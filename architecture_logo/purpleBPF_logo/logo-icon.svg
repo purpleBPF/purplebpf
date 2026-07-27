@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="PurpleBPF logo">
+  <g transform="translate(20,7)">
+    <path d="M60 6 L108 22 L108 66 C108 104 86 128 60 140 C34 128 12 104 12 66 L12 22 Z" fill="#EEEDFE" stroke="#534AB7" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M60 6 L108 22 L108 66 C108 104 86 128 60 140 Z" fill="#CECBF6" opacity="0.55"/>
+    <circle cx="34" cy="60" r="6" fill="#D85A30"/>
+    <circle cx="86" cy="60" r="6" fill="#378ADD"/>
+    <path d="M34 60 C46 60 46 84 60 84 C74 84 74 60 86 60" fill="none" stroke="#534AB7" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="60" cy="84" r="6.5" fill="#534AB7"/>
+    <path d="M42 104 L78 104" stroke="#534AB7" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+    <path d="M48 114 L72 114" stroke="#534AB7" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+  </g>
+</svg>

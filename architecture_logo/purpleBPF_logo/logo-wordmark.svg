@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="132" viewBox="0 0 480 132" role="img" aria-label="PurpleBPF - self-evolving coverage loop for container runtime">
+  <style>
+    .wm { fill: #1A1A18; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .tag { fill: #6B6A64; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    @media (prefers-color-scheme: dark) {
+      .wm { fill: #F2F1EC; }
+      .tag { fill: #A7A59C; }
+    }
+  </style>
+  <g transform="translate(8,20)">
+    <path d="M46 4 L82 16 L82 50 C82 78 63 96 46 104 C29 96 10 78 10 50 L10 16 Z" fill="#EEEDFE" stroke="#534AB7" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M46 4 L82 16 L82 50 C82 78 63 96 46 104 Z" fill="#CECBF6" opacity="0.55"/>
+    <circle cx="28" cy="46" r="4.5" fill="#D85A30"/>
+    <circle cx="64" cy="46" r="4.5" fill="#378ADD"/>
+    <path d="M28 46 C37 46 37 64 46 64 C55 64 55 46 64 46" fill="none" stroke="#534AB7" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="46" cy="64" r="5" fill="#534AB7"/>
+  </g>
+  <text x="108" y="62" font-size="42" font-weight="600" class="wm">Purple<tspan fill="#534AB7">BPF</tspan></text>
+  <text x="110" y="92" font-size="15" class="tag">self-evolving coverage loop for container runtime</text>
+</svg>
