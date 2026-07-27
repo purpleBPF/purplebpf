@@ -14,7 +14,7 @@
 
 ## 아키텍처
 
-![PurpleBPF Architecture](architecture_logo/purpleBPF_logo/purplebpf_architecture.png)
+![PurpleBPF Architecture](architecture_logo/purplebpf_architecture.png)
 
 ## 개요 (What & Why)
 
