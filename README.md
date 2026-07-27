@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="architecture_logo/purpleBPF_logo/logo-wordmark.svg" width="440" alt="PurpleBPF">
+</p>
+
+<p align="center">
+  <em>self-evolving coverage loop for container runtime</em>
+</p>
+
 # PurpleBPF
 
 *a self-evolving coverage loop for container runtime*
@@ -6,7 +14,7 @@
 
 ## 아키텍처
 
-![PurpleBPF Architecture](architecture/purplebpf_architecture.png)
+![PurpleBPF Architecture](architecture_logo/purpleBPF_logo/purplebpf_architecture.png)
 
 ## 개요 (What & Why)
 
@@ -102,5 +110,5 @@ PurpleBPF/
 ├── dbt/                # staging/intermediate/marts 데이터 변환 모델
 ├── orchestration/      # Dagster 에셋·센서 정의
 ├── infra/              # compose, grafana, redpanda, terraform 등 인프라 설정
-└── architecture/       # 아키텍처 다이어그램 소스와 이미지
+└── architecture_logo/       # 아키텍처 다이어그램 소스와 이미지
 ```
