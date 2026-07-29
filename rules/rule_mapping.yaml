@@ -1,21 +1,15 @@
 # 탐지 → ATT&CK technique 매핑
-#
-# Mapper가 이 파일을 읽어 Tetragon 이벤트에 technique을 태깅한다.
+# Mapper가 이 파일을 읽어 Tetragon 이벤트에 technique을 태깅
 # 탐지 출처가 두 가지라 섹션이 나뉜다.
 
 # TracingPolicy로 정의한 탐지. Tetragon 이벤트의 policy_name으로 식별한다.
 policies:
   t1548-001-setuid-bit-set:
     technique: T1548.001
+    # 탐지가 잡는 ATT&CK 번호
     leg: setuid 비트 설정
     hook: security_path_chmod
     requires: CONFIG_SECURITY_PATH=y
-
-  t1552-001-credential-file-read:
-    technique: T1552.001
-    leg: 자격증명 파일 접근
-    hook: security_file_open
-    note: 읽기와 쓰기를 구분하지 않는다. 파일 생성도 탐지된다
 
   t1610-runtime-socket-connect:
     technique: T1610

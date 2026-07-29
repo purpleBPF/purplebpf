@@ -1,0 +1,31 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1548-001-setuid-bit-set"
+spec:
+  kprobes:
+  - call: "security_path_chmod"
+    # security_path_chmod(const struct path *path, umode_t mode)
+    # chmod 계열 syscall(chmod/fchmod/fchmodat)이 전부 security_path_chmod를 통과
+    # -> syscall 대신 LSM(security_*) 훅을 사용해서 syscall 경로 3개를 LSM 훅 1개로 커버
+    syscall: false 
+    # syscall: false -> syscall 이름이 아니라 커널 내부 함수 이름
+    args: # 함수 인자를 어떻게 읽을지 선언 -> 이벤트에 실릴 내용
+    # security_path_chmod(const struct path *path, umode_t mode)
+    # 0번: struct path * 포인터, 1번: 숫자 int
+    # 이벤트 출력 예시: 
+    # "kprobe_args": [
+    #   {"path_arg": {"path": "/tmp/rootbash", "permission": "-rwxr-xr-x"}},
+    #   {"int_arg": 35309}
+    # ]
+    - index: 0
+      type: "path"
+    - index: 1
+      type: "int"
+    selectors: # 무얼 남길지 결정 -> 커널 안에서 선택(필터)
+    - matchArgs:
+      - index: 1
+        operator: "Mask"
+        values:
+        - "2048"   # S_ISUID (04000)
+        - "1024"   # S_ISGID (02000)

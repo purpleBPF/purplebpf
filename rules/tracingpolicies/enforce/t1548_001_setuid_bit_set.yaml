@@ -1,0 +1,34 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  # 관측판과 같은 이름. 두 판을 동시에 로드하지 않으므로 충돌하지 않고,
+  # Mapper가 모드와 무관하게 같은 policy_name으로 태깅할 수 있다.
+  name: "t1548-001-setuid-bit-set"
+spec:
+  kprobes:
+  # 관측판(observe/)과 훅·인자·필터가 전부 동일하다. matchActions만 다르다.
+  - call: "security_path_chmod"
+    syscall: false
+    args:
+    - index: 0
+      type: "path"
+    - index: 1
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 1
+        operator: "Mask"
+        values:
+        - "2048"   # S_ISUID (04000)
+        - "1024"   # S_ISGID (02000)
+      matchActions:
+      # Sigkill이 아니라 Override를 쓴다.
+      #
+      # Sigkill은 프로세스를 죽이지만 syscall은 이미 자기 일을 끝낸 뒤라
+      # setuid 비트가 실제로 붙는다. 실측: chmod가 137로 죽었는데 결과가
+      # -rwsr-xr-x 였다. 탐지·차단은 성공인데 방지는 실패다.
+      #
+      # Override는 함수 반환값을 에러로 바꿔서 커널이 변경 자체를 안 한다.
+      # 실측: chmod가 Operation not permitted, 결과가 -rwxr-xr-x.
+      - action: Override
+        argError: -1   # -EPERM
