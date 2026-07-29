@@ -1,0 +1,40 @@
+# 탐지 → ATT&CK technique 매핑
+#
+# Mapper가 이 파일을 읽어 Tetragon 이벤트에 technique을 태깅한다.
+# 탐지 출처가 두 가지라 섹션이 나뉜다.
+
+# TracingPolicy로 정의한 탐지. Tetragon 이벤트의 policy_name으로 식별한다.
+policies:
+  t1548-001-setuid-bit-set:
+    technique: T1548.001
+    leg: setuid 비트 설정
+    hook: security_path_chmod
+    requires: CONFIG_SECURITY_PATH=y
+
+  t1552-001-credential-file-read:
+    technique: T1552.001
+    leg: 자격증명 파일 접근
+    hook: security_file_open
+    note: 읽기와 쓰기를 구분하지 않는다. 파일 생성도 탐지된다
+
+  t1610-runtime-socket-connect:
+    technique: T1610
+    leg: 런타임 소켓 연결
+    hook: unix_stream_connect
+    requires: Tetragon 1.7.0 이상 (sockaddr_un 타입)
+    note: 호스트의 docker CLI도 잡힌다. 컨테이너 ID 유무로 걸러야 한다
+
+# TracingPolicy 없이 Tetragon 기본 exec 스트림에서 판정하는 탐지.
+#
+# 기본 센서가 모든 exec 이벤트를 이미 내보내므로 정책을 추가하면
+# 같은 이벤트가 두 번 올라와 비용만 늘어난다. 유저스페이스에서 판정한다.
+stream_rules:
+  setuid-exec-escalation:
+    technique: T1548.001
+    leg: setuid 비트 바이너리 execve, UID != EUID 전이
+    source: process_exec
+    condition: process_credentials.uid != process_credentials.euid
+    requires: tetragon --enable-process-cred
+    example:
+      binary: /tmp/rootsh
+      process_credentials: { uid: 1000, euid: 0, suid: 0 }

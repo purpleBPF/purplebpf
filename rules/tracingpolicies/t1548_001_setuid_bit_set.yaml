@@ -5,8 +5,8 @@ metadata:
 spec:
   kprobes:
   # security_path_chmod(const struct path *path, umode_t mode)
-  # chmod 계열 syscall(chmod/fchmod/fchmodat)이 전부 여기로 수렴한다.
-  # syscall 진입점 대신 이 LSM 훅을 잡는 이유: 진입점은 3개인데 여기는 1개다.
+  # chmod 계열 syscall(chmod/fchmod/fchmodat)이 전부 여기로 수렴
+  # syscall 진입점 대신 LSM 훅을 잡는 이유: 진입점은 3개인데 여기는 1개
   - call: "security_path_chmod"
     syscall: false
     args:
