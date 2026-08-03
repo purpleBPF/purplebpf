@@ -17,5 +17,7 @@ src/purplebpf/offensive/executor/__init__.py
 src/purplebpf/offensive/filter/__init__.py
 src/purplebpf/offensive/generation/__init__.py
 src/purplebpf/offensive/kg/__init__.py
+src/purplebpf/offensive/kg/download_stix.py
+src/purplebpf/offensive/kg/load_graph.py
 src/purplebpf/offensive/review/__init__.py
 src/purplebpf/queue/__init__.py

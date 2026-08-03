@@ -7,6 +7,10 @@ CTI 리포트 기반 ENABLES 관계는 이 스크립트의 스코프에 포함�
 """
 from __future__ import annotations
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import argparse
 import json
 import os
