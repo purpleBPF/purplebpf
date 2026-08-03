@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: purplebpf
+Version: 0.1.0
+Summary: a self-evolving coverage loop for container runtime
+Requires-Python: >=3.10
+Requires-Dist: alembic>=1.13
+Requires-Dist: psycopg2-binary>=2.9
+Requires-Dist: sqlalchemy>=2.0
