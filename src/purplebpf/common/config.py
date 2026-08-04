@@ -30,3 +30,10 @@ def get_ollama_host() -> str:
 
 def get_gemma_model() -> str:
     return os.environ.get("GEMMA_MODEL", "gemma2:2b")
+
+
+def get_slack_webhook_url() -> str:
+    url = os.environ.get("SLACK_WEBHOOK_URL")
+    if not url:
+        raise RuntimeError("SLACK_WEBHOOK_URL 환경변수가 설정되어 있지 않다.")
+    return url

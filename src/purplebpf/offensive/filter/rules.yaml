@@ -1,0 +1,8 @@
+# technique_id별 순서(ordering) 규칙.
+# requires_before: command_contains를 포함한 step은, must_follow를 포함한 step보다
+# 먼저(order가 더 작게) 나올 수 없다.
+# 규칙이 없는 technique_id는 순서 검사를 통과로 간주한다.
+# 정교한 순서 규칙은 KG에 ENABLES 관계가 추가되는 다음 단계에서 다룬다.
+T1611:
+  requires_before:
+    - {command_contains: "chroot", must_follow: "mount"}
