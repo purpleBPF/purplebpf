@@ -7,16 +7,11 @@ CTI 리포트 기반 ENABLES 관계는 이 스크립트의 스코프에 포함�
 """
 from __future__ import annotations
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import argparse
 import json
-import os
 import pathlib
 
-from neo4j import GraphDatabase
+from purplebpf.common.config import build_neo4j_driver
 
 STIX_PATH = pathlib.Path("data/stix/enterprise-attack.json")
 SCHEMA_PATH = pathlib.Path(__file__).parent / "schema.cypher"
@@ -101,21 +96,6 @@ def extract_subtechnique_relationships(objects: list[dict]) -> list[dict]:
             }
         )
     return relationships
-
-
-def build_neo4j_driver():
-    uri = os.environ.get("NEO4J_URI")
-    auth_raw = os.environ.get("NEO4J_AUTH")
-    if not uri:
-        raise RuntimeError("NEO4J_URI 환경변수가 설정되어 있지 않다.")
-    if not auth_raw:
-        raise RuntimeError("NEO4J_AUTH 환경변수가 설정되어 있지 않다.")
-
-    username, _, password = auth_raw.partition("/")
-    if not username or not password:
-        raise RuntimeError("NEO4J_AUTH는 'neo4j/비밀번호' 형식이어야 한다.")
-
-    return GraphDatabase.driver(uri, auth=(username, password))
 
 
 def apply_schema(driver) -> None:
