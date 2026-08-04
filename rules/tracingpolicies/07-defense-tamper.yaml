@@ -1,0 +1,20 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "pbpf-07-defense-tamper"
+spec:
+  kprobes:
+  - call: "security_bpf"
+    syscall: false
+    tags: [ "T1562.001", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "bpf_cmd"
+  - call: "sys_kill"
+    syscall: true
+    tags: [ "T1562.001", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "int"
+    - index: 1
+      type: "int"

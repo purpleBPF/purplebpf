@@ -1,0 +1,21 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "pbpf-05-persistence-treatment"
+spec:
+  kprobes:
+  - call: "security_file_open"
+    syscall: false
+    tags: [ "T1574.006", "T1053.003", "T1098.004", "pbpf:treatment" ]
+    args:
+    - index: 0
+      type: "file"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/etc/ld.so.preload"
+        - "/var/spool/cron/"
+        - "/etc/cron.d/"
+        - "/root/.ssh/authorized_keys"

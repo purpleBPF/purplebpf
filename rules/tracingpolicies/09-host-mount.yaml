@@ -1,0 +1,14 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "pbpf-09-host-mount"
+spec:
+  kprobes:
+  - call: "security_sb_mount"
+    syscall: false
+    tags: [ "T1611", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "string"
+    - index: 1
+      type: "path"

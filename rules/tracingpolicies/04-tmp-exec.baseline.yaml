@@ -1,0 +1,23 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "pbpf-04-tmp-exec-baseline"
+spec:
+  kprobes:
+  - call: "sys_openat"
+    syscall: true
+    tags: [ "T1105", "pbpf:baseline" ]
+    args:
+    - index: 0
+      type: "int"
+    - index: 1
+      type: "string"
+    selectors:
+    - matchArgs:
+      - index: 1
+        operator: "Prefix"
+        values:
+        - "/tmp/"
+        - "/dev/shm/"
+        - "/run/shm/"
+        - "/var/tmp/"

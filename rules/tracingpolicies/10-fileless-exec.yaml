@@ -1,0 +1,27 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "pbpf-10-fileless-exec"
+spec:
+  kprobes:
+  - call: "sys_memfd_create"
+    syscall: true
+    tags: [ "T1620", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "string"
+    - index: 1
+      type: "int"
+  - call: "security_bprm_check"
+    syscall: false
+    tags: [ "T1620", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "linux_binprm"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/memfd:"
+        - "memfd:"
