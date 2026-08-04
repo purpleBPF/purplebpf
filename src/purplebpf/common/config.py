@@ -5,6 +5,7 @@ import os
 
 from dotenv import load_dotenv
 from neo4j import Driver, GraphDatabase
+from sqlalchemy import Engine, create_engine
 
 load_dotenv()
 
@@ -37,3 +38,10 @@ def get_slack_webhook_url() -> str:
     if not url:
         raise RuntimeError("SLACK_WEBHOOK_URL 환경변수가 설정되어 있지 않다.")
     return url
+
+
+def build_db_engine() -> Engine:
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL 환경변수가 설정되어 있지 않다.")
+    return create_engine(database_url)
