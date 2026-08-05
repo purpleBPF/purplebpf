@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-04-tmp-exec-treatment"
+  name: "t1105-tmp-exec"
 spec:
   kprobes:
   - call: "security_file_open"

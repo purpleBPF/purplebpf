@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-07-defense-tamper"
+  name: "t1562-001-defense-tamper"
 spec:
   kprobes:
   - call: "security_bpf"

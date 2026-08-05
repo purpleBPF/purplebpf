@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-09-host-mount"
+  name: "t1611-host-mount"
 spec:
   kprobes:
   - call: "security_sb_mount"

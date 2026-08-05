@@ -1,12 +1,13 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-06-imds-baseline"
+  name: "t1610-runtime-socket-baseline"
 spec:
   kprobes:
+  # baseline = 시스템콜 진입점. io_uring SOCKET/CONNECT 는 여기를 안 지난다.
   - call: "sys_connect"
     syscall: true
-    tags: [ "T1552.005", "pbpf:baseline" ]
+    tags: [ "T1610", "pbpf:baseline" ]
     args:
     - index: 0
       type: "int"

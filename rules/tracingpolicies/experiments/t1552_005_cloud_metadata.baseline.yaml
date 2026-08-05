@@ -1,12 +1,12 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-11-reverse-shell-baseline"
+  name: "t1552-005-cloud-metadata-baseline"
 spec:
   kprobes:
   - call: "sys_connect"
     syscall: true
-    tags: [ "T1059.004", "pbpf:baseline" ]
+    tags: [ "T1552.005", "pbpf:baseline" ]
     args:
     - index: 0
       type: "int"

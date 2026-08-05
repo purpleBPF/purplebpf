@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-01-cred-file-read-treatment"
+  name: "t1552-001-cred-file-read"
 spec:
   kprobes:
   # treatment = 커널 내부 함수. read/write/sendfile/splice/aio/io_uring 이 전부 여기로 수렴한다.

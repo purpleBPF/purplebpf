@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-10-fileless-exec"
+  name: "t1620-fileless-exec"
 spec:
   kprobes:
   - call: "sys_memfd_create"

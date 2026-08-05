@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-11-reverse-shell-treatment"
+  name: "t1059-004-reverse-shell"
 spec:
   kprobes:
   - call: "tcp_connect"

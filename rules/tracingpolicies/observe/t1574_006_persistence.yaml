@@ -1,20 +1,18 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-05-persistence-baseline"
+  name: "t1574-006-persistence"
 spec:
   kprobes:
-  - call: "sys_openat"
-    syscall: true
-    tags: [ "T1574.006", "T1053.003", "T1098.004", "pbpf:baseline" ]
+  - call: "security_file_open"
+    syscall: false
+    tags: [ "T1574.006", "T1053.003", "T1098.004", "pbpf:treatment" ]
     args:
     - index: 0
-      type: "int"
-    - index: 1
-      type: "string"
+      type: "file"
     selectors:
     - matchArgs:
-      - index: 1
+      - index: 0
         operator: "Prefix"
         values:
         - "/etc/ld.so.preload"

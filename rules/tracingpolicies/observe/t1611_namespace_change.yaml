@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-02-namespace-change"
+  name: "t1611-namespace-change"
 spec:
   kprobes:
   - call: "sys_setns"

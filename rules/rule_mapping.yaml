@@ -3,6 +3,7 @@
 # 탐지 출처가 두 가지라 섹션이 나뉜다.
 
 # TracingPolicy로 정의한 탐지. Tetragon 이벤트의 policy_name으로 식별한다.
+# observe/ 와 enforce/ 는 metadata.name이 같으므로 한 항목이 두 모드를 다 덮는다.
 policies:
   t1548-001-setuid-bit-set:
     technique: T1548.001
@@ -10,6 +11,7 @@ policies:
     leg: setuid 비트 설정
     hook: security_path_chmod
     requires: CONFIG_SECURITY_PATH=y
+    io_uring: 비대상   # chmod 옵코드가 없다 (io_uring.h 확인)
 
   t1610-runtime-socket-connect:
     technique: T1610
@@ -17,6 +19,71 @@ policies:
     hook: unix_stream_connect
     requires: Tetragon 1.7.0 이상 (sockaddr_un 타입)
     note: 호스트의 docker CLI도 잡힌다. 컨테이너 ID 유무로 걸러야 한다
+    io_uring: 대상     # SOCKET/CONNECT/WRITE 옵코드가 있다
+
+  t1552-001-cred-file-read:
+    technique: T1552.001
+    leg: 자격증명 파일 읽기
+    hook: security_file_permission
+    note: SA 토큰은 kubelet과 SDK가 상시 읽는다. 오탐 베이스라인 없이는 FP를 못 센다
+    io_uring: 대상     # 대조실험 본진
+
+  t1611-namespace-change:
+    technique: T1611
+    leg: 네임스페이스 변경
+    hook: sys_setns, sys_unshare
+    io_uring: 비대상
+
+  t1611-host-mount:
+    technique: T1611
+    leg: 네임스페이스 변경 후 호스트 마운트
+    hook: security_sb_mount
+    io_uring: 비대상
+
+  t1105-tmp-exec:
+    technique: T1105
+    leg: 임시 경로 드롭 및 실행
+    hook: security_file_open, security_bprm_check
+    note: 경로 접두사만 보면 정상 빌드 컨테이너에서 뜬다. 컨테이너 시작 후 생성 조건이 필요하다
+    io_uring: 대상     # 드롭 레그만. 실행 레그는 execve라 불가
+
+  t1574-006-persistence:
+    technique: [T1574.006, T1053.003, T1098.004]
+    leg: ld.so.preload / cron / authorized_keys 쓰기
+    hook: security_file_open
+    note: 탐지 하나가 기법 셋을 덮는다. Mapper가 경로로 기법을 갈라야 한다
+    io_uring: 대상     # execve 없이 완결되는 유일한 경로
+
+  t1552-005-cloud-metadata:
+    technique: T1552.005
+    leg: IMDS 연결
+    hook: tcp_connect
+    io_uring: 대상
+
+  t1562-001-defense-tamper:
+    technique: T1562.001
+    leg: BPF 프로그램 detach, 에이전트 프로세스 종료
+    hook: security_bpf, sys_kill
+    note: |
+      자기참조. 탐지기를 죽이는 데 성공하면 탐지 기록 자체가 사라진다.
+      미탐과 탐지기 사망을 구분하는 결과 코드가 채점기에 따로 필요하다.
+      ATT&CK ID 재편(T1685) 여부 미확인.
+    io_uring: 비대상
+
+  t1620-fileless-exec:
+    technique: T1620
+    leg: memfd 실행
+    hook: sys_memfd_create, security_bprm_check
+    io_uring: 비대상   # write 레그는 가능하나 관측 지점이 아니다
+
+  t1059-004-reverse-shell:
+    technique: T1059.004
+    leg: connect 후 셸 execve
+    hook: tcp_connect, security_bprm_check
+    note: |
+      상관분석. fd 0/1/2가 소켓인지는 셀렉터로 검사할 수 없다.
+      io_uring SOCKET/CONNECT로 connect 이벤트가 빠지면 상관 자체가 붕괴한다.
+    io_uring: 대상
 
 # TracingPolicy 없이 Tetragon 기본 exec 스트림에서 판정하는 탐지.
 #
@@ -32,3 +99,7 @@ stream_rules:
     example:
       binary: /tmp/rootsh
       process_credentials: { uid: 1000, euid: 0, suid: 0 }
+
+# experiments/ 의 baseline 정책은 여기 등재하지 않는다.
+# 일부러 뚫리라고 만든 실험 장비라 커버리지 집계에 섞이면 안 된다.
+# 대조실험 결과는 baseline/treatment 쌍을 따로 비교해 산출한다.

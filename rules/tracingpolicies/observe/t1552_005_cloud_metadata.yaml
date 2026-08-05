@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-06-imds-treatment"
+  name: "t1552-005-cloud-metadata"
 spec:
   kprobes:
   - call: "tcp_connect"

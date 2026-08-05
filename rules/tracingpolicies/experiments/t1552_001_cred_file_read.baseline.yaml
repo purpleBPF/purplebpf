@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: "pbpf-01-cred-file-read-baseline"
+  name: "t1552-001-cred-file-read-baseline"
 spec:
   kprobes:
   # baseline = 시스템콜 진입점. io_uring OPENAT 은 여기를 안 지나므로 놓친다.
