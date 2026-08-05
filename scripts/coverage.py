@@ -10,6 +10,9 @@ from collections import Counter
 
 events, loaded = sys.argv[1], sys.argv[2]
 
+names = sorted(set(open(loaded).read().split()))
+known = set(names)
+
 count = Counter()
 for line in open(events):
     try:
@@ -20,13 +23,12 @@ for line in open(events):
     if not k:
         continue
     name = k.get("policy_name", "")
-    if name.startswith("pbpf"):
+    if name in known:
         count[name] += 1
 
-names = sorted(n for n in open(loaded).read().split() if n.startswith("pbpf"))
 fired = 0
 for n in names:
     c = count[n]
     fired += c > 0
-    print(f'{"발화" if c else "  0 "}  {n:42} {c:5}')
+    print(f'{"발화" if c else "  0 "}  {n:42} {c:6}')
 print(f"--- 정책 {len(names)}개 중 {fired}개 발화")

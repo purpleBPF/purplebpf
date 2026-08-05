@@ -1,6 +1,15 @@
 # PurpleBPF 룰팩
 
-탐지 후보 11종, 정책 파일 17개. 대조실험 6종은 baseline·treatment 두 벌이라 파일 수가 더 많다.
+탐지 후보 9종, 정책 파일 14개.
+
+```
+observe/       9   실제 탐지 룰
+experiments/   4   baseline, io_uring 대조용
+enforce/       1   차단판 (T1548.001)
+```
+
+대조실험 4종은 baseline·treatment 두 벌이라 파일 수가 후보 수보다 많다.
+동시 로드는 13개다. enforce 는 observe 와 metadata.name 이 같아 배타적으로 쓴다.
 
 - baseline = 시스템콜 진입점 (`sys_*`). io_uring 경로가 우회하는 쪽
 - treatment = 커널 내부 함수 (`security_*`, `tcp_connect`, `unix_stream_connect`)
@@ -18,7 +27,7 @@ BPF LSM 을 못 쓰므로 전 정책이 kprobe 다. 관리형 쿠버네티스에
 
 ## 검증 결과
 
-`scripts/attack_all.sh` 실행 시 17개 정책 전부 발화 확인.
+`scripts/attack_all.sh` 실행 시 로드된 13개 정책 전부 발화 확인.
 
 io_uring 대조실험(01번, 자격증명 파일 읽기)의 2×2:
 

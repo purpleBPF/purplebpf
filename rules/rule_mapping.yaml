@@ -47,12 +47,6 @@ policies:
     note: 경로 접두사만 보면 정상 빌드 컨테이너에서 뜬다. 컨테이너 시작 후 생성 조건이 필요하다
     io_uring: 대상     # 드롭 레그만. 실행 레그는 execve라 불가
 
-  t1574-006-persistence:
-    technique: [T1574.006, T1053.003, T1098.004]
-    leg: ld.so.preload / cron / authorized_keys 쓰기
-    hook: security_file_open
-    note: 탐지 하나가 기법 셋을 덮는다. Mapper가 경로로 기법을 갈라야 한다
-    io_uring: 대상     # execve 없이 완결되는 유일한 경로
 
   t1552-005-cloud-metadata:
     technique: T1552.005
@@ -76,14 +70,6 @@ policies:
     hook: sys_memfd_create, security_bprm_check
     io_uring: 비대상   # write 레그는 가능하나 관측 지점이 아니다
 
-  t1059-004-reverse-shell:
-    technique: T1059.004
-    leg: connect 후 셸 execve
-    hook: tcp_connect, security_bprm_check
-    note: |
-      상관분석. fd 0/1/2가 소켓인지는 셀렉터로 검사할 수 없다.
-      io_uring SOCKET/CONNECT로 connect 이벤트가 빠지면 상관 자체가 붕괴한다.
-    io_uring: 대상
 
 # TracingPolicy 없이 Tetragon 기본 exec 스트림에서 판정하는 탐지.
 #

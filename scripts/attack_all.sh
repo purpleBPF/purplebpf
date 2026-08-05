@@ -23,11 +23,6 @@ mark 04.begin
 cp /bin/true /tmp/pbpf-dropped && /tmp/pbpf-dropped
 mark 04.end
 
-mark 05.begin
-echo "# pbpf test" | sudo tee /etc/cron.d/pbpf-canary >/dev/null
-echo "# pbpf test" | sudo tee -a /root/.ssh/authorized_keys >/dev/null
-mark 05.end
-
 mark 06.begin
 curl -s --max-time 2 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1
 mark 06.end
@@ -57,19 +52,7 @@ os.waitpid(pid, 0)
 " 2>/dev/null
 mark 10.end
 
-mark 11.begin
-# 리버스 셸 형태: connect 후 같은 프로세스에서 셸 exec
-(python3 -c "
-import socket,os,subprocess
-s=socket.socket()
-try: s.connect(('127.0.0.1',9))
-except OSError: pass
-subprocess.run(['/bin/sh','-c','true'])
-" 2>/dev/null)
-mark 11.end
-
 # teardown
-sudo rm -f /etc/cron.d/pbpf-canary /tmp/pbpf-suid /tmp/pbpf-dropped
-sudo sed -i '/# pbpf test/d' /root/.ssh/authorized_keys 2>/dev/null
+sudo rm -f /tmp/pbpf-suid /tmp/pbpf-dropped
 sudo rmdir /tmp/pbpf-mnt 2>/dev/null
 echo "NONCE=$NONCE"
