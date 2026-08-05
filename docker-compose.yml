@@ -1,3 +1,4 @@
 include:
   - infra/compose/postgres.yml
   - infra/compose/neo4j.yml
+  - infra/compose/grafana.yml
