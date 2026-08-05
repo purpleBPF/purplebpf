@@ -1,0 +1,22 @@
+[project]
+name = "purplebpf"
+version = "0.1.0"
+description = "a self-evolving coverage loop for container runtime"
+requires-python = ">=3.10"
+dependencies = [
+    "alembic>=1.13",
+    "psycopg2-binary>=2.9",
+    "sqlalchemy>=2.0",
+    "neo4j>=5.19",
+    "python-dotenv>=1.0",
+    "requests>=2.31",
+    "pyyaml>=6.0",
+    "docker>=7.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
