@@ -15,8 +15,10 @@ run() {   # run <라벨> <명령...>
   "$@" >/dev/null 2>&1
   wait
   local b t
-  b=$(grep -c pbpf-01-cred-file-read-baseline  /tmp/demo.json || true)
-  t=$(grep -c pbpf-01-cred-file-read-treatment /tmp/demo.json || true)
+  # policy_name 을 통째로 매칭한다. 부분 문자열로 세면
+  # treatment 쪽이 baseline 이벤트까지 같이 집계한다.
+  b=$(grep -c '"policy_name":"t1552-001-cred-file-read-baseline"' /tmp/demo.json || true)
+  t=$(grep -c '"policy_name":"t1552-001-cred-file-read"' /tmp/demo.json || true)
   printf '%-16s  baseline %-8s  treatment %s\n' "$label" \
     "$([ "$b" -gt 0 ] && echo "잡힘($b)" || echo '놓침(0)')" \
     "$([ "$t" -gt 0 ] && echo "잡힘($t)" || echo '놓침(0)')"
