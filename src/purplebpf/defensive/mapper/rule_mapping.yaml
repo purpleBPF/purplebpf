@@ -1,3 +1,0 @@
-# Tetragon TracingPolicy 이름(policy_name) → ATT&CK technique 매핑.
-# 매핑되지 않은 policy_name의 이벤트는 mapper.py가 건너뛰고 경고만 남긴다.
-monitor-shell-lsm: "T1059.004"

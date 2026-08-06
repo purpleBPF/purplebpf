@@ -19,7 +19,13 @@ from pathlib import Path
 import psycopg2
 import yaml
 
-RULE_MAPPING_PATH = Path(__file__).parent / "rule_mapping.yaml"
+# 매핑의 단일 출처는 레포 루트의 rules/rule_mapping.yaml 이다.
+# 룰과 매핑은 같은 사람이 관리하므로 룰 옆에 두고, Mapper 는 읽기만 한다.
+# VM 안에서 레포 경로가 다르면 PBPF_RULE_MAPPING 으로 덮어쓴다.
+RULE_MAPPING_PATH = Path(
+    os.environ.get("PBPF_RULE_MAPPING")
+    or Path(__file__).resolve().parents[4] / "rules" / "rule_mapping.yaml"
+)
 CHANNEL = "syscall"  # 이번 프로토타입은 syscall 채널 고정.
 
 # Tetragon JSON 이벤트에서 policy_name/process 정보가 담기는 최상위 이벤트 타입들.
@@ -119,8 +125,34 @@ def _truncate(value: str | None, limit: int) -> str | None:
 
 
 def _load_rule_mapping() -> dict:
+    """rules/rule_mapping.yaml 의 policies 섹션을 {policy_name: technique} 으로 편다.
+
+    파일은 policy_name 아래에 technique 말고도 leg·hook·requires·note 를 담는다.
+    Mapper 가 쓰는 건 technique 뿐이고 나머지는 사람이 읽는 근거다.
+
+    stream_rules 섹션은 여기서 무시한다. TracingPolicy 가 아니라 기본 exec
+    스트림에서 판정하는 탐지라 policy_name 으로 매칭될 일이 없다.
+    """
     with RULE_MAPPING_PATH.open(encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
+        doc = yaml.safe_load(f) or {}
+
+    mapping: dict[str, str] = {}
+    for policy_name, spec in (doc.get("policies") or {}).items():
+        technique = spec.get("technique") if isinstance(spec, dict) else spec
+        if isinstance(technique, list):
+            # 탐지 하나가 기법 여럿을 덮는 경우. detections.technique 는 단일 값이라
+            # 첫 번째만 쓴다. 정확히 가르려면 Mapper 가 경로·인자로 분기해야 한다.
+            print(
+                f"경고: {policy_name} 에 technique 이 여럿이다({technique}). 첫 번째만 쓴다.",
+                file=sys.stderr,
+            )
+            technique = technique[0] if technique else None
+        if technique:
+            mapping[policy_name] = technique
+
+    if not mapping:
+        raise RuntimeError(f"{RULE_MAPPING_PATH} 의 policies 섹션이 비어 있다.")
+    return mapping
 
 
 if __name__ == "__main__":
