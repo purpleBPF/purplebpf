@@ -38,7 +38,9 @@ JOIN_SQL = text(
         COUNT(d.detection_id) AS hits
     FROM execution_log e
     LEFT JOIN detections d
-      ON  d.container_id = e.container_id
+      -- Executor 는 Docker short_id(12자)를, Tetragon 은 더 긴 컨테이너 ID를 준다.
+      -- 짧은 쪽이 긴 쪽의 접두사이므로 prefix 로 맞춘다. 등호로 두면 항상 어긋난다.
+      ON  d.container_id LIKE e.container_id || '%'
       AND d.technique    = e.technique
       AND d.detected_at >= e.started_at
       AND d.detected_at <= e.finished_at + (:eps || ' seconds')::interval
@@ -56,7 +58,7 @@ FP_SQL = text(
     FROM detections d
     WHERE NOT EXISTS (
         SELECT 1 FROM execution_log e
-        WHERE e.container_id = d.container_id
+        WHERE d.container_id LIKE e.container_id || '%'
           AND e.technique    = d.technique
           AND d.detected_at >= e.started_at
           AND d.detected_at <= e.finished_at + (:eps || ' seconds')::interval

@@ -1,0 +1,8 @@
+{
+  "technique_id": "T1613",
+  "goal": "컨테이너 내부에서 자원과 환경을 정찰한다",
+  "steps": [
+    {"order": 1, "purpose": "컨테이너 여부 확인", "command": "cat /proc/self/cgroup; ls -la /.dockerenv 2>/dev/null || true"},
+    {"order": 2, "purpose": "프로세스와 마운트 열거", "command": "ps aux; mount | head -20"}
+  ]
+}

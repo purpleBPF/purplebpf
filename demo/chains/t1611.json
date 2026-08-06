@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1611",
+  "goal": "네임스페이스를 바꿔 호스트로 탈출한다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "네임스페이스 변경",
+      "command": "unshare --mount --pid --fork true"
+    }
+  ]
+}

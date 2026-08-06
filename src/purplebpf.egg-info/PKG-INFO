@@ -7,3 +7,7 @@ Requires-Dist: alembic>=1.13
 Requires-Dist: psycopg2-binary>=2.9
 Requires-Dist: sqlalchemy>=2.0
 Requires-Dist: neo4j>=5.19
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: requests>=2.31
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: docker>=7.0

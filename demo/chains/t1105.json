@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "임시 경로에 바이너리를 떨어뜨리고 실행한다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "드롭",
+      "command": "cp /bin/true /tmp/dropped"
+    },
+    {
+      "order": 2,
+      "purpose": "실행",
+      "command": "/tmp/dropped"
+    }
+  ]
+}

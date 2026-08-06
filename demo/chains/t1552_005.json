@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1552.005",
+  "goal": "IMDS 에 접속해 인스턴스 자격증명을 노린다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "IMDS 연결 시도",
+      "command": "timeout 3 bash -c 'exec 3<>/dev/tcp/169.254.169.254/80' || true"
+    }
+  ]
+}

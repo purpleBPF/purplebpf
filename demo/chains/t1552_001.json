@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "자격증명 파일을 읽는다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "합성 카나리 배치",
+      "command": "mkdir -p /root/.ssh && echo SYNTHETIC-CANARY > /root/.ssh/id_rsa"
+    },
+    {
+      "order": 2,
+      "purpose": "자격증명 읽기",
+      "command": "cat /root/.ssh/id_rsa"
+    }
+  ]
+}
