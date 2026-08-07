@@ -1,0 +1,24 @@
+purplebpf:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # 로컬 파일(인메모리 아님) — dbt run과 dbt test는 각각 별도 프로세스라서
+      # 인메모리로 하면 run에서 만든 coverage 테이블을 test 때 못 읽는다.
+      # DuckDB의 path는 --project-dir이 아니라 dbt를 실행한 cwd 기준으로 해석되므로,
+      # 항상 레포 루트에서 `dbt ... --project-dir dbt --profiles-dir dbt`로 실행한다.
+      path: 'dbt/duckdb/purplebpf.duckdb'
+      extensions:
+        - postgres
+      # coverage 모델의 post-hook이 main(purplebpf)과 pg(Postgres) 두 ATTACH된
+      # DB에 걸쳐 쓰는데, DuckDB는 하나의 트랜잭션이 여러 ATTACH DB에 쓰는 걸
+      # 허용하지 않는다. 트랜잭션을 끄면 각 문이 개별적으로 커밋돼 해결된다.
+      disable_transactions: true
+      plugins:
+        # execution_log(Postgres)를 pg 별칭으로 ATTACH한다. coverage_duckdb.py에서
+        # 검증된, DATABASE_URL을 직접 파싱해 비번 마스킹을 피하는 방식을 재사용한다.
+        - module: purplebpf.analysis.dbt_plugins.postgres_plugin
+        # detections(Iceberg)를 pyarrow로 읽어 소스로 등록한다. 카탈로그 경로는
+        # iceberg_setup.py의 상수를 그대로 재사용한다.
+        - module: purplebpf.analysis.dbt_plugins.iceberg_plugin
+          alias: iceberg

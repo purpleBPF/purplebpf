@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from neo4j import Driver, GraphDatabase
@@ -45,3 +46,32 @@ def build_db_engine() -> Engine:
     if not database_url:
         raise RuntimeError("DATABASE_URL 환경변수가 설정되어 있지 않다.")
     return create_engine(database_url)
+
+
+def build_postgres_libpq_dsn() -> str:
+    """DATABASE_URL을 직접 파싱해 libpq 형식 DSN을 만든다.
+
+    SQLAlchemy의 Engine.url을 str()로 찍으면 비밀번호가 '***'로 마스킹되므로
+    (DuckDB의 postgres ATTACH 등 실제 인증이 필요한 곳에 쓰면 인증 실패),
+    os.environ에서 DATABASE_URL을 직접 읽어 마스킹을 우회한다.
+    """
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL 환경변수가 설정되어 있지 않다.")
+
+    parsed = urlparse(database_url)
+    parts = {
+        "host": parsed.hostname,
+        "port": parsed.port,
+        "dbname": (parsed.path or "").lstrip("/"),
+        "user": parsed.username,
+        "password": parsed.password,
+    }
+    return " ".join(f"{key}={_quote_libpq_value(str(value))}" for key, value in parts.items() if value)
+
+
+def _quote_libpq_value(value: str) -> str:
+    if " " not in value and '"' not in value:
+        return value
+    escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'

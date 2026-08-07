@@ -5,5 +5,11 @@ data/*
 !data/.gitkeep
 .venv/
 .DS_Store
-.venv/
-.env
+
+# dbt / DuckDB 산출물
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/duckdb/*.duckdb
+dbt/duckdb/*.duckdb.wal
+dbt/.user.yml

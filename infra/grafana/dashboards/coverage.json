@@ -1,0 +1,175 @@
+{
+  "id": null,
+  "uid": "purplebpf-coverage",
+  "title": "PurpleBPF Coverage",
+  "tags": ["purplebpf", "coverage"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-24h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Total TP",
+      "gridPos": { "x": 0, "y": 0, "w": 8, "h": 4 },
+      "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+          "format": "table",
+          "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'TP'",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "green" },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "colorMode": "background"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Total FN",
+      "gridPos": { "x": 8, "y": 0, "w": 8, "h": 4 },
+      "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+          "format": "table",
+          "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'FN'",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "red" },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "colorMode": "background"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Total FP",
+      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 4 },
+      "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+          "format": "table",
+          "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'FP'",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "yellow" },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "colorMode": "background"
+      }
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Coverage Matrix",
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 10 },
+      "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+          "format": "table",
+          "rawSql": "SELECT technique, shots, detects, result FROM coverage ORDER BY technique",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" } } },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "result" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-background" } },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "TP": { "color": "green", "index": 0 },
+                      "FN": { "color": "red", "index": 1 },
+                      "FP": { "color": "yellow", "index": 2 }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": { "showHeader": true }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Coverage Heatmap (technique x result)",
+      "description": "기법별 TP(초록)/FN(빨강)/FP(노랑) 상태를 색으로 표현한다.",
+      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "purplebpf-postgres" },
+          "format": "table",
+          "rawSql": "SELECT technique, result FROM coverage ORDER BY technique",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "center", "cellOptions": { "type": "auto" } } },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "result" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-background" } },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "TP": { "color": "green", "index": 0 },
+                      "FN": { "color": "red", "index": 1 },
+                      "FP": { "color": "yellow", "index": 2 }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": { "showHeader": true }
+    }
+  ]
+}

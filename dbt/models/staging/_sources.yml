@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: iceberg
+    schema: purplebpf
+    meta:
+      plugin: iceberg
+    tables:
+      - name: detections

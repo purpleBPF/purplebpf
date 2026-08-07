@@ -12,6 +12,10 @@ dependencies = [
     "requests>=2.31",
     "pyyaml>=6.0",
     "docker>=7.0",
+    "pyiceberg[sql-sqlite]>=0.7",
+    "pyarrow>=16.0",
+    "duckdb>=1.0",
+    "dbt-duckdb>=1.9",
 ]
 
 [build-system]
