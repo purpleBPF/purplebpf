@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: coverage
+    description: >
+      execution_log(Postgres, shots)와 detections(Iceberg, detects)를 technique 기준으로
+      조인한 커버리지 마트. TP/FN/FP를 계산하며, Postgres의 coverage 테이블로도 복제된다
+      (Grafana가 읽을 수 있게).
+    columns:
+      - name: technique
+        tests:
+          - not_null
+      - name: shots
+        tests:
+          - not_null
+          - non_negative
+      - name: detects
+        tests:
+          - not_null
+          - non_negative
