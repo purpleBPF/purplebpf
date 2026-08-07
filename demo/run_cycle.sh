@@ -6,14 +6,24 @@
 #   - docker compose 로 postgres 가 떠 있고 alembic upgrade head 가 끝났을 것
 #
 # 사용법: demo/run_cycle.sh [round_id]
+#   round_id 를 안 주면 마지막 라운드 + 1 로 자동 증가한다.
+#   라운드는 루프의 세대다. 같은 라운드에 두 번 쏘면 채점이 두 번 겹쳐
+#   집계되므로(재현율은 같고 건수만 배로 늘어난다) 매 실행이 새 라운드여야 한다.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-ROUND=${1:-1}
 set -a; . ./.env; set +a
 export DOCKER_HOST=unix:///Users/jaewoo/.lima/purplebpf/sock/docker.sock
 export PYTHONPATH=src           # editable install 의 .pth 가 처리 안 되는 환경 대비
 PY=.venv/bin/python
+
+ROUND=${1:-$($PY - <<'PY'
+import os, sqlalchemy as sa
+e = sa.create_engine(os.environ["DATABASE_URL"])
+with e.connect() as c:
+    print(c.execute(sa.text("select coalesce(max(round_id),0)+1 from execution_log")).scalar_one())
+PY
+)}
 
 CHAINS=(t1548_001 t1105 t1552_001 t1552_005 t1611 t1613)
 WINDOW=$(( ${#CHAINS[@]} * 25 + 30 ))
