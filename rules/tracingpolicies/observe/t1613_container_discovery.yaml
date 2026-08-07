@@ -1,0 +1,30 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1613-container-discovery"
+spec:
+  kprobes:
+  # 컨테이너 안에 있는지, 무엇이 붙어 있는지 확인하는 정찰 동작.
+  # 공격자가 발판을 잡은 직후 가장 먼저 하는 일이다.
+  #
+  # /proc/self/... 로 열어도 커널이 보는 경로는 /proc/<pid>/... 로 풀린다.
+  # 그래서 Equal 로는 안 맞고 Postfix 로 끝부분을 본다(실측).
+  - call: "security_file_open"
+    syscall: false
+    tags: [ "T1613", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "file"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Postfix"
+        values:
+        - "/cgroup"       # /proc/<pid>/cgroup — 자기가 어느 cgroup 인지
+        - "/mountinfo"    # /proc/<pid>/mountinfo — 무엇이 마운트돼 있는지
+    - matchArgs:
+      - index: 0
+        operator: "Equal"
+        values:
+        - "/.dockerenv"   # 도커가 컨테이너 루트에 넣어두는 표시 파일
+        - "/run/secrets/kubernetes.io/serviceaccount/namespace"

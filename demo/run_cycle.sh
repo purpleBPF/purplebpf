@@ -25,7 +25,7 @@ with e.connect() as c:
 PY
 )}
 
-CHAINS=(t1548_001 t1105 t1552_001 t1552_005 t1611 t1613)
+CHAINS=(t1548_001 t1105 t1552_001 t1552_005 t1611 t1613 t1055_008 t1055_009 t1548_003)
 WINDOW=$(( ${#CHAINS[@]} * 25 + 30 ))
 
 echo "=== Mapper 기동 (${WINDOW}초 수집) ==="

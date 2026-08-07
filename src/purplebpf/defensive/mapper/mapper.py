@@ -87,6 +87,24 @@ def _handle_event(event: dict, rule_mapping: dict, conn) -> None:
     container_id = _truncate(
         process.get("docker") or (process.get("container") or {}).get("id"), 64
     )
+
+    # 컨테이너 밖에서 난 이벤트는 버린다.
+    #
+    # 공격은 컨테이너 안에서만 실행하는데 규칙에는 컨테이너 한정 조건이 없어서
+    # 호스트 활동까지 전부 올라온다. 가장 큰 것이 runc 다. 컨테이너를 만들려면
+    # 네임스페이스를 새로 만들어야 하므로 setns 와 unshare 를 부르고, 그것이
+    # T1611 규칙에 그대로 걸린다. 공격이 아니라 도커가 제 일을 한 것이다.
+    #
+    # 커널 안에서 거르는 편이 이벤트 양까지 줄여 낫지만, Tetragon 의
+    # matchNamespaces 는 부팅마다 바뀌는 네임스페이스 inode 번호를 값으로
+    # 요구해서 정책 파일에 적어둘 수가 없다. 그래서 여기서 거른다.
+    # 이벤트 양은 안 줄고 기록만 줄어든다.
+    #
+    # PBPF_KEEP_HOST_EVENTS=1 을 주면 거르지 않는다. 호스트 대상 기법을
+    # 측정할 때나 오탐 내역을 살펴볼 때 쓴다.
+    if not container_id and not os.environ.get("PBPF_KEEP_HOST_EVENTS"):
+        return
+
     detected_at = _parse_timestamp(event.get("time") or body.get("time")) or datetime.now(timezone.utc)
 
     with conn.cursor() as cur:

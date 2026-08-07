@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1055.008",
+  "goal": "ptrace로 다른 프로세스 메모리에 주입한다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "대상 프로세스를 직접 낳고 ptrace로 붙어 메모리에 쓴다. 자식이라 CAP_SYS_PTRACE 없이도 붙는다",
+      "command": "perl -e 'my $pid = fork();\nif ($pid == 0) { sleep 30; exit 0 }\nsleep 1;\nsyscall(117, 16, $pid, 0, 0) == 0 or die \"ATTACH 실패: $!\\n\";\nwaitpid($pid, 0);\nopen(my $mp, \"<\", \"/proc/$pid/maps\") or die;\nmy $addr = hex((split /-/, <$mp>)[0]);\nsyscall(117, 5, $pid, $addr, 0);\nsyscall(117, 17, $pid, 0, 0);\nkill 9, $pid;\nprint \"ptrace 주입 완료\\n\";'"
+    }
+  ]
+}

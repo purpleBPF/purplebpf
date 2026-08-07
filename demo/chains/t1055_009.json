@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1055.009",
+  "goal": "/proc/<pid>/mem 쓰기로 메모리를 조작한다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "대상 프로세스를 직접 낳고 메모리 파일의 한 바이트를 읽어 그대로 되쓴다",
+      "command": "perl -e 'my $pid = fork();\nif ($pid == 0) { sleep 30; exit 0 }\nsleep 1;\nopen(my $mp, \"<\", \"/proc/$pid/maps\") or die;\nmy $start;\nwhile (<$mp>) { if (/^([0-9a-f]+)-\\S+\\s+rw/) { $start = hex($1); last } }\ndie \"쓰기 가능한 구간 없음\\n\" unless defined $start;\nopen(my $m, \"+<\", \"/proc/$pid/mem\") or die \"mem 열기 실패: $!\\n\";\nseek($m, $start, 0) or die \"seek 실패: $!\\n\";\nread($m, my $b, 1) == 1 or die \"read 실패: $!\\n\";\nseek($m, $start, 0);\nprint {$m} $b or die \"write 실패: $!\\n\";\nclose $m; kill 9, $pid;\nprint \"proc mem 쓰기 완료\\n\";'"
+    }
+  ]
+}

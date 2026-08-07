@@ -1,0 +1,28 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  # ATT&CK 매핑이 없다. 후속 행위에 따라 무슨 기법인지가 갈리기 때문이다.
+  # rule_mapping.yaml 에 등재하지 않는다. 다른 규칙의 앞 단계로 보는 신호다.
+  name: "exec-file-capability"
+spec:
+  kprobes:
+  # capability 는 관리자 권한을 잘게 쪼갠 단위다. 파일에 capability 를
+  # 붙여두면 그 파일을 실행할 때 해당 권한을 얻는다. setuid 보다 좁게
+  # 권한을 주는 방식인데, 공격자에게는 권한을 남겨두는 수단이 된다.
+  #
+  # 붙이는 시점을 본다. capability 는 security.capability 라는 확장 속성으로
+  # 저장되므로 그 속성을 쓰는 순간이 관측 지점이다.
+  - call: "security_inode_setxattr"
+    syscall: false
+    tags: [ "pbpf:single", "pbpf:no-attack-mapping" ]
+    args:
+    - index: 0
+      type: "dentry"
+    - index: 1
+      type: "string"
+    selectors:
+    - matchArgs:
+      - index: 1
+        operator: "Equal"
+        values:
+        - "security.capability"
