@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "action_vocabulary": [
+    "EXECUTE_PROGRAM",
+    "EXECUTE_FILE",
+    "CREATE_FILE",
+    "WRITE_FILE",
+    "READ_FILE",
+    "CREATE_MEMORY_FILE",
+    "CHANGE_FILE_PERMISSION",
+    "CONNECT_ENDPOINT",
+    "CONNECT_SOCKET",
+    "CREATE_NAMESPACE",
+    "ENTER_NAMESPACE",
+    "MOUNT_FILESYSTEM",
+    "TRACE_PROCESS",
+    "WRITE_PROCESS_MEMORY",
+    "TERMINATE_PROCESS",
+    "LOAD_KERNEL_MODULE",
+    "LOAD_BPF_PROGRAM",
+    "MODIFY_SECURITY_CONTROL"
+  ],
+  "context_vocabulary": [
+    "program_type",
+    "program_category",
+    "privilege_context",
+    "path_type",
+    "backing",
+    "file_state",
+    "data_type",
+    "credential_type",
+    "permission",
+    "endpoint_type",
+    "socket_type",
+    "namespace_type",
+    "namespace_context",
+    "target_context",
+    "source_type",
+    "operation",
+    "interface",
+    "process_type",
+    "control_type",
+    "module_source",
+    "bpf_type",
+    "uid_transition",
+    "transfer_source"
+  ],
+  "path_groups": {
+    "temporary": ["/tmp/", "/var/tmp/", "/dev/shm/"]
+  },
+  "rules": [
+    {
+      "id": "execute-shell-program",
+      "match": {"executable_in": ["bash", "sh", "dash", "zsh", "ksh"]},
+      "emit": {
+        "action": "EXECUTE_PROGRAM",
+        "context": {"program_type": {"const": "shell"}},
+        "evidence": {"executable": {"from": "executable.raw"}}
+      }
+    },
+    {
+      "id": "execute-temporary-file",
+      "match": {"executable_path_prefix_group": "temporary"},
+      "emit": {
+        "action": "EXECUTE_FILE",
+        "context": {"path_type": {"const": "temporary"}},
+        "evidence": {"executable": {"from": "executable.raw"}}
+      }
+    },
+    {
+      "id": "execute-with-sudo",
+      "match": {"executable": "sudo"},
+      "emit": {
+        "action": "EXECUTE_PROGRAM",
+        "context": {"privilege_context": {"const": "sudo"}},
+        "evidence": {"executable": {"from": "executable.normalized"}}
+      }
+    },
+    {
+      "id": "create-file",
+      "match": {"executable": "touch"},
+      "iterate": {"resources": {"direction": "produces", "type": "file"}},
+      "emit": {
+        "action": "CREATE_FILE",
+        "context": {
+          "path_type": {
+            "path_group_of": {"from": "iteration.resource.identity.path"}
+          }
+        },
+        "evidence": {
+          "executable": {"from": "executable.normalized"},
+          "resource": {"from": "iteration.resource"}
+        }
+      }
+    },
+    {
+      "id": "chmod-setuid",
+      "match": {
+        "executable": "chmod",
+        "operand": {
+          "position": 1,
+          "regex": "(^|,)u\\+s($|,)|^4[0-7]{3}$"
+        }
+      },
+      "emit": {
+        "action": "CHANGE_FILE_PERMISSION",
+        "context": {"permission": {"const": "setuid"}},
+        "evidence": {
+          "executable": {"from": "executable.normalized"},
+          "operand": {"from": "operand.1"}
+        }
+      }
+    },
+    {
+      "id": "chmod-setgid",
+      "match": {
+        "executable": "chmod",
+        "operand": {
+          "position": 1,
+          "regex": "(^|,)g\\+s($|,)|^2[0-7]{3}$"
+        }
+      },
+      "emit": {
+        "action": "CHANGE_FILE_PERMISSION",
+        "context": {"permission": {"const": "setgid"}},
+        "evidence": {
+          "executable": {"from": "executable.normalized"},
+          "operand": {"from": "operand.1"}
+        }
+      }
+    },
+    {
+      "id": "create-namespace",
+      "match": {"executable": "unshare"},
+      "iterate": {
+        "options": {
+          "values": {
+            "-m": "mount",
+            "--mount": "mount",
+            "-u": "uts",
+            "--uts": "uts",
+            "-i": "ipc",
+            "--ipc": "ipc",
+            "-n": "net",
+            "--net": "net",
+            "-p": "pid",
+            "--pid": "pid",
+            "-U": "user",
+            "--user": "user",
+            "-C": "cgroup",
+            "--cgroup": "cgroup",
+            "-T": "time",
+            "--time": "time"
+          }
+        }
+      },
+      "emit": {
+        "action": "CREATE_NAMESPACE",
+        "context": {"namespace_type": {"from": "iteration.value"}},
+        "evidence": {
+          "executable": {"from": "executable.normalized"},
+          "option": {"from": "iteration.option"}
+        }
+      }
+    },
+    {
+      "id": "mount-filesystem",
+      "match": {
+        "executable": "mount",
+        "resource": {"direction": "produces", "type": "mount"}
+      },
+      "emit": {
+        "action": "MOUNT_FILESYSTEM",
+        "context": {},
+        "evidence": {
+          "executable": {"from": "executable.normalized"},
+          "resource": {"from": "matched_resource"}
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "commands": {
+    "touch": {
+      "operands": {"min": 1, "max": null},
+      "options": [
+        {"names": ["-a"]},
+        {"names": ["-c", "--no-create"]},
+        {"names": ["-d", "--date"], "value": "required"},
+        {"names": ["-f"]},
+        {"names": ["-h", "--no-dereference"]},
+        {"names": ["-m"]},
+        {"names": ["-r", "--reference"], "value": "required"},
+        {"names": ["-t"], "value": "required"},
+        {"names": ["--time"], "value": "required"},
+        {"names": ["--help"]},
+        {"names": ["--version"]}
+      ]
+    },
+    "chmod": {
+      "operands": {"min": 2, "max": null},
+      "min_operands_by_option": {"--reference": 1},
+      "options": [
+        {"names": ["-c", "--changes"]},
+        {"names": ["-f", "--silent", "--quiet"]},
+        {"names": ["-v", "--verbose"]},
+        {"names": ["--no-preserve-root"]},
+        {"names": ["--preserve-root"]},
+        {"names": ["--reference"], "value": "required"},
+        {"names": ["-R", "--recursive"]},
+        {"names": ["--help"]},
+        {"names": ["--version"]}
+      ]
+    },
+    "mount": {
+      "operands": {"min": 0, "max": 3},
+      "options": [
+        {"names": ["-a", "--all"]}, {"names": ["-c", "--no-canonicalize"]},
+        {"names": ["-f", "--fake"]}, {"names": ["-F", "--fork"]},
+        {"names": ["-T", "--fstab"], "value": "required"},
+        {"names": ["-i", "--internal-only"]}, {"names": ["-l", "--show-labels"]},
+        {"names": ["-m", "--mkdir"], "value": "optional_attached"},
+        {"names": ["-n", "--no-mtab"]},
+        {"names": ["--options-mode"], "value": "required"},
+        {"names": ["--options-source"], "value": "required"},
+        {"names": ["--options-source-force"]}, {"names": ["--onlyonce"]},
+        {"names": ["-o", "--options"], "value": "required"},
+        {"names": ["-O", "--test-opts"], "value": "required"},
+        {"names": ["-r", "--read-only"]},
+        {"names": ["-t", "--types"], "value": "required"},
+        {"names": ["--source"], "value": "required"},
+        {"names": ["--target"], "value": "required"},
+        {"names": ["--target-prefix"], "value": "required"},
+        {"names": ["-v", "--verbose"]}, {"names": ["-w", "--rw", "--read-write"]},
+        {"names": ["-N", "--namespace"], "value": "required"},
+        {"names": ["-h", "--help"]}, {"names": ["-V", "--version"]},
+        {"names": ["-L", "--label"], "value": "required"},
+        {"names": ["-U", "--uuid"], "value": "required"},
+        {"names": ["-B", "--bind"]}, {"names": ["-M", "--move"]},
+        {"names": ["-R", "--rbind"]}, {"names": ["--make-shared"]},
+        {"names": ["--make-slave"]}, {"names": ["--make-private"]},
+        {"names": ["--make-unbindable"]}, {"names": ["--make-rshared"]},
+        {"names": ["--make-rslave"]}, {"names": ["--make-rprivate"]},
+        {"names": ["--make-runbindable"]}
+      ]
+    },
+    "chroot": {
+      "operands": {"min": 1, "max": null},
+      "options": [
+        {"names": ["--groups"], "value": "required"},
+        {"names": ["--userspec"], "value": "required"},
+        {"names": ["--skip-chdir"]}, {"names": ["--help"]},
+        {"names": ["--version"]}
+      ]
+    },
+    "unshare": {
+      "operands": {"min": 0, "max": null},
+      "options": [
+        {"names": ["-m", "--mount"], "value": "optional_attached"},
+        {"names": ["-u", "--uts"], "value": "optional_attached"},
+        {"names": ["-i", "--ipc"], "value": "optional_attached"},
+        {"names": ["-n", "--net"], "value": "optional_attached"},
+        {"names": ["-p", "--pid"], "value": "optional_attached"},
+        {"names": ["-U", "--user"], "value": "optional_attached"},
+        {"names": ["-C", "--cgroup"], "value": "optional_attached"},
+        {"names": ["-T", "--time"], "value": "optional_attached"},
+        {"names": ["-f", "--fork"]},
+        {"names": ["--map-user"], "value": "required"},
+        {"names": ["--map-group"], "value": "required"},
+        {"names": ["-r", "--map-root-user"]},
+        {"names": ["-c", "--map-current-user"]}, {"names": ["--map-auto"]},
+        {"names": ["--map-users"], "value": "required"},
+        {"names": ["--map-groups"], "value": "required"},
+        {"names": ["--kill-child"], "value": "optional_attached"},
+        {"names": ["--mount-proc"], "value": "optional_attached"},
+        {"names": ["--propagation"], "value": "required"},
+        {"names": ["--setgroups"], "value": "required"}, {"names": ["--keep-caps"]},
+        {"names": ["-R", "--root"], "value": "required"},
+        {"names": ["-w", "--wd"], "value": "required"},
+        {"names": ["-S", "--setuid"], "value": "required"},
+        {"names": ["-G", "--setgid"], "value": "required"},
+        {"names": ["--monotonic"], "value": "required"},
+        {"names": ["--boottime"], "value": "required"},
+        {"names": ["-h", "--help"]}, {"names": ["-V", "--version"]}
+      ]
+    }
+  }
+}

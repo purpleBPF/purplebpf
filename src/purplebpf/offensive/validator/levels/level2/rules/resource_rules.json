@@ -1,0 +1,61 @@
+{
+  "commands": {
+    "touch": {
+      "resolution": "required",
+      "produces": [
+        {
+          "type": "file",
+          "for_each_operand": {"start": 1},
+          "identity": {"path": {"operand": "current"}}
+        }
+      ]
+    },
+    "chmod": {
+      "resolution": "required",
+      "requires": [
+        {
+          "type": "file",
+          "when": {"option_none": ["--reference"]},
+          "for_each_operand": {"start": 2},
+          "identity": {"path": {"operand": "current"}}
+        },
+        {
+          "type": "file",
+          "when": {"option_any": ["--reference"]},
+          "for_each_operand": {"start": 1},
+          "identity": {"path": {"operand": "current"}}
+        }
+      ]
+    },
+    "mount": {
+      "resolution": "required",
+      "produces": [
+        {
+          "type": "mount",
+          "identity": {
+            "source": {"operand": 1},
+            "target": {"operand": 2}
+          }
+        }
+      ]
+    },
+    "unshare": {
+      "resolution": "required",
+      "produces": [
+        {"type": "namespace", "when": {"option_any": ["-m", "--mount"]}, "identity": {"kind": {"const": "mount"}}},
+        {"type": "namespace", "when": {"option_any": ["-u", "--uts"]}, "identity": {"kind": {"const": "uts"}}},
+        {"type": "namespace", "when": {"option_any": ["-i", "--ipc"]}, "identity": {"kind": {"const": "ipc"}}},
+        {"type": "namespace", "when": {"option_any": ["-n", "--net"]}, "identity": {"kind": {"const": "net"}}},
+        {"type": "namespace", "when": {"option_any": ["-p", "--pid"]}, "identity": {"kind": {"const": "pid"}}},
+        {"type": "namespace", "when": {"option_any": ["-U", "--user"]}, "identity": {"kind": {"const": "user"}}},
+        {"type": "namespace", "when": {"option_any": ["-C", "--cgroup"]}, "identity": {"kind": {"const": "cgroup"}}},
+        {"type": "namespace", "when": {"option_any": ["-T", "--time"]}, "identity": {"kind": {"const": "time"}}}
+      ]
+    },
+    "chroot": {
+      "resolution": "none",
+      "requires": [],
+      "produces": []
+    }
+  }
+}
