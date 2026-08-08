@@ -21,20 +21,38 @@ len(m[:])
 m.close(); f.close()
 PY
 
-BASE='"policy_name":"t1552-001-cred-file-read-baseline"'
-TREAT='"policy_name":"t1552-001-cred-file-read"'
+# 이벤트를 실행한 프로그램으로 골라 센다.
+#
+# 시간창만으로 세면 앞 실행의 이벤트가 다음 창에 새어 들어온다.
+# 실제로 io_uring 자리에 syscall 실행의 이벤트가 섞여 잡힌 것으로
+# 나온 적이 있다. 어느 프로그램이 낸 이벤트인지로 거르면 그 일이 없다.
+cat > /tmp/count.py <<'PY'
+import json, sys
 
-run() {   # run <라벨> <명령...>
-  local label="$1"; shift
+events, binary = sys.argv[1], sys.argv[2]
+base = treat = 0
+for line in open(events):
+    try:
+        k = json.loads(line).get("process_kprobe")
+    except ValueError:
+        continue
+    if not k or binary not in (k.get("process", {}).get("binary") or ""):
+        continue
+    name = k.get("policy_name")
+    if name == "t1552-001-cred-file-read-baseline":
+        base += 1
+    elif name == "t1552-001-cred-file-read":
+        treat += 1
+print(base, treat)
+PY
+
+run() {   # run <라벨> <이벤트를 낼 프로그램> <명령...>
+  local label="$1" binary="$2"; shift 2
   docker exec tetragon timeout 8 tetra getevents -o json > /tmp/demo.json 2>/dev/null &
   sleep 3
   "$@" >/dev/null 2>&1 || true
   wait
-  # policy_name 을 통째로 매칭한다. 부분 문자열로 세면 treatment 쪽이
-  # baseline 이벤트까지 같이 집계한다.
-  local b t
-  b=$(grep -c "$BASE"  /tmp/demo.json || true)
-  t=$(grep -c "$TREAT" /tmp/demo.json || true)
+  read -r b t < <(python3 /tmp/count.py /tmp/demo.json "$binary")
   printf '  %-16s %-12s %s\n' "$label" \
     "$([ "$b" -gt 0 ] && echo "잡힘($b)" || echo '놓침')" \
     "$([ "$t" -gt 0 ] && echo "잡힘($t)" || echo '놓침')"
@@ -42,17 +60,13 @@ run() {   # run <라벨> <명령...>
 
 echo
 echo "  공격      /root/.ssh/id_rsa 읽기 (합성 카나리 파일)"
-echo "  baseline  sys_openat              시스템콜 진입점"
+echo "  baseline  sys_openat               시스템콜 진입점"
 echo "  treatment security_file_permission 커널 내부 함수"
 echo
 printf '  %-16s %-12s %s\n' "읽는 방식" "baseline" "treatment"
 printf '  %s\n' "----------------------------------------------"
-run "syscall"        sudo cat /root/.ssh/id_rsa
-run "io_uring"       sudo /tmp/iouring_read /root/.ssh/id_rsa
-run "io_uring async" sudo /tmp/iouring_read /root/.ssh/id_rsa --async
-run "mmap"           sudo python3 /tmp/mmap_read.py /root/.ssh/id_rsa
-echo
-echo "  io_uring 은 시스템콜 진입점을 지나지 않아 baseline 이 놓친다."
-echo "  mmap 은 읽기가 권한 검사를 지나지 않아 treatment 가 놓친다."
-echo "  둘은 서로 다른 사각지대다. 어느 한쪽이 우월한 것이 아니다."
+run "syscall"        /bin/cat            sudo cat /root/.ssh/id_rsa
+run "io_uring"       /tmp/iouring_read   sudo /tmp/iouring_read /root/.ssh/id_rsa
+run "io_uring async" /tmp/iouring_read   sudo /tmp/iouring_read /root/.ssh/id_rsa --async
+run "mmap"           python3             sudo python3 /tmp/mmap_read.py /root/.ssh/id_rsa
 echo
