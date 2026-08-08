@@ -4,12 +4,36 @@ metadata:
   name: "t1562-001-defense-tamper"
 spec:
   kprobes:
+  # eBPF 프로그램을 떼어내는 명령만 본다.
+  #
+  # 조건 없이 security_bpf 를 걸면 Tetragon 자신이 eBPF 를 쓰기 때문에
+  # 계속 뜬다. 공격에 해당하는 것은 프로그램을 떼거나 지우는 쪽이다.
+  #   BPF_PROG_DETACH(8)  붙어 있는 프로그램을 뗀다
+  #   BPF_MAP_DELETE_ELEM(3)  맵에서 항목을 지운다
   - call: "security_bpf"
     syscall: false
     tags: [ "T1562.001", "pbpf:single" ]
     args:
     - index: 0
-      type: "bpf_cmd"
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Equal"
+        values:
+        - "8"   # BPF_PROG_DETACH
+        - "3"   # BPF_MAP_DELETE_ELEM
+
+  # 프로세스를 실제로 죽이는 시그널만 본다.
+  #
+  # 조건 없이 걸었더니 20초에 32건이 떴고 전부 정상 동작이었다.
+  #   timeout   시그널 0    살아있는지 확인만 한다. 죽이지 않는다
+  #   postgres  시그널 23   SIGURG, 워커를 깨운다
+  #   postgres  시그널 12   SIGUSR2
+  #   postgres  시그널 10   SIGUSR1
+  #
+  # 탐지 도구를 무력화하려면 SIGKILL 이나 SIGTERM 을 보내야 한다.
+  # 그 둘로 좁히니 같은 20초에 0건이 됐다.
   - call: "sys_kill"
     syscall: true
     tags: [ "T1562.001", "pbpf:single" ]
@@ -18,3 +42,10 @@ spec:
       type: "int"
     - index: 1
       type: "int"
+    selectors:
+    - matchArgs:
+      - index: 1
+        operator: "Equal"
+        values:
+        - "9"    # SIGKILL
+        - "15"   # SIGTERM
