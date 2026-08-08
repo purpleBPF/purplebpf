@@ -26,18 +26,20 @@
         "h": 4
       },
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "purplebpf-postgres"
       },
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "purplebpf-postgres"
           },
           "format": "table",
           "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'TP'",
-          "refId": "A"
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code"
         }
       ],
       "fieldConfig": {
@@ -73,18 +75,20 @@
         "h": 4
       },
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "purplebpf-postgres"
       },
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "purplebpf-postgres"
           },
           "format": "table",
           "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'FN'",
-          "refId": "A"
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code"
         }
       ],
       "fieldConfig": {
@@ -120,18 +124,20 @@
         "h": 4
       },
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "purplebpf-postgres"
       },
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "purplebpf-postgres"
           },
           "format": "table",
           "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'INVALID'",
-          "refId": "A"
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code"
         }
       ],
       "fieldConfig": {
@@ -167,18 +173,20 @@
         "h": 10
       },
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "purplebpf-postgres"
       },
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "purplebpf-postgres"
           },
           "format": "table",
           "rawSql": "SELECT technique, shots, detects, result FROM coverage ORDER BY technique",
-          "refId": "A"
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code"
         }
       ],
       "fieldConfig": {
@@ -217,9 +225,13 @@
                         "color": "red",
                         "index": 1
                       },
-                      "FP": {
-                        "color": "yellow",
+                      "INVALID": {
+                        "color": "orange",
                         "index": 2
+                      },
+                      "UNMATCHED": {
+                        "color": "text",
+                        "index": 3
                       }
                     }
                   }
@@ -245,18 +257,20 @@
         "h": 8
       },
       "datasource": {
-        "type": "postgres",
+        "type": "grafana-postgresql-datasource",
         "uid": "purplebpf-postgres"
       },
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
+            "type": "grafana-postgresql-datasource",
             "uid": "purplebpf-postgres"
           },
           "format": "table",
           "rawSql": "SELECT round_id, tp, fn, invalid, recall_pct FROM recall_by_round ORDER BY round_id",
-          "refId": "A"
+          "refId": "A",
+          "rawQuery": true,
+          "editorMode": "code"
         }
       ],
       "fieldConfig": {
@@ -295,9 +309,13 @@
                         "color": "red",
                         "index": 1
                       },
-                      "FP": {
-                        "color": "yellow",
+                      "INVALID": {
+                        "color": "orange",
                         "index": 2
+                      },
+                      "UNMATCHED": {
+                        "color": "text",
+                        "index": 3
                       }
                     }
                   }
