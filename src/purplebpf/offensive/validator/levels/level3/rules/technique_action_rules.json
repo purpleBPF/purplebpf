@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "techniques": {
+    "T1548.001": {
+      "patterns": [
+        {
+          "id": "setuid-permission",
+          "required": [
+            {"action": "CHANGE_FILE_PERMISSION", "context": {"permission": "setuid"}}
+          ]
+        },
+        {
+          "id": "setgid-permission",
+          "required": [
+            {"action": "CHANGE_FILE_PERMISSION", "context": {"permission": "setgid"}}
+          ]
+        },
+        {
+          "id": "setuid-execution",
+          "required": [
+            {"action": "EXECUTE_PROGRAM", "context": {"privilege_context": "setuid"}}
+          ]
+        }
+      ],
+      "supporting_actions": [],
+      "limitations": ["Static command analysis does not prove a runtime UID/EUID transition."]
+    },
+    "T1610": {
+      "patterns": [
+        {
+          "id": "container-runtime-socket",
+          "required": [
+            {"action": "CONNECT_SOCKET", "context": {"socket_type": "container_runtime"}}
+          ]
+        }
+      ],
+      "supporting_actions": [],
+      "limitations": ["Runtime socket access is related evidence, not complete proof that a container was deployed."]
+    },
+    "T1552.001": {
+      "patterns": [
+        {
+          "id": "credential-file-read",
+          "required": [
+            {"action": "READ_FILE", "context": {"data_type": "credential"}}
+          ]
+        }
+      ],
+      "supporting_actions": [],
+      "limitations": ["The current Action Mapper does not yet derive credential reads from commands."]
+    },
+    "T1611": {
+      "patterns": [
+        {
+          "id": "enter-host-namespace",
+          "required": [
+            {"action": "ENTER_NAMESPACE", "context": {"namespace_context": "host"}}
+          ]
+        },
+        {
+          "id": "mount-host-filesystem",
+          "required": [
+            {"action": "MOUNT_FILESYSTEM", "context": {"target_context": "host"}}
+          ]
+        }
+      ],
+      "supporting_actions": [
+        {"action": "CREATE_NAMESPACE", "context": {}}
+      ],
+      "limitations": ["Creating a namespace alone does not prove an escape to the host."]
+    },
+    "T1105": {
+      "patterns": [
+        {
+          "id": "create-external-file",
+          "required": [
+            {"action": "CREATE_FILE", "context": {"transfer_source": "external"}}
+          ]
+        },
+        {
+          "id": "write-external-file",
+          "required": [
+            {"action": "WRITE_FILE", "context": {"transfer_source": "external"}}
+          ]
+        }
+      ],
+      "supporting_actions": [
+        {"action": "CREATE_FILE", "context": {"path_type": "temporary"}},
+        {"action": "WRITE_FILE", "context": {"path_type": "temporary"}},
+        {"action": "EXECUTE_FILE", "context": {"path_type": "temporary"}}
+      ],
+      "limitations": ["A temporary path alone does not prove transfer from an external system."]
+    },
+    "T1552.005": {
+      "patterns": [
+        {
+          "id": "cloud-metadata-endpoint",
+          "required": [
+            {"action": "CONNECT_ENDPOINT", "context": {"endpoint_type": "cloud_metadata"}}
+          ]
+        }
+      ],
+      "supporting_actions": [],
+      "limitations": ["The current Action Mapper does not yet derive endpoint connections from commands."]
+    },
+    "T1562.001": {
+      "patterns": [
+        {
+          "id": "detach-bpf-control",
+          "required": [
+            {"action": "MODIFY_SECURITY_CONTROL", "context": {"control_type": "bpf", "operation": "detach"}}
+          ]
+        },
+        {
+          "id": "terminate-security-agent",
+          "required": [
+            {"action": "TERMINATE_PROCESS", "context": {"process_type": "security_agent"}}
+          ]
+        }
+      ],
+      "supporting_actions": [],
+      "limitations": ["The current Action Mapper does not yet derive these security-control actions from commands."]
+    },
+    "T1620": {
+      "patterns": [
+        {
+          "id": "execute-memory-backed-file",
+          "required": [
+            {"action": "EXECUTE_FILE", "context": {"backing": "memory"}}
+          ]
+        }
+      ],
+      "supporting_actions": [
+        {"action": "CREATE_MEMORY_FILE", "context": {"backing": "memfd"}}
+      ],
+      "limitations": ["Creating a memfd without executing memory-backed content is not sufficient for a match."]
+    }
+  }
+}
