@@ -1,0 +1,32 @@
+{
+  "label": "kill_zero_liveness_check",
+  "kind": "trap",
+  "goal": "감시 스크립트가 시그널 0으로 백그라운드 작업이 살아있는지만 확인한다. 종료 시그널을 보내지 않으므로 방어 무력화로 볼 수 없다.",
+  "expect_silent": [
+    "t1562-001-defense-tamper",
+    "t1055-008-ptrace-inject",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "pid 파일을 둘 작업 디렉터리를 만든다.",
+      "command": "mkdir -p /tmp/pb-liveness; echo ready"
+    },
+    {
+      "order": 2,
+      "purpose": "백그라운드 작업을 띄워 pid 를 남기고, 시그널 0으로 살아있는지 확인한 뒤 끝날 때까지 기다린다. 부모 셸이 직접 거둬야 다음 단계에서 pid 가 확실히 사라진다.",
+      "command": "sh -c 'sleep 3 & W=$!; echo $W > /tmp/pb-liveness/worker.pid; kill -0 $W && echo alive; wait $W; echo worker-done'"
+    },
+    {
+      "order": 3,
+      "purpose": "끝난 pid 에 다시 시그널 0을 보내 이제 없다는 것을 확인한다.",
+      "command": "kill -0 $(cat /tmp/pb-liveness/worker.pid) 2>/dev/null && echo still-listed || echo exited"
+    },
+    {
+      "order": 4,
+      "purpose": "남긴 pid 파일과 디렉터리를 지운다.",
+      "command": "rm -rf /tmp/pb-liveness"
+    }
+  ]
+}

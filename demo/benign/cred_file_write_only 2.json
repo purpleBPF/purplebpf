@@ -1,0 +1,26 @@
+{
+  "label": "cred_file_write_only",
+  "kind": "trap",
+  "goal": "배포 도구가 자격증명 파일을 새로 쓰기만 하고 읽지는 않는 동작을 흉내낸다. 규칙은 접근 종류 4(MAY_READ)만 보므로 쓰기(2)와 덧붙이기(10)는 걸리지 않는다",
+  "expect_silent": [
+    "t1552-001-cred-file-read",
+    "t1548-001-setuid-bit-set"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "합성 자격증명 파일을 한 번에 쓴다. 값은 가짜 표식이다",
+      "command": "mkdir -p /root/.aws && printf '[default]\\naws_access_key_id = SYNTHETIC-CANARY\\n' > /root/.aws/credentials"
+    },
+    {
+      "order": 2,
+      "purpose": "권한만 좁힌다. 내용은 읽지 않는다",
+      "command": "chmod 600 /root/.aws/credentials && ls -l /root/.aws/credentials"
+    },
+    {
+      "order": 3,
+      "purpose": "파일을 지운다",
+      "command": "rm -f /root/.aws/credentials"
+    }
+  ]
+}

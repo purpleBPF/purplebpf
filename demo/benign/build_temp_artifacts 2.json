@@ -1,0 +1,37 @@
+{
+  "label": "build_temp_artifacts",
+  "kind": "normal",
+  "goal": "빌드 과정에서 임시 디렉터리에 중간 산출물을 만들고 합치는 동작이다",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1620-fileless-exec",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "빌드용 임시 디렉터리와 원본 파일을 만든다",
+      "command": "mkdir -p /tmp/build/src /tmp/build/out && echo 'line one' > /tmp/build/src/a.txt && echo 'line two' > /tmp/build/src/b.txt"
+    },
+    {
+      "order": 2,
+      "purpose": "원본을 합치면서 치환한다",
+      "command": "cat /tmp/build/src/a.txt /tmp/build/src/b.txt | sed 's/line/row/' > /tmp/build/out/merged.txt"
+    },
+    {
+      "order": 3,
+      "purpose": "산출물 줄 수를 센다",
+      "command": "wc -l /tmp/build/out/merged.txt && cut -d' ' -f2 /tmp/build/out/merged.txt | wc -l"
+    },
+    {
+      "order": 4,
+      "purpose": "산출물 이름을 최종본으로 바꾼다",
+      "command": "mv /tmp/build/out/merged.txt /tmp/build/out/merged.final && ls -l /tmp/build/out"
+    },
+    {
+      "order": 5,
+      "purpose": "빌드 디렉터리를 정리한다",
+      "command": "rm -rf /tmp/build"
+    }
+  ]
+}

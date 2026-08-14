@@ -1,0 +1,30 @@
+{
+  "label": "sudo_lookalike_paths",
+  "kind": "trap",
+  "goal": "이름에 sudo 가 들어가지만 /etc/sudoers, /var/run/sudo/ts/, /var/db/sudo/ 접두사에는 걸리지 않는 경로들을 읽고 쓴다",
+  "expect_silent": [
+    "t1548-003-sudo-abuse"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "앱이 배포하는 권한 정책 템플릿을 /opt 아래에 만든다",
+      "command": "mkdir -p /opt/pbpf-app/config && echo '# 배포 템플릿. 실제 정책 파일이 아니다' > /opt/pbpf-app/config/sudoers"
+    },
+    {
+      "order": 2,
+      "purpose": "sudoers 와 이름만 비슷한 참고 설정과 로그를 만든다. 로그 디렉터리가 없을 수 있어 먼저 만든다",
+      "command": "mkdir -p /var/log && echo 'Plugin sudoers_policy sudoers.so' > /etc/sudoer_ref.conf && echo 'session opened' > /var/log/sudo-audit.log"
+    },
+    {
+      "order": 3,
+      "purpose": "세 경로를 모두 읽는다",
+      "command": "cat /opt/pbpf-app/config/sudoers && cat /etc/sudoer_ref.conf && tail -1 /var/log/sudo-audit.log"
+    },
+    {
+      "order": 4,
+      "purpose": "만든 것을 모두 지운다",
+      "command": "rm -rf /opt/pbpf-app && rm -f /etc/sudoer_ref.conf /var/log/sudo-audit.log"
+    }
+  ]
+}

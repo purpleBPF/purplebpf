@@ -1,0 +1,39 @@
+{
+  "label": "container_selfcheck_healthprobe",
+  "kind": "normal",
+  "goal": "컨테이너가 자기 상태를 확인하는 평범한 헬스체크다. 디스크와 프로세스, 부하 지표만 본다. GNU df 가 /proc/self/mountinfo 를 읽어 정찰 규칙에 걸리므로 df 대신 statfs 계열을 쓴다.",
+  "expect_silent": [
+    "t1613-container-discovery",
+    "t1552-005-cloud-metadata",
+    "t1611-namespace-change",
+    "t1610-runtime-socket-connect",
+    "t1055-009-proc-mem-inject"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "디스크 여유 공간을 확인한다. GNU df 는 /proc/self/mountinfo 를 열어 t1613 이 뜨므로 statfs 만 쓰는 stat -f 로 바꿨다.",
+      "command": "stat -f / 2>/dev/null || true"
+    },
+    {
+      "order": 2,
+      "purpose": "현재 프로세스 목록을 확인한다. ps 가 없는 최소 이미지에서는 /proc 의 pid 디렉터리를 대신 센다.",
+      "command": "ps 2>/dev/null || ls -d /proc/[0-9]* | head -5"
+    },
+    {
+      "order": 3,
+      "purpose": "컨테이너 가동 시간을 읽는다.",
+      "command": "head -1 /proc/uptime"
+    },
+    {
+      "order": 4,
+      "purpose": "시스템 부하 지표를 읽는다.",
+      "command": "cat /proc/loadavg"
+    },
+    {
+      "order": 5,
+      "purpose": "열린 파일 디스크립터 개수를 센다.",
+      "command": "ls /proc/self/fd | wc -l"
+    }
+  ]
+}

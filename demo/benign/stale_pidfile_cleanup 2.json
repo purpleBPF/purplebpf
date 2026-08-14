@@ -1,0 +1,32 @@
+{
+  "label": "stale_pidfile_cleanup",
+  "kind": "trap",
+  "goal": "부팅 스크립트가 남아 있는 pid 파일이 아직 유효한지 시그널 0으로 검사하고, 죽은 항목은 파일만 지운다.",
+  "expect_silent": [
+    "t1562-001-defense-tamper",
+    "t1055-008-ptrace-inject",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "이미 끝난 프로세스의 pid 가 담긴 pid 파일을 만든다. 자식 셸이 자기 pid 를 적고 곧바로 끝나므로 확실히 죽은 pid 가 남는다.",
+      "command": "mkdir -p /tmp/pb-pidfile; sh -c 'echo $$ > /tmp/pb-pidfile/old.pid'; echo wrote-pidfile"
+    },
+    {
+      "order": 2,
+      "purpose": "시그널 0으로 pid 파일이 아직 유효한지 검사한다.",
+      "command": "kill -0 $(cat /tmp/pb-pidfile/old.pid) 2>/dev/null && echo running || echo stale"
+    },
+    {
+      "order": 3,
+      "purpose": "죽은 것으로 확인된 pid 파일을 지운다. 시그널은 보내지 않는다.",
+      "command": "rm -f /tmp/pb-pidfile/old.pid; echo removed-stale-pidfile"
+    },
+    {
+      "order": 4,
+      "purpose": "작업 디렉터리를 지운다.",
+      "command": "rm -rf /tmp/pb-pidfile"
+    }
+  ]
+}

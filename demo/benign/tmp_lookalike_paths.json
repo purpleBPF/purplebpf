@@ -1,0 +1,35 @@
+{
+  "label": "tmp_lookalike_paths",
+  "kind": "trap",
+  "goal": "경로에 tmp 라는 글자가 들어가지만 임시 디렉터리는 아닌 곳에서 실행하는 동작이다",
+  "expect_silent": [
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "이름만 비슷한 디렉터리 세 곳을 만든다",
+      "command": "mkdir -p /var/tmpfiles /opt/tmp-data /tmpfiles"
+    },
+    {
+      "order": 2,
+      "purpose": "/var/tmpfiles 에 스크립트를 만들어 실행한다",
+      "command": "echo '#!/bin/sh' > /var/tmpfiles/job.sh && echo 'echo var-tmpfiles-ok' >> /var/tmpfiles/job.sh && chmod 755 /var/tmpfiles/job.sh && /var/tmpfiles/job.sh"
+    },
+    {
+      "order": 3,
+      "purpose": "/opt/tmp-data 에 복사해 실행한다",
+      "command": "cp /var/tmpfiles/job.sh /opt/tmp-data/job.sh && /opt/tmp-data/job.sh"
+    },
+    {
+      "order": 4,
+      "purpose": "최상위 /tmpfiles 에 복사해 실행한다",
+      "command": "cp /var/tmpfiles/job.sh /tmpfiles/job.sh && /tmpfiles/job.sh"
+    },
+    {
+      "order": 5,
+      "purpose": "만든 디렉터리를 모두 정리한다",
+      "command": "rm -rf /var/tmpfiles /opt/tmp-data /tmpfiles"
+    }
+  ]
+}

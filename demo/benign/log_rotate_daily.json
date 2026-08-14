@@ -1,0 +1,36 @@
+{
+  "label": "log_rotate_daily",
+  "kind": "normal",
+  "goal": "서비스 로그를 쌓고 하루치를 넘겨 새 파일로 바꾸는 동작이다",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "로그 디렉터리와 첫 기록을 만든다",
+      "command": "mkdir -p /var/log/app && echo 'svc start' > /var/log/app/svc.log"
+    },
+    {
+      "order": 2,
+      "purpose": "요청 로그를 덧붙인다",
+      "command": "echo 'req id=1' >> /var/log/app/svc.log && echo 'req id=2' >> /var/log/app/svc.log && sleep 1"
+    },
+    {
+      "order": 3,
+      "purpose": "기존 로그를 넘기고 새 로그를 시작한다",
+      "command": "mv /var/log/app/svc.log /var/log/app/svc.log.1 && echo 'svc rotated' > /var/log/app/svc.log"
+    },
+    {
+      "order": 4,
+      "purpose": "넘긴 로그의 끝부분을 확인한다",
+      "command": "tail -n 2 /var/log/app/svc.log.1 && wc -l /var/log/app/svc.log.1"
+    },
+    {
+      "order": 5,
+      "purpose": "로그 디렉터리를 정리한다",
+      "command": "rm -rf /var/log/app"
+    }
+  ]
+}

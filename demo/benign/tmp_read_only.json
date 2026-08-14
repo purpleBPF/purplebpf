@@ -1,0 +1,30 @@
+{
+  "label": "tmp_read_only",
+  "kind": "trap",
+  "goal": "임시 경로에 실행 파일까지 내려받아 두지만 읽기만 하고 한 번도 실행하지 않는 캐시 동작이다",
+  "expect_silent": [
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "/tmp 이 아닌 /var/tmp 에 캐시 디렉터리를 만들고 데이터 파일을 생성한다",
+      "command": "mkdir -p /var/tmp/cache-b && dd if=/dev/zero of=/var/tmp/cache-b/blob.bin bs=1024 count=16 2>/dev/null && echo 'key=value' > /var/tmp/cache-b/app.conf"
+    },
+    {
+      "order": 2,
+      "purpose": "실제 실행 파일을 캐시에 복사해 둔다. 떨어뜨리기만 하고 실행은 하지 않는다",
+      "command": "cp /usr/bin/wc /var/tmp/cache-b/wc.bin && ls -l /var/tmp/cache-b/wc.bin"
+    },
+    {
+      "order": 3,
+      "purpose": "설정과 이진 파일 앞부분을 읽는다. 여전히 실행은 없다",
+      "command": "cat /var/tmp/cache-b/app.conf && head -c 32 /var/tmp/cache-b/blob.bin > /dev/null && head -c 4 /var/tmp/cache-b/wc.bin > /dev/null && grep -c value /var/tmp/cache-b/app.conf"
+    },
+    {
+      "order": 4,
+      "purpose": "캐시를 정리한다",
+      "command": "rm -rf /var/tmp/cache-b"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "label": "proc_read_only_inspect",
+  "kind": "trap",
+  "goal": "모니터링 에이전트가 /proc 아래를 읽기만 하며 프로세스 상태를 조회하는 동작을 흉내낸다. cgroup, mountinfo 로 끝나는 경로는 열지 않는다",
+  "expect_silent": [
+    "t1055-009-proc-mem-inject",
+    "t1613-container-discovery"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "자기 프로세스 상태와 메모리 정보를 읽는다",
+      "command": "head -5 /proc/self/status && head -3 /proc/meminfo && cat /proc/uptime"
+    },
+    {
+      "order": 2,
+      "purpose": "프로세스 목록과 자원 한도를 읽는다",
+      "command": "ls /proc | head -20 && wc -l < /proc/self/limits"
+    },
+    {
+      "order": 3,
+      "purpose": "표준 도구로 프로세스를 조회한다. 최소 이미지에 ps 가 없어도 넘어간다",
+      "command": "ps 2>/dev/null || true"
+    }
+  ]
+}

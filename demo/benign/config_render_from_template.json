@@ -1,0 +1,31 @@
+{
+  "label": "config_render_from_template",
+  "kind": "normal",
+  "goal": "배포 시 템플릿에 값을 채워 설정 파일을 만드는 동작이다",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "설정 템플릿을 만든다",
+      "command": "mkdir -p /opt/app/conf && echo 'host=__HOST__' > /opt/app/conf/app.tpl && echo 'port=__PORT__' >> /opt/app/conf/app.tpl"
+    },
+    {
+      "order": 2,
+      "purpose": "템플릿의 자리표시자를 실제 값으로 바꾼다",
+      "command": "sed -e 's/__HOST__/127.0.0.1/' -e 's/__PORT__/8080/' /opt/app/conf/app.tpl > /opt/app/conf/app.conf"
+    },
+    {
+      "order": 3,
+      "purpose": "만들어진 설정을 확인한다",
+      "command": "grep host /opt/app/conf/app.conf && cut -d= -f1 /opt/app/conf/app.conf | wc -l"
+    },
+    {
+      "order": 4,
+      "purpose": "설정 디렉터리를 정리한다",
+      "command": "rm -rf /opt/app"
+    }
+  ]
+}

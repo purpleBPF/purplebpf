@@ -1,0 +1,36 @@
+{
+  "label": "proc_sysinfo_read",
+  "kind": "trap",
+  "goal": "CPU 와 메모리 정보를 /proc 에서 조회한다. 경로가 정확히 일치할 때만 뜨는 정찰 규칙이 다른 /proc 파일에 반응하는지 본다.",
+  "expect_silent": [
+    "t1613-container-discovery",
+    "t1055-009-proc-mem-inject"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "CPU 정보를 읽는다.",
+      "command": "head -15 /proc/cpuinfo"
+    },
+    {
+      "order": 2,
+      "purpose": "메모리 정보를 읽는다.",
+      "command": "head -5 /proc/meminfo"
+    },
+    {
+      "order": 3,
+      "purpose": "커널 버전 문자열을 읽는다.",
+      "command": "cat /proc/version"
+    },
+    {
+      "order": 4,
+      "purpose": "전체 통계에서 CPU 줄만 뽑는다.",
+      "command": "grep -m1 '^cpu ' /proc/stat"
+    },
+    {
+      "order": 5,
+      "purpose": "파일 디스크립터 사용량을 읽는다.",
+      "command": "cat /proc/sys/fs/file-nr || true"
+    }
+  ]
+}

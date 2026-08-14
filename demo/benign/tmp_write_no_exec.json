@@ -1,0 +1,31 @@
+{
+  "label": "tmp_write_no_exec",
+  "kind": "trap",
+  "goal": "임시 디렉터리에 스크립트 파일을 만들어 두기만 하고 실행하지 않는 동작이다",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "임시 작업 디렉터리를 만들고 스크립트 내용을 기록한다",
+      "command": "mkdir -p /tmp/stage-a && echo '#!/bin/sh' > /tmp/stage-a/run.sh && echo 'echo hello' >> /tmp/stage-a/run.sh"
+    },
+    {
+      "order": 2,
+      "purpose": "실행 권한만 부여한다. setuid 비트는 켜지 않는다",
+      "command": "chmod 755 /tmp/stage-a/run.sh && ls -l /tmp/stage-a"
+    },
+    {
+      "order": 3,
+      "purpose": "파일 내용을 확인만 하고 실행하지 않는다",
+      "command": "wc -l /tmp/stage-a/run.sh && grep -c echo /tmp/stage-a/run.sh"
+    },
+    {
+      "order": 4,
+      "purpose": "만든 파일을 정리한다",
+      "command": "rm -rf /tmp/stage-a"
+    }
+  ]
+}

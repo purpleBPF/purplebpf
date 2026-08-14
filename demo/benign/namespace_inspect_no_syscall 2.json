@@ -1,0 +1,38 @@
+{
+  "label": "namespace_inspect_no_syscall",
+  "kind": "trap",
+  "goal": "네임스페이스 상태를 들여다보는 관리 작업이다. 한계가 있는 항목이라 초안을 고쳤다. 초안은 unshare 와 mount 를 실제로 부르고 실패를 전제했는데, 두 규칙은 조건이 없어 호출만 하면 뜨고 unshare -U 는 도커 기본 설정에서 성공할 수 있다. 결국 규칙 정밀도가 아니라 컨테이너 격리 설정을 재는 항목이 되므로, 호출을 빼고 링크 읽기와 도구 존재 확인만 남겼다.",
+  "expect_silent": [
+    "t1611-namespace-change",
+    "t1611-host-mount",
+    "t1613-container-discovery",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "unshare 도구가 있는지만 확인한다. 실행하지 않는다.",
+      "command": "command -v unshare || echo 'unshare not present'"
+    },
+    {
+      "order": 2,
+      "purpose": "네임스페이스 링크 값을 읽는다. readlink 는 링크 문자열만 읽고 setns 를 부르지 않는다.",
+      "command": "readlink /proc/self/ns/mnt 2>/dev/null; readlink /proc/self/ns/pid 2>/dev/null; true"
+    },
+    {
+      "order": 3,
+      "purpose": "1번 프로세스와 마운트 네임스페이스가 같은지 문자열로 비교한다.",
+      "command": "[ \"$(readlink /proc/self/ns/mnt)\" = \"$(readlink /proc/1/ns/mnt)\" ] && echo same-mnt-ns || echo diff-mnt-ns"
+    },
+    {
+      "order": 4,
+      "purpose": "마운트 대상 디렉터리를 만들고 파일을 둔다. mount 는 부르지 않는다.",
+      "command": "mkdir -p /tmp/mnttest && echo placeholder > /tmp/mnttest/README && ls -l /tmp/mnttest"
+    },
+    {
+      "order": 5,
+      "purpose": "작업 디렉터리를 지운다.",
+      "command": "rm -rf /tmp/mnttest"
+    }
+  ]
+}

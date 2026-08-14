@@ -1,0 +1,42 @@
+# 차단판. 관측판과 훅·인자·필터가 같고 matchActions 만 다르다.
+#
+# Sigkill 이 아니라 Override 를 쓴다. Sigkill 은 시스템콜이 제 일을 끝낸 뒤에
+# 프로세스를 죽이므로 막으려던 변경이 이미 일어나 있다. setuid 에서 실측했다.
+# 프로세스는 종료코드 137 로 죽었는데 결과는 -rwsr-xr-x 였다.
+# Override 는 커널 함수의 반환값을 오류로 바꿔 변경 자체가 일어나지 않게 한다.
+#
+# metadata.name 은 관측판과 같다. 두 판을 동시에 올리지 않으므로 충돌하지 않고,
+# 채점하는 쪽은 모드가 바뀌어도 같은 규칙 이름으로 집계한다.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1055-009-proc-mem-inject"
+spec:
+  kprobes:
+  # ptrace 없이 남의 메모리를 고치는 다른 길이다.
+  # /proc/<pid>/mem 은 그 프로세스의 메모리를 파일처럼 열어놓은 것이라
+  # 여기에 쓰면 메모리가 바뀐다. ptrace 를 막아둔 환경에서 쓰이는 우회로다.
+  #
+  # 두 번째 인자가 접근 종류이고 2 가 MAY_WRITE 다. 읽기는 뺀다.
+  # 디버거와 모니터링 도구가 /proc 메모리를 읽는 것은 정상이다.
+  - call: "security_file_permission"
+    syscall: false
+    tags: [ "T1055.009", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "file"
+    - index: 1
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/proc/"
+      - index: 1
+        operator: "Equal"
+        values:
+        - "2"   # MAY_WRITE
+      matchActions:
+      - action: Override
+        argError: -1   # -EPERM
