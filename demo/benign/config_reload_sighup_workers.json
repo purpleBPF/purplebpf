@@ -1,0 +1,38 @@
+{
+  "label": "config_reload_sighup_workers",
+  "kind": "trap",
+  "goal": "설정 파일을 바꾸고 워커에 SIGHUP 을 보내 다시 읽히는 무중단 설정 반영 흐름이다. 종료 시그널은 쓰지 않는다.",
+  "expect_silent": [
+    "t1562-001-defense-tamper",
+    "t1611-namespace-change",
+    "t1105-tmp-exec",
+    "t1548-003-sudo-abuse"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "애플리케이션 설정 파일과 작업 디렉터리를 만든다.",
+      "command": "mkdir -p /etc/app /srv/app && printf 'workers=2\\ntimeout=30\\n' > /etc/app/app.conf && cat /etc/app/app.conf"
+    },
+    {
+      "order": 2,
+      "purpose": "SIGHUP 을 받으면 설정을 다시 읽는 워커 스크립트를 만든다.",
+      "command": "cat > /srv/app/reload.pl <<'PERLEOF'\nuse strict; use warnings;\nmy $CONF = \"/etc/app/app.conf\";\nmy $STOP = \"/srv/app/stop.flag\";\nmy @pids;\nfor my $i (0..1) {\n    my $pid = fork(); die \"fork: $!\" unless defined $pid;\n    if (!$pid) {\n        my $gen = 0;\n        $SIG{HUP} = sub {\n            $gen++;\n            open(my $c, '<', $CONF) or return;\n            my $data = do { local $/; <$c> }; close $c;\n            $data =~ s/\\n/ /g; $data =~ s/^\\s+|\\s+$//g;\n            open(my $l, '>>', \"/srv/app/worker-$i.log\") or return;\n            print $l \"reload $gen $data\\n\"; close $l;\n        };\n        open(my $l, '>>', \"/srv/app/worker-$i.log\"); print $l \"start\\n\"; close $l;\n        for (1..40) { select(undef, undef, undef, 0.1); last if -e $STOP }\n        exit 0;\n    }\n    push @pids, $pid;\n}\nselect(undef, undef, undef, 0.8);\nopen(my $c, '>', $CONF) or die $!; print $c \"workers=2\\ntimeout=45\\n\"; close $c;\nkill 'HUP', $_ for @pids;\nselect(undef, undef, undef, 0.8);\nopen(my $s, '>', $STOP) or die $!; print $s \"stop\\n\"; close $s;\nwaitpid($_, 0) for @pids;\nprint \"workers reloaded config and exited\\n\";\nPERLEOF\nperl -c /srv/app/reload.pl"
+    },
+    {
+      "order": 3,
+      "purpose": "워커를 띄우고 설정을 갱신한 뒤 SIGHUP 으로 재적용시킨다.",
+      "command": "perl /srv/app/reload.pl"
+    },
+    {
+      "order": 4,
+      "purpose": "워커 로그에 재적용 기록이 남았는지 확인한다.",
+      "command": "grep -c reload /srv/app/worker-*.log || true"
+    },
+    {
+      "order": 5,
+      "purpose": "설정 디렉터리와 작업 디렉터리를 지운다.",
+      "command": "rm -rf /etc/app /srv/app && ls /etc/app 2>/dev/null || true"
+    }
+  ]
+}

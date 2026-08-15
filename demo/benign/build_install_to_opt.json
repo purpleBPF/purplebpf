@@ -1,0 +1,40 @@
+{
+  "label": "build_install_to_opt",
+  "kind": "normal",
+  "goal": "임시 디렉터리에서 소스를 빌드해 산출물을 만들고 설치 경로인 /opt 로 옮긴 뒤 거기서 실행해 확인한다.",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set",
+    "exec-admin-tools",
+    "t1620-fileless-exec",
+    "t1611-host-mount",
+    "exec-file-capability"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "임시 경로에 소스 트리와 빌드 설정 파일을 만든다.",
+      "command": "mkdir -p /tmp/build-src/src /tmp/build-out && printf '%s\\n' 'echo \"app ok\"' 'exit 0' > /tmp/build-src/src/app.sh && printf '%s\\n' 'name=demo-app' 'version=1.0.3' > /tmp/build-src/build.conf && ls -l /tmp/build-src/src"
+    },
+    {
+      "order": 2,
+      "purpose": "설정에서 버전을 읽어 소스와 합친 산출물을 임시 경로에 만든다. 이 자리에서는 실행하지 않으므로 실행 권한을 주지 않는다.",
+      "command": "ver=$(awk -F= '/^version=/{print $2}' /tmp/build-src/build.conf) && { printf '%s\\n' '#!/bin/sh' \"echo build $ver\"; cat /tmp/build-src/src/app.sh; } > /tmp/build-out/demo-app && chmod 0644 /tmp/build-out/demo-app && cat /tmp/build-out/demo-app"
+    },
+    {
+      "order": 3,
+      "purpose": "산출물을 설치 경로에 복사하고 실행 권한만 준다.",
+      "command": "mkdir -p /opt/demo-app/bin && cp /tmp/build-out/demo-app /opt/demo-app/bin/demo-app && chmod 0755 /opt/demo-app/bin/demo-app && ls -l /opt/demo-app/bin/demo-app"
+    },
+    {
+      "order": 4,
+      "purpose": "설치 경로에서 산출물을 실행해 빌드가 제대로 됐는지 확인한다.",
+      "command": "/opt/demo-app/bin/demo-app"
+    },
+    {
+      "order": 5,
+      "purpose": "임시 빌드 디렉터리와 설치본을 지워 원래 상태로 되돌린다.",
+      "command": "rm -rf /tmp/build-src /tmp/build-out /opt/demo-app"
+    }
+  ]
+}

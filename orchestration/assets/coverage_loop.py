@@ -49,11 +49,17 @@ def _limactl_shell(bash_command: str) -> list[str]:
 
 
 @asset
-def run_attack_round(context: AssetExecutionContext) -> MaterializeResult:
-    """Lima VM 안에서 Executor로 공격 체인 한 라운드를 실행한다 (execution_log에 기록됨)."""
+def run_attack_round(context: AssetExecutionContext, round_id: int) -> MaterializeResult:
+    """Lima VM 안에서 Executor로 공격 체인 한 라운드를 실행한다 (execution_log에 기록됨).
+
+    round_id 를 넘기지 않으면 Executor 기본값 1 로 들어간다. 그러면 파이프라인을
+    돌릴 때마다 같은 라운드에 쌓여 채점이 겹친다. 커버리지 뷰가 라운드로
+    묶어 세기 때문에 건수만 배로 늘고 세대별 변화가 안 보인다.
+    """
     bash_command = (
         f"cd {C.VM_REPO_ROOT} && source {C.VM_ENV_FILE} && "
-        f"python3 -m purplebpf.offensive.executor.executor {C.TARGET_TECHNIQUE_ID}"
+        f"python3 -m purplebpf.offensive.executor.executor {C.TARGET_TECHNIQUE_ID} "
+        f"--round-id {round_id}"
     )
     cmd = _limactl_shell(bash_command)
     result = _run_shell(context, "run_attack_round", cmd)

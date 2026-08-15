@@ -1,7 +1,7 @@
 {
   "label": "proc_cgroup_lookalike_read",
   "kind": "trap",
-  "goal": "컨테이너 격리 정보를 보되 규칙이 지정한 경로는 피한다. /proc/self/cgroup 대신 /proc/1/cgroup, /proc/self/mountinfo 대신 /proc/self/mounts 를 읽는다.",
+  "goal": "컨테이너가 자기 자원 한도와 마운트 상태를 확인한다. cgroup 파일시스템과 mounts 는 규칙이 보는 /proc/<pid>/cgroup, /proc/<pid>/mountinfo 가 아니다.",
   "expect_silent": [
     "t1613-container-discovery",
     "t1611-host-mount",
@@ -11,8 +11,8 @@
   "steps": [
     {
       "order": 1,
-      "purpose": "1번 프로세스의 cgroup 정보를 읽는다. 셸이 pid 1 이어도 열리는 경로 문자열은 /proc/1/cgroup 이라 규칙과 일치하지 않는다.",
-      "command": "head -5 /proc/1/cgroup || true"
+      "purpose": "프로세스 상태를 cgroup 이 아닌 status 에서 읽는다.",
+      "command": "head -5 /proc/self/status"
     },
     {
       "order": 2,
@@ -26,7 +26,7 @@
     },
     {
       "order": 4,
-      "purpose": "cgroup 파일시스템 디렉터리 목록을 본다.",
+      "purpose": "cgroup 파일시스템 디렉터리 목록을 본다. 경로가 /proc 아래가 아니라 규칙에 안 걸린다.",
       "command": "ls /sys/fs/cgroup 2>/dev/null || true"
     },
     {

@@ -1,0 +1,30 @@
+{
+  "label": "var_db_sudo_prefix_boundary",
+  "kind": "trap",
+  "goal": "/var/db 아래에서 이름이 sudo로 시작하지만 /var/db/sudo/ 가 아닌 디렉터리를 쓴다.",
+  "expect_silent": [
+    "t1548-003-sudo-abuse"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "백업 디렉터리와 보관 디렉터리를 만들고 상태 파일을 쓴다.",
+      "command": "mkdir -p /var/db/sudo_backup /var/db/sudoers_archive && printf 'ts=1\\n' > /var/db/sudo_backup/state"
+    },
+    {
+      "order": 2,
+      "purpose": "보관 로그를 쓰고 읽는다.",
+      "command": "printf 'archived 2026-08\\n' > /var/db/sudoers_archive/2026-08.log && cat /var/db/sudoers_archive/2026-08.log"
+    },
+    {
+      "order": 3,
+      "purpose": "만들어진 파일 목록을 확인한다.",
+      "command": "find /var/db -type f | sort"
+    },
+    {
+      "order": 4,
+      "purpose": "만든 디렉터리를 모두 지우고 상위 디렉터리도 정리한다.",
+      "command": "rm -rf /var/db/sudo_backup /var/db/sudoers_archive && rmdir /var/db 2>/dev/null || true"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "label": "sudoers_template_outside_etc",
+  "kind": "trap",
+  "goal": "파일 이름이 sudoers인 템플릿을 /etc 밖 애플리케이션 디렉터리에서 렌더링한다.",
+  "expect_silent": [
+    "t1548-003-sudo-abuse"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "정책 템플릿 디렉터리에 sudoers라는 이름의 원본을 만든다.",
+      "command": "mkdir -p /opt/policy/templates && printf 'root ALL=(ALL:ALL) ALL\\n%%admin ALL=(ALL) ALL\\n' > /opt/policy/templates/sudoers"
+    },
+    {
+      "order": 2,
+      "purpose": "템플릿에서 규칙 줄 수를 확인한다.",
+      "command": "grep -c 'ALL' /opt/policy/templates/sudoers"
+    },
+    {
+      "order": 3,
+      "purpose": "그룹 이름을 치환해 결과 파일을 만든다.",
+      "command": "sed 's/%admin/%ops/' /opt/policy/templates/sudoers > /opt/policy/templates/sudoers.rendered && cat /opt/policy/templates/sudoers.rendered"
+    },
+    {
+      "order": 4,
+      "purpose": "정책 디렉터리를 지운다.",
+      "command": "rm -rf /opt/policy"
+    }
+  ]
+}

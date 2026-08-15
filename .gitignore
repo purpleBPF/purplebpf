@@ -13,3 +13,7 @@ dbt/dbt_packages/
 dbt/duckdb/*.duckdb
 dbt/duckdb/*.duckdb.wal
 dbt/.user.yml
+
+# Dagster 로컬 실행 산출물
+.tmp_dagster_home_*/
+dagster_home/

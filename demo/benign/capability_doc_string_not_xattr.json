@@ -1,0 +1,30 @@
+{
+  "label": "capability_doc_string_not_xattr",
+  "kind": "trap",
+  "goal": "문서 본문과 속성 값에는 security.capability 문자열이 있지만 속성 이름으로는 쓰지 않는다. 규칙이 이름만 보는지 시험한다.",
+  "expect_silent": [
+    "exec-file-capability"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "파일 권한 설명 문서를 만든다.",
+      "command": "mkdir -p /opt/docs && printf 'setcap stores flags in the security.capability extended attribute\\ncap_net_bind_service+ep\\n' > /opt/docs/caps.md"
+    },
+    {
+      "order": 2,
+      "purpose": "문서에서 해당 문자열이 나오는 줄을 찾는다.",
+      "command": "grep -n 'security.capability' /opt/docs/caps.md"
+    },
+    {
+      "order": 3,
+      "purpose": "문서 주제를 user.doc_topic 속성의 값으로 기록한다.",
+      "command": "python3 -c \"import os; os.setxattr('/opt/docs/caps.md','user.doc_topic',b'security.capability')\" || true"
+    },
+    {
+      "order": 4,
+      "purpose": "문서 디렉터리를 지운다.",
+      "command": "rm -rf /opt/docs"
+    }
+  ]
+}

@@ -5,6 +5,6 @@
 """
 from dagster import Definitions, load_assets_from_modules
 
-from orchestration.assets import coverage_loop
+from orchestration.assets import benign_round, coverage_loop, rounds
 
-defs = Definitions(assets=load_assets_from_modules([coverage_loop]))
+defs = Definitions(assets=load_assets_from_modules([rounds, coverage_loop, benign_round]))

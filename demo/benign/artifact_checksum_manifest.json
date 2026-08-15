@@ -1,0 +1,40 @@
+{
+  "label": "artifact_checksum_manifest",
+  "kind": "normal",
+  "goal": "배포 산출물의 체크섬 목록을 만들고 그것으로 산출물이 바뀌지 않았는지 확인한다.",
+  "expect_silent": [
+    "t1620-fileless-exec",
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set",
+    "exec-file-capability",
+    "t1552-001-cred-file-read",
+    "t1055-009-proc-mem-inject"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "배포 디렉터리에 산출물 두 개를 만든다.",
+      "command": "mkdir -p /opt/dist && printf 'payload-a\\n' > /opt/dist/app.bin && printf 'payload-b\\n' > /opt/dist/lib.bin && ls -l /opt/dist"
+    },
+    {
+      "order": 2,
+      "purpose": "산출물의 해시를 계산해 체크섬 목록 파일을 만든다.",
+      "command": "cd /opt/dist && sha256sum app.bin lib.bin > SHA256SUMS && cat SHA256SUMS"
+    },
+    {
+      "order": 3,
+      "purpose": "체크섬 목록과 실제 파일을 대조해 산출물이 그대로인지 확인한다.",
+      "command": "cd /opt/dist && sha256sum -c SHA256SUMS"
+    },
+    {
+      "order": 4,
+      "purpose": "확인한 시각을 배포 로그에 덧붙인다.",
+      "command": "mkdir -p /var/log/dist && printf 'verify %s\\n' \"$(date -Iseconds)\" >> /var/log/dist/verify.log && tail -1 /var/log/dist/verify.log"
+    },
+    {
+      "order": 5,
+      "purpose": "산출물과 확인 로그를 지운다.",
+      "command": "rm -rf /opt/dist /var/log/dist"
+    }
+  ]
+}

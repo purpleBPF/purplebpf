@@ -1,0 +1,33 @@
+{
+  "label": "memfd_colon_prefix_named_script",
+  "kind": "trap",
+  "goal": "이름이 memfd: 로 시작하는 파일을 디스크에 만들어 실행한다. 실행 경로는 /opt 아래 절대경로라서 memfd: 로 시작하지 않는다.",
+  "expect_silent": [
+    "t1620-fileless-exec",
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "이름이 memfd: 로 시작하는 리포트 스크립트를 만든다.",
+      "command": "mkdir -p /opt/runner && printf '#!/bin/sh\\necho report generated\\n' > '/opt/runner/memfd:report' && chmod 750 '/opt/runner/memfd:report'"
+    },
+    {
+      "order": 2,
+      "purpose": "스크립트를 절대경로로 실행한다.",
+      "command": "'/opt/runner/memfd:report'"
+    },
+    {
+      "order": 3,
+      "purpose": "실행된 파일의 경로와 권한을 확인한다.",
+      "command": "ls -l /opt/runner"
+    },
+    {
+      "order": 4,
+      "purpose": "스크립트 디렉터리를 지운다.",
+      "command": "rm -rf /opt/runner"
+    }
+  ]
+}

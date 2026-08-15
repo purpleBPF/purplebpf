@@ -1,0 +1,42 @@
+{
+  "label": "cache_keyspace_expiry_sweep",
+  "kind": "normal",
+  "goal": "캐시 서버가 키 파일을 쌓아두고 남은 공간과 메모리를 확인한 뒤 오래된 키만 골라 비운다.",
+  "expect_silent": [
+    "t1055-009-proc-mem-inject",
+    "t1613-container-discovery",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "캐시 디렉터리에 키 파일 30개를 만든다.",
+      "command": "mkdir -p /var/lib/pbcache && for i in $(seq 1 30); do echo value$i > /var/lib/pbcache/key$i.cache; done; ls /var/lib/pbcache | wc -l"
+    },
+    {
+      "order": 2,
+      "purpose": "앞쪽 키 10개의 시각을 두 시간 전으로 돌려 만료된 상태로 만든다.",
+      "command": "for i in $(seq 1 10); do touch -d '2 hours ago' /var/lib/pbcache/key$i.cache; done; echo aged"
+    },
+    {
+      "order": 3,
+      "purpose": "남은 디스크 공간과 메모리 여유를 확인해 비울지 판단한다. /proc 은 읽기만 한다.",
+      "command": "df -k /var/lib/pbcache | tail -1 && grep -m1 MemAvailable /proc/meminfo"
+    },
+    {
+      "order": 4,
+      "purpose": "만료된 키가 몇 개인지 먼저 세어본다.",
+      "command": "find /var/lib/pbcache -name '*.cache' -mmin +60 | wc -l"
+    },
+    {
+      "order": 5,
+      "purpose": "만료된 키만 지우고 남은 개수를 확인한다.",
+      "command": "find /var/lib/pbcache -name '*.cache' -mmin +60 -delete; ls /var/lib/pbcache | wc -l"
+    },
+    {
+      "order": 6,
+      "purpose": "캐시 디렉터리를 통째로 지운다.",
+      "command": "rm -rf /var/lib/pbcache"
+    }
+  ]
+}

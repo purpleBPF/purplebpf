@@ -1,0 +1,42 @@
+{
+  "label": "record_store_crud_cycle",
+  "kind": "normal",
+  "goal": "애플리케이션이 레코드 파일을 만들고 행을 넣고 고치고 지운 뒤 파일을 다시 쓰며 공간을 정리하는 평범한 흐름이다.",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "데이터 디렉터리를 만들고 주문 테이블 머리글을 올린다.",
+      "command": "mkdir -p /var/lib/pbdb && printf 'id|item|qty\\n' > /var/lib/pbdb/orders.tbl && echo schema-ready"
+    },
+    {
+      "order": 2,
+      "purpose": "행 50개를 한 번에 넣고 개수를 확인한다.",
+      "command": "seq 1 50 | awk '{print $1 \"|item\" $1 \"|\" $1}' >> /var/lib/pbdb/orders.tbl && awk 'END{print \"rows=\" NR-1}' /var/lib/pbdb/orders.tbl"
+    },
+    {
+      "order": 3,
+      "purpose": "조건에 맞는 행만 수량을 올리고 합계를 다시 읽는다.",
+      "command": "awk -F'|' 'NR==1{print;next} {if ($1 <= 10) $3=$3+1; print $1 \"|\" $2 \"|\" $3}' /var/lib/pbdb/orders.tbl > /var/lib/pbdb/orders.new && mv /var/lib/pbdb/orders.new /var/lib/pbdb/orders.tbl && awk -F'|' 'NR>1{s+=$3} END{print \"sum=\" s}' /var/lib/pbdb/orders.tbl"
+    },
+    {
+      "order": 4,
+      "purpose": "오래된 행을 지우고 파일을 다시 써서 공간을 회수한다.",
+      "command": "awk -F'|' 'NR==1 || $1 <= 40' /var/lib/pbdb/orders.tbl > /var/lib/pbdb/orders.compact && mv /var/lib/pbdb/orders.compact /var/lib/pbdb/orders.tbl && awk 'END{print \"rows=\" NR-1}' /var/lib/pbdb/orders.tbl"
+    },
+    {
+      "order": 5,
+      "purpose": "데이터 파일 권한을 소유자만 읽고 쓰게 좁힌다. 특수 권한 비트는 세우지 않는다.",
+      "command": "chmod 600 /var/lib/pbdb/orders.tbl && ls -l /var/lib/pbdb/orders.tbl"
+    },
+    {
+      "order": 6,
+      "purpose": "데이터 디렉터리를 통째로 지운다.",
+      "command": "rm -rf /var/lib/pbdb"
+    }
+  ]
+}

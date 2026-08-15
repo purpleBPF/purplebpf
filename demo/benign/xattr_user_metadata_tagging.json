@@ -1,0 +1,30 @@
+{
+  "label": "xattr_user_metadata_tagging",
+  "kind": "trap",
+  "goal": "빌드 산출물에 user 네임스페이스 확장 속성으로 버전 정보를 붙인다. 속성 이름이 security.capability가 아니라서 규칙 조건에 닿지 않는다.",
+  "expect_silent": [
+    "exec-file-capability"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "산출물 디렉터리와 바이너리 파일을 만든다.",
+      "command": "mkdir -p /opt/artifacts && printf 'binary payload placeholder\\n' > /opt/artifacts/app.bin && ls -l /opt/artifacts"
+    },
+    {
+      "order": 2,
+      "purpose": "빌드 식별자와 리비전을 user 네임스페이스 확장 속성으로 기록한다.",
+      "command": "python3 -c \"import os; p='/opt/artifacts/app.bin'; os.setxattr(p,'user.build_id',b'2026-08-16-a1'); os.setxattr(p,'user.git_rev',b'd70ada3')\" || true"
+    },
+    {
+      "order": 3,
+      "purpose": "붙인 속성 목록을 읽어 확인한다.",
+      "command": "python3 -c \"import os; print(os.listxattr('/opt/artifacts/app.bin'))\" || true"
+    },
+    {
+      "order": 4,
+      "purpose": "산출물 디렉터리를 지운다.",
+      "command": "rm -rf /opt/artifacts"
+    }
+  ]
+}

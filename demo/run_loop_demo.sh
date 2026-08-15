@@ -8,12 +8,7 @@
 # 이것이 이 프로젝트의 주장 그 자체다. 놓친 것을 알아내고, 메우고,
 # 메워졌는지 숫자로 확인한다.
 set -euo pipefail
-cd "$(dirname "$0")/.."
-
-set -a; . ./.env; set +a
-export DOCKER_HOST=unix:///Users/jaewoo/.lima/purplebpf/sock/docker.sock
-export PYTHONPATH=src
-PY=.venv/bin/python
+. "$(dirname "$0")/_env.sh"
 POLICY=t1613-container-discovery
 FILE=/etc/tetragon/tetragon.tp.d/t1613_container_discovery.yaml
 
@@ -22,7 +17,7 @@ hr() { printf '%s\n' "----------------------------------------------------------
 hr
 echo " 1단계  T1613 탐지 규칙을 내린다"
 hr
-limactl shell purplebpf -- docker exec tetragon tetra tracingpolicy delete "$POLICY" 2>&1 | tail -1 || true
+limactl shell "$PBPF_LIMA_VM" -- docker exec tetragon tetra tracingpolicy delete "$POLICY" 2>&1 | tail -1 || true
 echo
 
 ./demo/run_cycle.sh
@@ -38,7 +33,7 @@ echo
 hr
 echo " 2단계  놓친 기법을 보고 규칙을 투입한다"
 hr
-limactl shell purplebpf -- docker exec tetragon tetra tracingpolicy add "$FILE" 2>&1 | tail -1
+limactl shell "$PBPF_LIMA_VM" -- docker exec tetragon tetra tracingpolicy add "$FILE" 2>&1 | tail -1
 echo
 
 ./demo/run_cycle.sh
@@ -54,13 +49,9 @@ echo
 hr
 echo " 결과  라운드 ${R1} → ${R2}"
 hr
-docker --context lima-purplebpf compose exec -T postgres \
-  psql -U purplebpf -d purplebpf -c \
-  "SELECT round_id, tp, fn, invalid, recall_pct AS 재현율
+$PSQL -c "SELECT round_id, tp, fn, invalid, recall_pct AS 재현율
    FROM recall_by_round WHERE round_id IN (${R1}, ${R2}) ORDER BY round_id;"
 
-docker --context lima-purplebpf compose exec -T postgres \
-  psql -U purplebpf -d purplebpf -c \
-  "SELECT round_id, technique, shots, detects, result
+$PSQL -c "SELECT round_id, technique, shots, detects, result
    FROM coverage_by_round WHERE round_id IN (${R1}, ${R2}) AND technique = 'T1613'
    ORDER BY round_id;"

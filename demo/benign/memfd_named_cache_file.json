@@ -1,0 +1,31 @@
+{
+  "label": "memfd_named_cache_file",
+  "kind": "trap",
+  "goal": "이름에 memfd가 들어간 디스크 캐시 파일을 만들고 읽는다. 실행하지 않고 데이터로만 다룬다.",
+  "expect_silent": [
+    "t1620-fileless-exec",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "memfd라는 이름이 붙은 캐시 파일을 만든다.",
+      "command": "mkdir -p /var/lib/cache && printf 'row-1\\nrow-2\\nrow-3\\n' > /var/lib/cache/memfd-index.dat"
+    },
+    {
+      "order": 2,
+      "purpose": "캐시 파일의 줄 수를 센다.",
+      "command": "wc -l < /var/lib/cache/memfd-index.dat"
+    },
+    {
+      "order": 3,
+      "purpose": "캐시를 복사해 이전 세대로 남긴다.",
+      "command": "cp /var/lib/cache/memfd-index.dat /var/lib/cache/memfd-index.dat.bak && mv /var/lib/cache/memfd-index.dat.bak /var/lib/cache/memfd-index.prev"
+    },
+    {
+      "order": 4,
+      "purpose": "캐시 디렉터리를 지운다.",
+      "command": "rm -rf /var/lib/cache"
+    }
+  ]
+}

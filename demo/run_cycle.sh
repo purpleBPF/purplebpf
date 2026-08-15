@@ -10,12 +10,7 @@
 #   라운드는 루프의 세대다. 같은 라운드에 두 번 쏘면 채점이 두 번 겹쳐
 #   집계되므로(재현율은 같고 건수만 배로 늘어난다) 매 실행이 새 라운드여야 한다.
 set -euo pipefail
-cd "$(dirname "$0")/.."
-
-set -a; . ./.env; set +a
-export DOCKER_HOST=unix:///Users/jaewoo/.lima/purplebpf/sock/docker.sock
-export PYTHONPATH=src           # editable install 의 .pth 가 처리 안 되는 환경 대비
-PY=.venv/bin/python
+. "$(dirname "$0")/_env.sh"
 
 ROUND=${1:-$($PY - <<'PY'
 import os, sqlalchemy as sa
@@ -36,7 +31,7 @@ echo "=== Mapper 기동 (${WINDOW}초 수집) ==="
 # stdin 을 막지 않으면 백그라운드의 limactl 이 루프의 stdin 을 가져간다.
 # 리다이렉션은 반드시 limactl 쪽에 건다. 파이프라인 끝에 걸면 Mapper 가
 # 이벤트 대신 /dev/null 을 읽어 아무것도 기록하지 않는다.
-limactl shell purplebpf -- docker exec tetragon timeout "$WINDOW" tetra getevents -o json \
+limactl shell "$PBPF_LIMA_VM" -- docker exec tetragon timeout "$WINDOW" tetra getevents -o json \
     < /dev/null 2>/dev/null \
   | $PY -m purplebpf.defensive.mapper.mapper > /tmp/pbpf-mapper.log 2>&1 &
 MAPPER=$!

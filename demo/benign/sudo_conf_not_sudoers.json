@@ -1,0 +1,30 @@
+{
+  "label": "sudo_conf_not_sudoers",
+  "kind": "trap",
+  "goal": "/etc 아래에서 sudoers가 아닌 sudo.conf 설정 파일을 다룬다. 경로가 /etc/sudoers 로 시작하지 않는다.",
+  "expect_silent": [
+    "t1548-003-sudo-abuse"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "sudo.conf 설정 파일을 만든다.",
+      "command": "printf 'Set disable_coredump false\\n' > /etc/sudo.conf && ls -l /etc/sudo.conf"
+    },
+    {
+      "order": 2,
+      "purpose": "설정 항목이 들어갔는지 확인한다.",
+      "command": "grep -c 'disable_coredump' /etc/sudo.conf"
+    },
+    {
+      "order": 3,
+      "purpose": "설정 파일을 백업하고 크기를 잰다.",
+      "command": "cp /etc/sudo.conf /etc/sudo.conf.bak && wc -c < /etc/sudo.conf.bak"
+    },
+    {
+      "order": 4,
+      "purpose": "만든 설정 파일과 백업을 지운다.",
+      "command": "rm -f /etc/sudo.conf /etc/sudo.conf.bak"
+    }
+  ]
+}

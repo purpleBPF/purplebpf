@@ -1,0 +1,46 @@
+{
+  "label": "checkpoint_write_and_recover",
+  "kind": "trap",
+  "goal": "데이터 저장소가 /var/tmp 에 체크포인트 파일을 남기고 원본이 사라진 뒤 그 파일로 복구한다. 임시 경로에 쓰고 읽기만 할 뿐 그곳의 파일을 실행하지 않는다.",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "키값 테이블을 만들고 초기 데이터를 채운다.",
+      "command": "mkdir -p /var/tmp/pb-ckpt /var/lib/pbdb-ckpt && seq 0 19 | awk '{print \"k\" $1 \"|v\" $1}' > /var/lib/pbdb-ckpt/main.tbl && wc -l < /var/lib/pbdb-ckpt/main.tbl"
+    },
+    {
+      "order": 2,
+      "purpose": "현재 내용을 임시 경로의 체크포인트 파일로 내보낸다.",
+      "command": "sed 's/|/=/' /var/lib/pbdb-ckpt/main.tbl > /var/tmp/pb-ckpt/snap.txt && wc -l < /var/tmp/pb-ckpt/snap.txt"
+    },
+    {
+      "order": 3,
+      "purpose": "체크포인트 파일 권한을 좁힌다. 실행 비트나 특수 권한 비트는 세우지 않는다.",
+      "command": "chmod 640 /var/tmp/pb-ckpt/snap.txt && ls -l /var/tmp/pb-ckpt/snap.txt"
+    },
+    {
+      "order": 4,
+      "purpose": "원본 데이터 파일이 사라진 상황을 만든다.",
+      "command": "rm -f /var/lib/pbdb-ckpt/main.tbl && ls /var/lib/pbdb-ckpt | wc -l"
+    },
+    {
+      "order": 5,
+      "purpose": "체크포인트 파일을 읽어 테이블을 다시 만들고 행 수가 맞는지 확인한다.",
+      "command": "sed 's/=/|/' /var/tmp/pb-ckpt/snap.txt > /var/lib/pbdb-ckpt/main.tbl && wc -l < /var/lib/pbdb-ckpt/main.tbl"
+    },
+    {
+      "order": 6,
+      "purpose": "체크포인트 파일 크기와 앞부분만 확인하고 실행은 하지 않는다.",
+      "command": "wc -c < /var/tmp/pb-ckpt/snap.txt && head -3 /var/tmp/pb-ckpt/snap.txt"
+    },
+    {
+      "order": 7,
+      "purpose": "체크포인트와 데이터 디렉터리를 지운다.",
+      "command": "rm -rf /var/tmp/pb-ckpt /var/lib/pbdb-ckpt"
+    }
+  ]
+}

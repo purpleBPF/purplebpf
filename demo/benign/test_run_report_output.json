@@ -1,0 +1,40 @@
+{
+  "label": "test_run_report_output",
+  "kind": "normal",
+  "goal": "테스트를 돌려 결과와 종료 코드를 로그로 남기고 요약한 뒤 지난 회차 이름으로 옮겨 보관한다.",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1562-001-defense-tamper",
+    "t1055-009-proc-mem-inject",
+    "t1620-fileless-exec",
+    "t1055-008-ptrace-inject",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "테스트 스크립트와 결과를 담을 로그 디렉터리를 만든다.",
+      "command": "mkdir -p /opt/testkit /var/log/ci && printf '%s\\n' '#!/bin/sh' 'fail=0' '[ $((1+1)) -eq 2 ] || fail=$((fail+1))' '[ \"$(printf %s ab)\" = ab ] || fail=$((fail+1))' '[ \"$(seq 3 | wc -l)\" -eq 3 ] || fail=$((fail+1))' 'echo \"ran 3 failed $fail\"' '[ $fail -eq 0 ]' > /opt/testkit/run_tests.sh && chmod 0755 /opt/testkit/run_tests.sh && cat /opt/testkit/run_tests.sh"
+    },
+    {
+      "order": 2,
+      "purpose": "테스트를 돌려 출력과 종료 코드를 결과 파일에 기록한다.",
+      "command": "/opt/testkit/run_tests.sh > /var/log/ci/test-result.log 2>&1; printf 'exit=%s\\n' \"$?\" >> /var/log/ci/test-result.log"
+    },
+    {
+      "order": 3,
+      "purpose": "결과 파일에서 줄 수와 마지막 줄을 뽑아 요약한다.",
+      "command": "grep -c . /var/log/ci/test-result.log && tail -2 /var/log/ci/test-result.log"
+    },
+    {
+      "order": 4,
+      "purpose": "결과 파일을 지난 회차 이름으로 옮겨 보관한다.",
+      "command": "mv /var/log/ci/test-result.log /var/log/ci/test-result.log.1 && ls -l /var/log/ci"
+    },
+    {
+      "order": 5,
+      "purpose": "테스트 스크립트와 로그 디렉터리를 지운다.",
+      "command": "rm -rf /opt/testkit /var/log/ci"
+    }
+  ]
+}

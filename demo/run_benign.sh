@@ -11,12 +11,7 @@
 #
 # 사용법: demo/run_benign.sh [round_id]
 set -euo pipefail
-cd "$(dirname "$0")/.."
-
-set -a; . ./.env; set +a
-export DOCKER_HOST=unix:///Users/jaewoo/.lima/purplebpf/sock/docker.sock
-export PYTHONPATH=src
-PY=.venv/bin/python
+. "$(dirname "$0")/_env.sh"
 
 COUNT=$(ls demo/benign/*.json 2>/dev/null | wc -l | tr -d ' ')
 [ "$COUNT" = "0" ] && { echo "demo/benign 에 시나리오가 없다."; exit 1; }
@@ -36,7 +31,7 @@ PY
 WINDOW=${PBPF_WINDOW:-$(( COUNT * 3 + 25 ))}
 
 echo "=== Mapper 기동 (${WINDOW}초 수집) ==="
-limactl shell purplebpf -- docker exec tetragon timeout "$WINDOW" tetra getevents -o json \
+limactl shell "$PBPF_LIMA_VM" -- docker exec tetragon timeout "$WINDOW" tetra getevents -o json \
     < /dev/null 2>/dev/null \
   | $PY -m purplebpf.defensive.mapper.mapper > /tmp/pbpf-benign-mapper.log 2>&1 &
 MAPPER=$!
@@ -50,14 +45,10 @@ wait $MAPPER 2>/dev/null || true
 echo "detections 기록 $(grep -c '^기록' /tmp/pbpf-benign-mapper.log || echo 0) 건"
 echo
 
-docker --context lima-purplebpf compose exec -T postgres \
-  psql -U purplebpf -d purplebpf -c \
-  "SELECT result, COUNT(*) AS 시나리오수
+$PSQL -c "SELECT result, COUNT(*) AS 시나리오수
    FROM benign_summary WHERE round_id = ${ROUND} GROUP BY result ORDER BY result;"
 
 echo "규칙이 뜬 시나리오"
-docker --context lima-purplebpf compose exec -T postgres \
-  psql -U purplebpf -d purplebpf -c \
-  "SELECT label, kind, rule_name, hits, was_expected_silent AS 조용해야_했나
+$PSQL -c "SELECT label, kind, rule_name, hits, was_expected_silent AS 조용해야_했나
    FROM false_positives WHERE round_id = ${ROUND}
    ORDER BY was_expected_silent DESC, hits DESC LIMIT 20;"

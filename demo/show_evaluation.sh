@@ -4,8 +4,7 @@
 # 공격을 쏘면 재현율이 나오고 정상 워크로드를 돌리면 정밀도가 나온다.
 # 둘을 같이 봐야 규칙을 좁힐지 넓힐지 정할 수 있다.
 set -euo pipefail
-cd "$(dirname "$0")/.."
-PSQL="docker --context lima-purplebpf compose exec -T postgres psql -U purplebpf -d purplebpf"
+. "$(dirname "$0")/_env.sh"
 
 echo
 echo "================ 규칙별 점수판 ================"

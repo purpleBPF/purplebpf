@@ -1,0 +1,44 @@
+{
+  "label": "http_server_local_requests",
+  "kind": "trap",
+  "goal": "루프백에만 붙인 HTTP 서버를 백그라운드로 띄우고 로컬 요청을 처리한 뒤 SIGINT 로 접는 웹 서버 기동과 종료 흐름이다.",
+  "expect_silent": [
+    "t1562-001-defense-tamper",
+    "t1105-tmp-exec",
+    "t1613-container-discovery",
+    "t1552-005-cloud-metadata",
+    "t1610-runtime-socket-connect"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "서버가 내보낼 문서 루트와 정적 파일을 만든다.",
+      "command": "mkdir -p /srv/httpd/www && printf '%s\\n' '<h1>ok</h1>' > /srv/httpd/www/index.html && printf 'a,b,c\\n1,2,3\\n' > /srv/httpd/www/data.csv && ls -l /srv/httpd/www"
+    },
+    {
+      "order": 2,
+      "purpose": "SIGINT 을 받으면 소켓을 닫고 빠지는 서버 스크립트를 만든다. 백그라운드 프로세스는 셸이 SIGINT 을 막아두므로 스크립트가 직접 처리기를 건다.",
+      "command": "cat > /srv/httpd/serve.pl <<'PERLEOF'\nuse strict; use warnings;\nuse IO::Socket::INET;\nmy $LOG = \"/var/log/httpd-test.log\";\nsub logmsg { open(my $f, '>>', $LOG) or return; print $f \"@_\\n\"; close $f }\nmy $srv = IO::Socket::INET->new(LocalAddr=>'127.0.0.1', LocalPort=>8081,\n                                Listen=>5, ReuseAddr=>1, Proto=>'tcp') or die \"bind: $!\";\n$SIG{INT} = sub { logmsg(\"shutdown on SIGINT\"); close $srv; exit 0 };\nlogmsg(\"listening on 127.0.0.1:8081\");\nwhile (my $c = $srv->accept()) {\n    my $req = <$c> // '';\n    my ($path) = $req =~ m{^GET\\s+(\\S+)};\n    $path = '/' unless defined $path;\n    $path = '/index.html' if $path eq '/';\n    my $body = '';\n    if (open(my $f, '<', \"/srv/httpd/www$path\")) { local $/; $body = <$f>; close $f }\n    my $code = length($body) ? '200 OK' : '404 Not Found';\n    print $c \"HTTP/1.0 $code\\r\\nContent-Length: \" . length($body) . \"\\r\\n\\r\\n$body\";\n    close $c;\n    logmsg(\"$path $code\");\n}\nPERLEOF\nperl -c /srv/httpd/serve.pl"
+    },
+    {
+      "order": 3,
+      "purpose": "서버를 백그라운드로 띄우고 pid 를 파일에 남긴다.",
+      "command": "perl /srv/httpd/serve.pl >/dev/null 2>&1 </dev/null & echo $! > /run/httpd.pid; sleep 1; cat /run/httpd.pid"
+    },
+    {
+      "order": 4,
+      "purpose": "로컬 서버에 요청을 세 번 보내 응답 코드를 확인한다.",
+      "command": "cat > /srv/httpd/client.pl <<'PERLEOF'\nuse strict; use warnings;\nuse IO::Socket::INET;\nfor my $p ('/index.html', '/data.csv', '/') {\n    my $s = IO::Socket::INET->new(PeerAddr=>'127.0.0.1', PeerPort=>8081, Proto=>'tcp')\n        or die \"connect: $!\";\n    print $s \"GET $p HTTP/1.0\\r\\n\\r\\n\";\n    my $status = <$s> // ''; $status =~ s/\\r?\\n$//;\n    print \"$p -> $status\\n\";\n    close $s;\n}\nPERLEOF\nperl -c /srv/httpd/client.pl && perl /srv/httpd/client.pl"
+    },
+    {
+      "order": 5,
+      "purpose": "서버에 SIGINT 을 보내 정상 종료시킨다. SIGTERM 이나 SIGKILL 은 쓰지 않는다.",
+      "command": "kill -INT \"$(cat /run/httpd.pid)\" 2>/dev/null || true; sleep 1; tail -n 3 /var/log/httpd-test.log || true"
+    },
+    {
+      "order": 6,
+      "purpose": "문서 루트와 스크립트, pid 파일, 로그를 지워 컨테이너 상태를 되돌린다.",
+      "command": "rm -rf /srv/httpd /run/httpd.pid /var/log/httpd-test.log && ls /srv || true"
+    }
+  ]
+}
