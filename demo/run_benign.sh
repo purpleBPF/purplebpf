@@ -21,11 +21,14 @@ PY=.venv/bin/python
 COUNT=$(ls demo/benign/*.json 2>/dev/null | wc -l | tr -d ' ')
 [ "$COUNT" = "0" ] && { echo "demo/benign 에 시나리오가 없다."; exit 1; }
 
+# 정상 워크로드는 공격과 같은 라운드에서 돌려야 짝이 된다. 그 시점의 규칙으로
+# 재현율과 정밀도를 같이 재야 F1 이 나오기 때문이다. 그래서 benign_log 가
+# 아니라 execution_log 의 최신 라운드를 따라간다.
 ROUND=${1:-$($PY - <<'PY'
 import os, sqlalchemy as sa
 e = sa.create_engine(os.environ["DATABASE_URL"])
 with e.connect() as c:
-    print(c.execute(sa.text("select coalesce(max(round_id),0)+1 from benign_log")).scalar_one())
+    print(c.execute(sa.text("select coalesce(max(round_id),1) from execution_log")).scalar_one())
 PY
 )}
 
