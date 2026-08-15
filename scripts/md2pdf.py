@@ -25,23 +25,16 @@ body {
 }
 h1 { font-size: 21pt; margin: 0 0 4pt; letter-spacing: -0.5px; }
 h1 + .subtitle { color: #666; font-size: 11pt; margin-bottom: 28pt; }
-h2 {
-  font-size: 15pt; margin: 26pt 0 10pt; padding-bottom: 5pt;
-  border-bottom: 1.5px solid #333; page-break-after: avoid;
-}
+h2 { font-size: 15pt; margin: 30pt 0 11pt; page-break-after: avoid; }
 h3 { font-size: 12.5pt; margin: 18pt 0 7pt; page-break-after: avoid; }
-h4 { font-size: 11pt; margin: 13pt 0 5pt; color: #333; page-break-after: avoid; }
+h4 { font-size: 11pt; margin: 14pt 0 5pt; page-break-after: avoid; }
 p { margin: 0 0 9pt; }
 ul, ol { margin: 0 0 9pt; padding-left: 20pt; }
 li { margin-bottom: 3pt; }
-code {
-  font-family: "SFMono-Regular", Menlo, monospace; font-size: 9pt;
-  background: #f0f0f0; padding: 1px 4px; border-radius: 3px;
-}
+code { font-family: "SFMono-Regular", Menlo, monospace; font-size: 9.2pt; }
 pre {
-  background: #f7f7f7; border: 1px solid #ddd; border-left: 3px solid #666;
-  padding: 9pt 11pt; border-radius: 3px; overflow-x: auto;
-  page-break-inside: avoid; margin: 0 0 11pt;
+  padding: 2pt 0 2pt 14pt; overflow-x: auto;
+  page-break-inside: avoid; margin: 0 0 12pt;
 }
 pre code {
   background: none; padding: 0; font-size: 8.6pt; line-height: 1.5;
@@ -52,14 +45,12 @@ table {
   font-size: 9.3pt; page-break-inside: avoid;
 }
 th, td { border: 1px solid #ccc; padding: 5pt 7pt; text-align: left; vertical-align: top; }
-th { background: #eee; font-weight: 600; }
-blockquote {
-  border-left: 3px solid #bbb; margin: 0 0 11pt; padding: 2pt 0 2pt 12pt; color: #444;
-}
-hr { border: none; border-top: 1px solid #ddd; margin: 20pt 0; }
+th { font-weight: 600; }
+blockquote { margin: 0 0 11pt; padding-left: 14pt; }
+hr { border: none; margin: 22pt 0; }
 a { color: #1a1a1a; text-decoration: none; }
-.toc { background: #fafafa; border: 1px solid #e0e0e0; padding: 12pt 16pt; margin-bottom: 24pt; }
-.toc h2 { border: none; font-size: 12pt; margin: 0 0 7pt; padding: 0; }
+.toc { margin-bottom: 30pt; }
+.toc h2 { font-size: 12pt; margin: 0 0 8pt; padding: 0; }
 .toc ul { margin: 0; padding-left: 16pt; }
 .toc li { margin-bottom: 2pt; font-size: 9.5pt; }
 """
