@@ -1,0 +1,26 @@
+{
+  "technique_id": "T1059.004",
+  "goal": "서버 프로세스를 발판 삼아 셸을 띄운다. 웹셸이나 명령 주입 이후의 모습이다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "서버 프로세스를 흉내낸다. 규칙은 부모 실행 파일 이름을 보므로 이름이 서버여야 상황이 재현된다",
+      "command": "cp /usr/bin/perl /usr/sbin/nginx && ls -l /usr/sbin/nginx"
+    },
+    {
+      "order": 2,
+      "purpose": "서버가 자식으로 셸을 띄운다. 명령 주입이 성공했을 때 나오는 부모 자식 관계다",
+      "command": "/usr/sbin/nginx -e 'system(\"/bin/sh\", \"-c\", \"id; cat /etc/hostname\")'"
+    },
+    {
+      "order": 3,
+      "purpose": "그 셸로 이어서 정찰한다",
+      "command": "/usr/sbin/nginx -e 'system(\"/bin/bash\", \"-c\", \"ls /root 2>/dev/null; env | head -5\")'"
+    },
+    {
+      "order": 4,
+      "purpose": "흔적을 지운다",
+      "command": "rm -f /usr/sbin/nginx"
+    }
+  ]
+}

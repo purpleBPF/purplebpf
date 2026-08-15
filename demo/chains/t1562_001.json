@@ -1,0 +1,26 @@
+{
+  "technique_id": "T1562.001",
+  "goal": "감시 프로세스를 종료시켜 관측을 끊는다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "죽일 대상을 띄운다. 실제 상황에서는 보안 에이전트가 이 자리에 있다",
+      "command": "(sleep 60 & echo $! > /tmp/agent1.pid); (sleep 60 & echo $! > /tmp/agent2.pid); sleep 0.3; cat /tmp/agent1.pid /tmp/agent2.pid"
+    },
+    {
+      "order": 2,
+      "purpose": "먼저 정상 종료 시그널을 보낸다. 로그를 남길 틈을 주는 쪽이라 흔한 첫 시도다",
+      "command": "kill -15 \"$(cat /tmp/agent1.pid)\"; sleep 0.3; kill -0 \"$(cat /tmp/agent1.pid)\" 2>/dev/null && echo 살아있음 || echo 종료됨"
+    },
+    {
+      "order": 3,
+      "purpose": "안 죽으면 강제 종료한다. 처리기를 못 타므로 흔적을 안 남긴다",
+      "command": "kill -9 \"$(cat /tmp/agent2.pid)\"; sleep 0.3; kill -0 \"$(cat /tmp/agent2.pid)\" 2>/dev/null && echo 살아있음 || echo 종료됨"
+    },
+    {
+      "order": 4,
+      "purpose": "흔적을 지운다",
+      "command": "rm -f /tmp/agent1.pid /tmp/agent2.pid"
+    }
+  ]
+}

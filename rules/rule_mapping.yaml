@@ -110,25 +110,49 @@ policies:
 #
 # 기본 센서가 모든 exec 이벤트를 이미 내보내므로 정책을 추가하면
 # 같은 이벤트가 두 번 올라와 비용만 늘어난다. 유저스페이스에서 판정한다.
+#
+# match 는 Mapper 가 읽는다. kind 마다 필요한 항목이 다르다.
+#   cred_transition        uid 와 euid 가 다른 exec
+#   parent_child_binary    child_postfix 와 parent_postfix 를 둘 다 만족
+# 경로 끝으로 맞추는 것은 TracingPolicy 의 Postfix 와 같은 방식이다.
+# /usr/sbin/nginx 든 /usr/local/bin/nginx 든 같은 항목으로 걸린다.
 stream_rules:
   setuid-exec-escalation:
     technique: T1548.001
     leg: setuid 비트 바이너리 execve, UID != EUID 전이
     source: process_exec
+    match:
+      kind: cred_transition
     condition: process_credentials.uid != process_credentials.euid
     requires: tetragon --enable-process-cred
     example:
       binary: /tmp/rootsh
       process_credentials: { uid: 1000, euid: 0, suid: 0 }
+    note: |
+      씨앗 체인이 없다. 이 설정에서는 규칙이 뜰 수가 없어서다.
+
+      두 겹으로 막힌다. 컨테이너가 root 로 돌면 uid 도 euid 도 0 이라
+      갈릴 게 없다. 비특권 사용자로 내려가 실행해도 마찬가지인데,
+      Executor 가 컨테이너에 no-new-privileges 를 걸기 때문이다.
+      이 설정이 켜져 있으면 setuid 비트가 붙어 있어도 커널이 권한을 안 준다.
+      실측: setpriv --reuid=65534 로 setuid 바이너리를 실행해도
+      uid=65534 euid=65534 그대로다.
+
+      T1611 이 seccomp 에 막히는 것과 같은 부류다. 공격이 안 통하는 것을
+      미탐으로 세면 안 되므로 체인을 만들지 않는다. 규칙을 지우지도 않는다.
+      no-new-privileges 를 안 거는 환경에서는 그대로 쓸 수 있다.
 
   anomalous-shell-spawn:
     technique: T1059.004
     leg: 웹·DB 서버가 셸을 자식으로 띄우는 것
     source: process_exec
+    match:
+      kind: parent_child_binary
+      child_postfix: [ "/sh", "/bash", "/dash", "/zsh", "/ash" ]
+      parent_postfix: [ "/nginx", "/httpd", "/apache2", "/postgres", "/mysqld",
+                        "/node", "/java", "/php-fpm", "/gunicorn", "/uwsgi" ]
     condition: |
       process.binary 가 셸이고 parent.binary 가 서버 프로세스일 것.
-      셸: /bin/sh /bin/bash /bin/dash /usr/bin/sh /usr/bin/bash /usr/bin/dash
-      서버: nginx httpd apache2 postgres mysqld node java php-fpm gunicorn uwsgi
     requires: 없음. 기본 센서가 모든 exec 이벤트를 내보낸다
     note: |
       TracingPolicy 로 안 만든 이유가 있다. 부모 프로세스 조건을 커널 안에서
@@ -137,6 +161,9 @@ stream_rules:
       걸러지지 않았다(1.7.0 실측).
       컨테이너가 셸을 띄우는 것 자체는 정상이라 조건 없이 잡으면 오탐만 는다.
       부모가 서버 프로세스일 때로 좁혀야 신호가 된다.
+
+      건강검진이 헷갈릴 만한데 실측으로는 안 걸린다. 도커 healthcheck 의
+      셸은 부모가 runc 나 containerd-shim 이지 서버 프로세스가 아니다.
 
 # experiments/ 의 baseline 정책은 여기 등재하지 않는다.
 # 일부러 뚫리라고 만든 실험 장비라 커버리지 집계에 섞이면 안 된다.

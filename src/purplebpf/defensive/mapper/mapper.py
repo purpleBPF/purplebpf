@@ -31,6 +31,9 @@ CHANNEL = "syscall"  # 이번 프로토타입은 syscall 채널 고정.
 # Tetragon JSON 이벤트에서 policy_name/process 정보가 담기는 최상위 이벤트 타입들.
 EVENT_BODY_KEYS = ("process_kprobe", "process_tracepoint", "process_lsm", "process_uprobe")
 
+# 정책 없이 기본 exec 스트림에서 판정하는 탐지가 붙는 이벤트 타입.
+STREAM_EVENT_KEY = "process_exec"
+
 FRACTIONAL_SECONDS_RE = re.compile(r"(\.\d{6})\d*")
 
 INSERT_SQL = """
@@ -43,6 +46,7 @@ INSERT_SQL = """
 
 def main() -> None:
     rule_mapping = _load_rule_mapping()
+    stream_rules = _load_stream_rules()
 
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
@@ -62,6 +66,7 @@ def main() -> None:
                 continue
 
             _handle_event(event, rule_mapping, conn)
+            _handle_stream_event(event, stream_rules, conn)
     except KeyboardInterrupt:
         print("\nCtrl+C로 종료한다.")
     finally:
@@ -106,13 +111,67 @@ def _handle_event(event: dict, rule_mapping: dict, conn) -> None:
         return
 
     detected_at = _parse_timestamp(event.get("time") or body.get("time")) or datetime.now(timezone.utc)
+    _record(conn, technique, policy_name, detected_at, container_id, binary_path)
 
+
+def _handle_stream_event(event: dict, stream_rules: list, conn) -> None:
+    """정책 없이 기본 exec 스트림에서 판정하는 탐지.
+
+    커널 안에서 표현할 수 없는 조건이라 여기서 본다. 부모가 무엇이냐는
+    조건이 대표적이다. 정책을 하나 더 얹으면 같은 exec 이벤트가 두 번
+    올라오므로, 이미 오는 이벤트를 유저스페이스에서 한 번 더 보는 쪽을 골랐다.
+    """
+    if not stream_rules:
+        return
+    body = event.get(STREAM_EVENT_KEY)
+    if not body:
+        return
+
+    process = body.get("process") or {}
+    container_id = _truncate(
+        process.get("docker") or (process.get("container") or {}).get("id"), 64
+    )
+    if not container_id and not os.environ.get("PBPF_KEEP_HOST_EVENTS"):
+        return
+
+    binary_path = _truncate(process.get("binary"), 256)
+    parent_binary = ((body.get("parent") or {}).get("binary")) or ""
+    creds = process.get("process_credentials") or {}
+    detected_at = _parse_timestamp(event.get("time") or body.get("time")) or datetime.now(timezone.utc)
+
+    for name, technique, match in stream_rules:
+        if _stream_rule_hits(match, binary_path or "", parent_binary, creds):
+            _record(conn, technique, name, detected_at, container_id, binary_path)
+
+
+def _stream_rule_hits(match: dict, binary: str, parent_binary: str, creds: dict) -> bool:
+    kind = match.get("kind")
+
+    if kind == "cred_transition":
+        # uid 와 euid 가 다르면 실행하면서 다른 사용자 권한을 얻었다는 뜻이다.
+        # 둘 중 하나라도 없으면 판정하지 않는다. Tetragon 에 --enable-process-cred
+        # 가 꺼져 있으면 필드 자체가 안 오는데, 그것을 "다르지 않다"로 읽으면
+        # 규칙이 조용히 죽는다. 안 뜬 것과 못 본 것은 다르다.
+        uid, euid = creds.get("uid"), creds.get("euid")
+        return uid is not None and euid is not None and uid != euid
+
+    if kind == "parent_child_binary":
+        return (_ends_with_any(binary, match.get("child_postfix") or [])
+                and _ends_with_any(parent_binary, match.get("parent_postfix") or []))
+
+    return False
+
+
+def _ends_with_any(path: str, postfixes: list) -> bool:
+    return any(path.endswith(p) for p in postfixes)
+
+
+def _record(conn, technique: str, rule_name: str, detected_at, container_id, binary_path) -> None:
     with conn.cursor() as cur:
         cur.execute(
             INSERT_SQL,
-            (technique, CHANNEL, policy_name, detected_at, container_id, binary_path),
+            (technique, CHANNEL, rule_name, detected_at, container_id, binary_path),
         )
-
     print(f"기록: technique={technique} binary={binary_path}")
 
 
@@ -171,6 +230,29 @@ def _load_rule_mapping() -> dict:
     if not mapping:
         raise RuntimeError(f"{RULE_MAPPING_PATH} 의 policies 섹션이 비어 있다.")
     return mapping
+
+
+def _load_stream_rules() -> list:
+    """stream_rules 섹션에서 match 가 있는 것만 (이름, technique, match) 로 편다.
+
+    match 없이 산문 condition 만 있는 항목은 아직 구현 안 된 명세다. 건너뛰되
+    경고를 낸다. 조용히 지나가면 규칙이 있는 줄 알고 미탐으로 오해하게 된다.
+    """
+    with RULE_MAPPING_PATH.open(encoding="utf-8") as f:
+        doc = yaml.safe_load(f) or {}
+
+    rules = []
+    for name, spec in (doc.get("stream_rules") or {}).items():
+        if not isinstance(spec, dict):
+            continue
+        technique, match = spec.get("technique"), spec.get("match")
+        if not technique:
+            continue
+        if not isinstance(match, dict) or not match.get("kind"):
+            print(f"경고: stream_rule {name} 에 match 가 없어 판정하지 않는다.", file=sys.stderr)
+            continue
+        rules.append((name, technique, match))
+    return rules
 
 
 if __name__ == "__main__":
