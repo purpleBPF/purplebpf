@@ -14,6 +14,7 @@ import json
 import shlex
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 
 import docker
 from sqlalchemy import text
@@ -155,12 +156,21 @@ def main() -> None:
         help="실행할 대상 Technique ID (기본: T1611)",
     )
     parser.add_argument("--round-id", type=int, default=1, help="round_id (기본: 1)")
+    parser.add_argument(
+        "--chain-file",
+        help="체인 JSON 파일. 지정하면 Neo4j·gemma 생성을 건너뛴다 "
+        "(0라운드 씨앗 체인이나 룰팩 검증용)",
+    )
     args = parser.parse_args()
 
     from purplebpf.offensive.filter.first_filter import filter_chain
-    from purplebpf.offensive.generation.generator import generate_chain
 
-    chain = generate_chain(args.technique_id)
+    if args.chain_file:
+        chain = json.loads(Path(args.chain_file).read_text(encoding="utf-8"))
+    else:
+        from purplebpf.offensive.generation.generator import generate_chain
+
+        chain = generate_chain(args.technique_id)
     verdict = filter_chain(chain)
     print("=== 1차 필터 판정 ===")
     print(json.dumps(verdict, indent=2, ensure_ascii=False))

@@ -1,0 +1,91 @@
+[32m2026-08-15 22:38:20 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47338 - LOGS_CAPTURED - Capturing logs for process (pid: 47338).
+[32m2026-08-15 22:38:20 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47338 - run_coverage_dbt - STEP_START - Started execution of step "run_coverage_dbt".
+[32m2026-08-15 22:38:20 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - run_coverage_dbt - [run_coverage_dbt] 실행: /Users/kwonjunhui/Desktop/PurpleBPF/.venv/bin/dbt run --project-dir /Users/kwonjunhui/Desktop/PurpleBPF/dbt --profiles-dir /Users/kwonjunhui/Desktop/PurpleBPF/dbt
+[32m2026-08-15 22:38:23 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - run_coverage_dbt - [run_coverage_dbt] returncode=0
+[32m2026-08-15 22:38:23 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - run_coverage_dbt - [run_coverage_dbt] stdout:
+[0m13:38:21  Running with dbt=1.12.0
+[0m13:38:21  Registered adapter: duckdb=1.10.1
+[0m13:38:22  Found 3 models, 6 data tests, 1 source, 487 macros
+[0m13:38:22  
+[0m13:38:22  Concurrency: 1 threads (target='dev')
+[0m13:38:22  
+[0m13:38:22  DuckDB adapter: Commit failed with DbtInternalError: Internal Error
+  Tried to commit transaction on connection "create_purplebpf_main", but it does not have one open!
+Traceback (most recent call last):
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/duckdb/impl.py", line 300, in commit_if_has_connection
+    self.connections.commit_if_has_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/base/connections.py", line 388, in commit_if_has_connection
+    self.commit()
+    ~~~~~~~~~~~^^
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/sql/connections.py", line 253, in commit
+    raise DbtInternalError(
+    ...<2 lines>...
+    )
+dbt_common.exceptions.base.DbtInternalError: Internal Error
+  Tried to commit transaction on connection "create_purplebpf_main", but it does not have one open!
+
+[0m13:38:22  1 of 3 START sql view model main.stg_detections ................................ [RUN]
+[0m13:38:22  DuckDB adapter: Commit failed with DbtInternalError: Internal Error
+  Tried to commit transaction on connection "model.purplebpf.stg_detections", but it does not have one open!
+Traceback (most recent call last):
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/duckdb/impl.py", line 300, in commit_if_has_connection
+    self.connections.commit_if_has_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/base/connections.py", line 388, in commit_if_has_connection
+    self.commit()
+    ~~~~~~~~~~~^^
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/sql/connections.py", line 253, in commit
+    raise DbtInternalError(
+    ...<2 lines>...
+    )
+dbt_common.exceptions.base.DbtInternalError: Internal Error
+  Tried to commit transaction on connection "model.purplebpf.stg_detections", but it does not have one open!
+
+[0m13:38:22  1 of 3 OK created sql view model main.stg_detections ........................... [[32mOK[0m in 0.08s]
+[0m13:38:22  2 of 3 START sql view model main.stg_execution_log ............................. [RUN]
+[0m13:38:22  DuckDB adapter: Commit failed with DbtInternalError: Internal Error
+  Tried to commit transaction on connection "model.purplebpf.stg_execution_log", but it does not have one open!
+Traceback (most recent call last):
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/duckdb/impl.py", line 300, in commit_if_has_connection
+    self.connections.commit_if_has_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/base/connections.py", line 388, in commit_if_has_connection
+    self.commit()
+    ~~~~~~~~~~~^^
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/sql/connections.py", line 253, in commit
+    raise DbtInternalError(
+    ...<2 lines>...
+    )
+dbt_common.exceptions.base.DbtInternalError: Internal Error
+  Tried to commit transaction on connection "model.purplebpf.stg_execution_log", but it does not have one open!
+
+[0m13:38:22  2 of 3 OK created sql view model main.stg_execution_log ........................ [[32mOK[0m in 0.01s]
+[0m13:38:22  3 of 3 START sql table model main.coverage ..................................... [RUN]
+[0m13:38:22  DuckDB adapter: Commit failed with DbtInternalError: Internal Error
+  Tried to commit transaction on connection "model.purplebpf.coverage", but it does not have one open!
+Traceback (most recent call last):
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/duckdb/impl.py", line 300, in commit_if_has_connection
+    self.connections.commit_if_has_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/base/connections.py", line 388, in commit_if_has_connection
+    self.commit()
+    ~~~~~~~~~~~^^
+  File "/Users/kwonjunhui/Desktop/PurpleBPF/.venv/lib/python3.14/site-packages/dbt/adapters/sql/connections.py", line 253, in commit
+    raise DbtInternalError(
+    ...<2 lines>...
+    )
+dbt_common.exceptions.base.DbtInternalError: Internal Error
+  Tried to commit transaction on connection "model.purplebpf.coverage", but it does not have one open!
+
+[0m13:38:22  3 of 3 OK created sql table model main.coverage ................................ [[32mOK[0m in 0.06s]
+[0m13:38:22  
+[0m13:38:22  Finished running 1 table model, 2 view models in 0 hours 0 minutes and 0.58 seconds (0.58s).
+[0m13:38:22  
+[0m13:38:22  [32mCompleted successfully[0m
+[0m13:38:22  
+[0m13:38:22  Done. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=3
+
+[32m2026-08-15 22:38:23 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47338 - run_coverage_dbt - STEP_OUTPUT - Yielded output "result" of type "Any". (Type check passed).
+[32m2026-08-15 22:38:23 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47338 - run_coverage_dbt - ASSET_MATERIALIZATION - Materialized value run_coverage_dbt.
+[32m2026-08-15 22:38:23 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47338 - run_coverage_dbt - STEP_SUCCESS - Finished execution of step "run_coverage_dbt" in 3.42s.

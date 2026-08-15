@@ -1,0 +1,20 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1611-namespace-change"
+spec:
+  kprobes:
+  - call: "sys_setns"
+    syscall: true
+    tags: [ "T1611", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "int"
+    - index: 1
+      type: "int"
+  - call: "sys_unshare"
+    syscall: true
+    tags: [ "T1611", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "int"

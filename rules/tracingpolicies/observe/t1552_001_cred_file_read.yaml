@@ -1,0 +1,29 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1552-001-cred-file-read"
+spec:
+  kprobes:
+  # treatment = 커널 내부 함수. read/write/sendfile/splice/aio/io_uring 이 전부 여기로 수렴한다.
+  # 채널과 무관하게 잡히는 것이 baseline 과의 차이.
+  - call: "security_file_permission"
+    syscall: false
+    tags: [ "T1552.001", "pbpf:treatment" ]
+    args:
+    - index: 0
+      type: "file"
+    - index: 1
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/var/run/secrets/kubernetes.io/serviceaccount"
+        - "/run/secrets/kubernetes.io/serviceaccount"
+        - "/root/.aws/credentials"
+        - "/root/.ssh/id_rsa"
+      - index: 1
+        operator: "Equal"
+        values:
+        - "4"   # MAY_READ

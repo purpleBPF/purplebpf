@@ -1,0 +1,30 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1055-009-proc-mem-inject"
+spec:
+  kprobes:
+  # ptrace 없이 남의 메모리를 고치는 다른 길이다.
+  # /proc/<pid>/mem 은 그 프로세스의 메모리를 파일처럼 열어놓은 것이라
+  # 여기에 쓰면 메모리가 바뀐다. ptrace 를 막아둔 환경에서 쓰이는 우회로다.
+  #
+  # 두 번째 인자가 접근 종류이고 2 가 MAY_WRITE 다. 읽기는 뺀다.
+  # 디버거와 모니터링 도구가 /proc 메모리를 읽는 것은 정상이다.
+  - call: "security_file_permission"
+    syscall: false
+    tags: [ "T1055.009", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "file"
+    - index: 1
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/proc/"
+      - index: 1
+        operator: "Equal"
+        values:
+        - "2"   # MAY_WRITE

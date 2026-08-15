@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "setuid 비트를 세워 권한 상승 기반을 만든다",
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "setuid 비트 설정",
+      "command": "cp /bin/true /tmp/rootbash && chmod 4755 /tmp/rootbash && ls -l /tmp/rootbash"
+    }
+  ]
+}

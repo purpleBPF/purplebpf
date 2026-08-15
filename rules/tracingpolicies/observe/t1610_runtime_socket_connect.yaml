@@ -1,0 +1,30 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1610-runtime-socket-connect"
+spec:
+  kprobes:
+  # unix_stream_connect(struct socket *sock, struct sockaddr *uaddr, int addr_len, int flags)
+  #
+  # security_file_open은 쓸 수 없다. 유닉스 소켓은 open()이 아니라
+  # socket() + connect()로 붙어서 파일 열기 훅을 지나지 않는다.
+  # 실측: 컨테이너에서 docker.sock에 curl 했을 때 security_file_open은
+  # runc의 바인드 마운트 1건만 잡혔고 curl은 안 잡혔다.
+  - call: "unix_stream_connect"
+    syscall: false
+    args:
+    - index: 1
+      type: "sockaddr_un"
+    selectors:
+    - matchArgs:
+      - index: 1
+        # Postfix는 sockaddr_un에서 동작하지 않는다 (Tetragon 1.7.0 실측, 0건).
+        # Equal / Prefix만 동작하므로 경로를 전부 열거한다.
+        operator: "Equal"
+        values:
+        - "/var/run/docker.sock"
+        - "/run/docker.sock"
+        - "/var/run/containerd/containerd.sock"
+        - "/run/containerd/containerd.sock"
+        - "/var/run/crio/crio.sock"
+        - "/run/crio/crio.sock"

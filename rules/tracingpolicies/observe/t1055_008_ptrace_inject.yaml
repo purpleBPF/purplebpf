@@ -1,0 +1,33 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1055-008-ptrace-inject"
+spec:
+  kprobes:
+  # 다른 프로세스의 메모리에 코드를 밀어넣어 그 프로세스가 실행하게 만든다.
+  # ptrace 는 원래 디버거가 쓰는 시스템콜인데, 같은 기능으로 남의 메모리를
+  # 읽고 쓸 수 있어서 주입에 쓰인다.
+  #
+  # 첫 인자가 요청 종류다. 숫자로 들어온다.
+  #   4  POKETEXT   코드 영역에 쓰기
+  #   5  POKEDATA   데이터 영역에 쓰기
+  #   13 SETREGS    레지스터 덮어쓰기, 실행 흐름을 바꾼다
+  #   16 ATTACH     대상에 붙기
+  # 읽기 계열(PEEKTEXT 등)은 뺐다. 디버깅과 구분이 안 된다.
+  - call: "sys_ptrace"
+    syscall: true
+    tags: [ "T1055.008", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "int"
+    - index: 1
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Equal"
+        values:
+        - "4"    # PTRACE_POKETEXT
+        - "5"    # PTRACE_POKEDATA
+        - "13"   # PTRACE_SETREGS
+        - "16"   # PTRACE_ATTACH

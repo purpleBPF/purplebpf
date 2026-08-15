@@ -1,0 +1,16 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1552-005-cloud-metadata-baseline"
+spec:
+  kprobes:
+  - call: "sys_connect"
+    syscall: true
+    tags: [ "T1552.005", "pbpf:baseline" ]
+    args:
+    - index: 0
+      type: "int"
+    - index: 1
+      type: "sockaddr"
+    - index: 2
+      type: "int"

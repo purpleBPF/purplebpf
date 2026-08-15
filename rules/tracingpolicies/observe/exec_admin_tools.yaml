@@ -1,0 +1,35 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  # ATT&CK 매핑이 없다. rule_mapping.yaml 에 등재하지 않으므로 Mapper 가
+  # 건너뛰고 커버리지 숫자에도 안 들어간다. 억지로 기법 번호를 붙이지 않았다.
+  # 운영에서 정책 위반을 보는 용도이지 공격 탐지 지표가 아니다.
+  name: "exec-admin-tools"
+spec:
+  kprobes:
+  # 돌아가는 컨테이너 안에서 패키지 관리자나 네트워크 도구가 실행되는 것.
+  # 컨테이너 이미지는 만들어진 뒤 안 바뀌는 것이 원칙이라, 실행 중에
+  # apt 나 nc 가 도는 것은 그 원칙이 깨졌다는 뜻이다.
+  #
+  # 다만 정상 사용이 압도적이다. 빌드 컨테이너와 디버깅에서 늘 쓴다.
+  # 그래서 탐지 규칙이라기보다 정책 위반 신호에 가깝다.
+  - call: "security_bprm_check"
+    syscall: false
+    tags: [ "pbpf:single", "pbpf:no-attack-mapping" ]
+    args:
+    - index: 0
+      type: "linux_binprm"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Postfix"
+        values:
+        - "/apt"
+        - "/apt-get"
+        - "/yum"
+        - "/apk"
+        - "/nc"
+        - "/ncat"
+        - "/nmap"
+        - "/tcpdump"
+        - "/socat"

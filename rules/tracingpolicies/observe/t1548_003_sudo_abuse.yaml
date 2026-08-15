@@ -1,0 +1,26 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1548-003-sudo-abuse"
+spec:
+  kprobes:
+  # sudo 설정을 고쳐 비밀번호 없이 root 가 되게 만드는 동작.
+  #
+  # 한계를 먼저 적어둔다. 컨테이너는 대부분 처음부터 root 로 돌기 때문에
+  # sudo 를 쓸 이유가 없다. 최소 이미지에는 sudo 가 설치돼 있지도 않다.
+  # 그래서 이 규칙은 컨테이너보다 탈출 이후의 호스트에서 의미가 있다.
+  # 확정 표에 있어서 만들었으나 컨테이너 단독 시나리오는 성립하지 않는다.
+  - call: "security_file_open"
+    syscall: false
+    tags: [ "T1548.003", "pbpf:single" ]
+    args:
+    - index: 0
+      type: "file"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/etc/sudoers"       # /etc/sudoers 와 /etc/sudoers.d/ 를 함께 덮는다
+        - "/var/run/sudo/ts/"  # 비밀번호를 다시 안 묻는 캐시 파일
+        - "/var/db/sudo/"

@@ -1,0 +1,25 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1552-001-cred-file-read-baseline"
+spec:
+  kprobes:
+  # baseline = 시스템콜 진입점. io_uring OPENAT 은 여기를 안 지나므로 놓친다.
+  # 이 정책이 놓치고 treatment 가 잡는 차이가 대조실험의 결과값이다.
+  - call: "sys_openat"
+    syscall: true
+    tags: [ "T1552.001", "pbpf:baseline" ]
+    args:
+    - index: 0
+      type: "int"
+    - index: 1
+      type: "string"
+    selectors:
+    - matchArgs:
+      - index: 1
+        operator: "Prefix"
+        values:
+        - "/var/run/secrets/kubernetes.io/serviceaccount"
+        - "/run/secrets/kubernetes.io/serviceaccount"
+        - "/root/.aws/credentials"
+        - "/root/.ssh/id_rsa"

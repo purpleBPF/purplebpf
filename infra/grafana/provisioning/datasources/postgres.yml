@@ -3,15 +3,20 @@ apiVersion: 1
 datasources:
   - name: PurpleBPF-Postgres
     uid: purplebpf-postgres
-    type: postgres
+    # Grafana 10 부터 플러그인 아이디가 postgres 에서 이 이름으로 바뀌었다.
+    type: grafana-postgresql-datasource
     access: proxy
     url: postgres:5432
-    database: ${POSTGRES_DB}
     user: ${POSTGRES_USER}
     isDefault: true
     editable: true
     secureJsonData:
       password: ${POSTGRES_PASSWORD}
     jsonData:
+      # 데이터베이스 이름은 jsonData 안에 있어야 한다. 최상위 database 필드에만
+      # 두면 Grafana 13 이 못 읽고 "default database 가 설정되지 않았다" 로
+      # 패널이 전부 No data 가 된다. 등록된 값에는 database 가 보이는데도
+      # 쿼리가 실패해서 원인을 찾기 어려운 지점이다.
+      database: ${POSTGRES_DB}
       sslmode: disable
       postgresVersion: 1600

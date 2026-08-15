@@ -1,0 +1,143 @@
+# 탐지 → ATT&CK technique 매핑
+# Mapper가 이 파일을 읽어 Tetragon 이벤트에 technique을 태깅
+# 탐지 출처가 두 가지라 섹션이 나뉜다.
+
+# TracingPolicy로 정의한 탐지. Tetragon 이벤트의 policy_name으로 식별한다.
+# observe/ 와 enforce/ 는 metadata.name이 같으므로 한 항목이 두 모드를 다 덮는다.
+policies:
+  t1548-001-setuid-bit-set:
+    technique: T1548.001
+    # 탐지가 잡는 ATT&CK 번호
+    leg: setuid 비트 설정
+    hook: security_path_chmod
+    requires: CONFIG_SECURITY_PATH=y
+    io_uring: 비대상   # chmod 옵코드가 없다 (io_uring.h 확인)
+
+  t1610-runtime-socket-connect:
+    technique: T1610
+    leg: 런타임 소켓 연결
+    hook: unix_stream_connect
+    requires: Tetragon 1.7.0 이상 (sockaddr_un 타입)
+    note: 호스트의 docker CLI도 잡힌다. 컨테이너 ID 유무로 걸러야 한다
+    io_uring: 대상     # SOCKET/CONNECT/WRITE 옵코드가 있다
+
+  t1552-001-cred-file-read:
+    technique: T1552.001
+    leg: 자격증명 파일 읽기
+    hook: security_file_permission
+    note: SA 토큰은 kubelet과 SDK가 상시 읽는다. 오탐 베이스라인 없이는 FP를 못 센다
+    io_uring: 대상     # 대조실험 본진
+
+  t1611-namespace-change:
+    technique: T1611
+    leg: 네임스페이스 변경
+    hook: sys_setns, sys_unshare
+    io_uring: 비대상
+
+  t1611-host-mount:
+    technique: T1611
+    leg: 네임스페이스 변경 후 호스트 마운트
+    hook: security_sb_mount
+    io_uring: 비대상
+
+  t1105-tmp-exec:
+    technique: T1105
+    leg: 임시 경로 드롭 및 실행
+    hook: security_file_open, security_bprm_check
+    note: 경로 접두사만 보면 정상 빌드 컨테이너에서 뜬다. 컨테이너 시작 후 생성 조건이 필요하다
+    io_uring: 대상     # 드롭 레그만. 실행 레그는 execve라 불가
+
+
+  t1552-005-cloud-metadata:
+    technique: T1552.005
+    leg: IMDS 연결
+    hook: tcp_connect
+    io_uring: 대상
+
+  t1562-001-defense-tamper:
+    technique: T1562.001
+    leg: BPF 프로그램 detach, 에이전트 프로세스 종료
+    hook: security_bpf, sys_kill
+    note: |
+      자기참조. 탐지기를 죽이는 데 성공하면 탐지 기록 자체가 사라진다.
+      미탐과 탐지기 사망을 구분하는 결과 코드가 채점기에 따로 필요하다.
+      ATT&CK ID 재편(T1685) 여부 미확인.
+    io_uring: 비대상
+
+  t1620-fileless-exec:
+    technique: T1620
+    leg: memfd 실행
+    hook: sys_memfd_create, security_bprm_check
+    io_uring: 비대상   # write 레그는 가능하나 관측 지점이 아니다
+
+
+  t1613-container-discovery:
+    technique: T1613
+    leg: 컨테이너 여부와 자원 정찰
+    hook: security_file_open
+    note: /.dockerenv 와 /proc/self/cgroup 은 정상 애플리케이션이 읽을 일이 없다
+    io_uring: 대상     # 파일 읽기라 OPENAT/READ 로 수행 가능
+
+  t1055-008-ptrace-inject:
+    technique: T1055.008
+    leg: ptrace 로 남의 프로세스 메모리에 코드 주입
+    hook: sys_ptrace
+    note: |
+      요청 종류로 좁혔다. POKETEXT(4), POKEDATA(5), SETREGS(13), ATTACH(16).
+      읽기 계열은 디버깅과 구분이 안 되어 뺐다.
+      컨테이너는 보통 프로세스가 하나라 주입 대상이 없다. 씨앗 체인은
+      대상 프로세스를 직접 띄우므로 시나리오가 인위적이다.
+    io_uring: 비대상   # ptrace 옵코드 없음
+
+  t1055-009-proc-mem-inject:
+    technique: T1055.009
+    leg: /proc/<pid>/mem 쓰기로 메모리 주입
+    hook: security_file_permission
+    note: ptrace 를 막아둔 환경에서 쓰이는 우회로다. MAY_WRITE(2) 만 본다
+    io_uring: 대상     # 파일 쓰기라 WRITE 로 수행 가능
+
+  t1548-003-sudo-abuse:
+    technique: T1548.003
+    leg: sudoers 수정, sudo 캐시 접근
+    hook: security_file_open
+    note: |
+      컨테이너 단독 시나리오가 성립하지 않는다. 대부분 처음부터 root 로 돌아
+      sudo 를 쓸 이유가 없고 최소 이미지에는 설치도 안 돼 있다.
+      탈출 이후 호스트 단계에서 의미가 있다.
+    io_uring: 대상     # 파일 접근
+
+# TracingPolicy 없이 Tetragon 기본 exec 스트림에서 판정하는 탐지.
+#
+# 기본 센서가 모든 exec 이벤트를 이미 내보내므로 정책을 추가하면
+# 같은 이벤트가 두 번 올라와 비용만 늘어난다. 유저스페이스에서 판정한다.
+stream_rules:
+  setuid-exec-escalation:
+    technique: T1548.001
+    leg: setuid 비트 바이너리 execve, UID != EUID 전이
+    source: process_exec
+    condition: process_credentials.uid != process_credentials.euid
+    requires: tetragon --enable-process-cred
+    example:
+      binary: /tmp/rootsh
+      process_credentials: { uid: 1000, euid: 0, suid: 0 }
+
+  anomalous-shell-spawn:
+    technique: T1059.004
+    leg: 웹·DB 서버가 셸을 자식으로 띄우는 것
+    source: process_exec
+    condition: |
+      process.binary 가 셸이고 parent.binary 가 서버 프로세스일 것.
+      셸: /bin/sh /bin/bash /bin/dash /usr/bin/sh /usr/bin/bash /usr/bin/dash
+      서버: nginx httpd apache2 postgres mysqld node java php-fpm gunicorn uwsgi
+    requires: 없음. 기본 센서가 모든 exec 이벤트를 내보낸다
+    note: |
+      TracingPolicy 로 안 만든 이유가 있다. 부모 프로세스 조건을 커널 안에서
+      표현할 수 없다. security_bprm_check 에서 matchBinaries 는 새로 실행될
+      바이너리를 보고, matchParentBinaries 는 parents_map 을 켜도 의도대로
+      걸러지지 않았다(1.7.0 실측).
+      컨테이너가 셸을 띄우는 것 자체는 정상이라 조건 없이 잡으면 오탐만 는다.
+      부모가 서버 프로세스일 때로 좁혀야 신호가 된다.
+
+# experiments/ 의 baseline 정책은 여기 등재하지 않는다.
+# 일부러 뚫리라고 만든 실험 장비라 커버리지 집계에 섞이면 안 된다.
+# 대조실험 결과는 baseline/treatment 쌍을 따로 비교해 산출한다.
