@@ -13,3 +13,4 @@ dbt/dbt_packages/
 dbt/duckdb/*.duckdb
 dbt/duckdb/*.duckdb.wal
 dbt/.user.yml
+.tmp_dagster_home_*/
