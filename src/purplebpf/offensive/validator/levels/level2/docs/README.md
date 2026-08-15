@@ -5,6 +5,13 @@
 `levels/level2/AGENTS.MD`뿐 아니라 실제 Python 코드, JSON 규칙 및 테스트를 함께
 확인해 작성했다.
 
+지원 깊이를 구분하는 `full`/`metadata`/`generic` Tier와 metadata 승인 절차는
+[Level 2 Support Tier 구현 문서](SUPPORT_TIERS.md)에서 별도로 설명한다.
+
+현재 구현의 extraction, CLI, argument, resource, fact, Tier 정확도를 측정하는
+100-case Ground Truth와 실행법은
+[Level 2 Evaluation Framework](../evaluation/README.md)를 참고한다.
+
 ## 1. 목적과 검증 범위
 
 Level 2는 scenario의 Shell command를 **실행하지 않고 정적으로 분석**한다. 검증의

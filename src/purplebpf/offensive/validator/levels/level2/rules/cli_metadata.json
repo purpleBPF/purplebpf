@@ -19,6 +19,17 @@
     "chmod": {
       "operands": {"min": 2, "max": null},
       "min_operands_by_option": {"--reference": 1},
+      "operand_rules": [
+        {
+          "position": 1,
+          "supported_pattern": "(?:[0-7]{3,4}|[ugoa]*[+=-][rwxXst]+(?:,[ugoa]*[+=-][rwxXst]+)*)",
+          "invalid_patterns": [
+            "[0-9]*[89][0-9]*",
+            "[ugoa]*[+=-][rwxXst]*[^rwxXst,\\s][^,\\s]*"
+          ],
+          "when_options_absent": ["--reference"]
+        }
+      ],
       "options": [
         {"names": ["-c", "--changes"]},
         {"names": ["-f", "--silent", "--quiet"]},
@@ -101,6 +112,176 @@
         {"names": ["--monotonic"], "value": "required"},
         {"names": ["--boottime"], "value": "required"},
         {"names": ["-h", "--help"]}, {"names": ["-V", "--version"]}
+      ]
+    },
+    "nsenter": {
+      "operands": {"min": 0, "max": null},
+      "options": [
+        {"names": ["-t", "--target"], "value": "required", "value_pattern": "[0-9]+"},
+        {"names": ["-m", "--mount"], "value": "optional_attached"},
+        {"names": ["-u", "--uts"], "value": "optional_attached"},
+        {"names": ["-i", "--ipc"], "value": "optional_attached"},
+        {"names": ["-n", "--net"], "value": "optional_attached"},
+        {"names": ["-p", "--pid"], "value": "optional_attached"},
+        {"names": ["-U", "--user"], "value": "optional_attached"},
+        {"names": ["-C", "--cgroup"], "value": "optional_attached"},
+        {"names": ["-T", "--time"], "value": "optional_attached"},
+        {"names": ["-r", "--root"], "value": "optional_attached"},
+        {"names": ["-w", "--wd"], "value": "optional_attached"},
+        {"names": ["-S", "--setuid"], "value": "required"},
+        {"names": ["-G", "--setgid"], "value": "required"},
+        {"names": ["-F", "--no-fork"]},
+        {"names": ["-h", "--help"]},
+        {"names": ["-V", "--version"]}
+      ]
+    },
+    "curl": {
+      "operands": {"min": 1, "max": null},
+      "min_operands_by_option": {"--url": 0},
+      "options": [
+        {"names": ["-o", "--output"], "value": "required"},
+        {"names": ["-O", "--remote-name"]},
+        {"names": ["-X", "--request"], "value": "required"},
+        {"names": ["--url"], "value": "required"},
+        {"names": ["-h", "--help"], "value": "optional_attached"},
+        {"names": ["-V", "--version"]}
+      ]
+    },
+    "kill": {
+      "operands": {"min": 1, "max": null, "pattern": "-?[0-9]+"},
+      "ambiguous_short_option": "invalid",
+      "ambiguous_short_option_source": "python_signals",
+      "options": [
+        {"pattern": "-(?:9|KILL|SIGKILL|TERM|SIGTERM)"}
+      ]
+    },
+    "wget": {
+      "provenance": {
+        "source_type": "help",
+        "source_command": ["/usr/bin/wget", "--help"],
+        "version": "GNU Wget 1.21.4 built on linux-gnu.",
+        "generator_version": "1",
+        "review_status": "APPROVED",
+        "reviewed_at": "2026-08-14"
+      },
+      "operands": {"min": 1, "max": null},
+      "options": [
+        {"names": ["-O", "--output-document"], "value": "required"},
+        {"names": ["-q", "--quiet"]},
+        {"names": ["-c", "--continue"]},
+        {"names": ["-t", "--tries"], "value": "required"},
+        {"names": ["-T", "--timeout"], "value": "required"},
+        {"names": ["-P", "--directory-prefix"], "value": "required"},
+        {"names": ["-h", "--help"]},
+        {"names": ["-V", "--version"]}
+      ]
+    },
+    "cat": {
+      "provenance": {
+        "source_type": "help",
+        "source_command": ["/usr/bin/cat", "--help"],
+        "version": "cat (GNU coreutils) 9.4",
+        "generator_version": "1",
+        "review_status": "APPROVED",
+        "reviewed_at": "2026-08-14"
+      },
+      "operands": {"min": 0, "max": null},
+      "allow_short_option_clusters": true,
+      "options": [
+        {"names": ["-A", "--show-all"]},
+        {"names": ["-b", "--number-nonblank"]},
+        {"names": ["-e"]},
+        {"names": ["-E", "--show-ends"]},
+        {"names": ["-n", "--number"]},
+        {"names": ["-s", "--squeeze-blank"]},
+        {"names": ["-t"]},
+        {"names": ["-T", "--show-tabs"]},
+        {"names": ["-u"]},
+        {"names": ["-v", "--show-nonprinting"]},
+        {"names": ["--help"]},
+        {"names": ["--version"]}
+      ]
+    },
+    "pkill": {
+      "provenance": {
+        "source_type": "help",
+        "source_command": ["/usr/bin/pkill", "--help"],
+        "version": "pkill from procps-ng 4.0.4",
+        "generator_version": "1",
+        "review_status": "APPROVED",
+        "reviewed_at": "2026-08-14"
+      },
+      "operands": {"min": 1, "max": 1},
+      "options": [
+        {"pattern": "-(?:9|KILL|SIGKILL|TERM|SIGTERM)"},
+        {"names": ["-f", "--full"]},
+        {"names": ["-i", "--ignore-case"]},
+        {"names": ["-x", "--exact"]},
+        {"names": ["-n", "--newest"]},
+        {"names": ["-o", "--oldest"]},
+        {"names": ["-P", "--parent"], "value": "required"},
+        {"names": ["-U", "--uid"], "value": "required"},
+        {"names": ["--signal"], "value": "required"},
+        {"names": ["-h", "--help"]},
+        {"names": ["-V", "--version"]}
+      ]
+    },
+    "grep": {
+      "provenance": {
+        "source_type": "help",
+        "source_command": ["/usr/bin/grep", "--help"],
+        "version": "grep (GNU grep) 3.11",
+        "generator_version": "1",
+        "review_status": "APPROVED",
+        "reviewed_at": "2026-08-14"
+      },
+      "operands": {"min": 1, "max": null},
+      "min_operands_by_option": {"-e": 0, "--regexp": 0, "-f": 0, "--file": 0},
+      "allow_short_option_clusters": true,
+      "options": [
+        {"names": ["-E", "--extended-regexp"]},
+        {"names": ["-F", "--fixed-strings"]},
+        {"names": ["-P", "--perl-regexp"]},
+        {"names": ["-e", "--regexp"], "value": "required"},
+        {"names": ["-f", "--file"], "value": "required"},
+        {"names": ["-i", "--ignore-case"]},
+        {"names": ["-n", "--line-number"]},
+        {"names": ["-r", "--recursive"]},
+        {"names": ["-R", "--dereference-recursive"]},
+        {"names": ["-v", "--invert-match"]},
+        {"names": ["-w", "--word-regexp"]},
+        {"names": ["-x", "--line-regexp"]},
+        {"names": ["-q", "--quiet", "--silent"]},
+        {"names": ["--color"], "value": "optional_attached"},
+        {"names": ["--help"]},
+        {"names": ["-V", "--version"]}
+      ]
+    },
+    "tar": {
+      "provenance": {
+        "source_type": "help",
+        "source_command": ["/usr/bin/tar", "--help"],
+        "version": "tar (GNU tar) 1.35",
+        "generator_version": "1",
+        "review_status": "APPROVED",
+        "reviewed_at": "2026-08-14"
+      },
+      "operands": {"min": 0, "max": null},
+      "allow_short_option_clusters": true,
+      "options": [
+        {"names": ["-x", "--extract", "--get"]},
+        {"names": ["-c", "--create"]},
+        {"names": ["-t", "--list"]},
+        {"names": ["-z", "--gzip", "--gunzip", "--ungzip"]},
+        {"names": ["-j", "--bzip2"]},
+        {"names": ["-J", "--xz"]},
+        {"names": ["-v", "--verbose"]},
+        {"names": ["-f", "--file"], "value": "required"},
+        {"names": ["-C", "--directory"], "value": "required"},
+        {"names": ["--strip-components"], "value": "required"},
+        {"names": ["-h", "--dereference"]},
+        {"names": ["-?", "--help"]},
+        {"names": ["--version"]}
       ]
     }
   }

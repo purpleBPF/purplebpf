@@ -177,6 +177,54 @@
           "resource": {"from": "matched_resource"}
         }
       }
+    },
+    {
+      "id": "connect-cloud-metadata-endpoint",
+      "iterate": {
+        "facts": {
+          "type": "endpoint",
+          "attributes": {"class": "cloud_metadata"},
+          "identity_present": ["url"]
+        }
+      },
+      "emit": {
+        "action": "CONNECT_ENDPOINT",
+        "context": {
+          "endpoint_type": {"from": "iteration.fact.attributes.class"}
+        },
+        "evidence": {
+          "source_command": {"from": "raw_command"},
+          "executable": {"from": "executable.normalized"},
+          "source_fact": {"from": "iteration.fact"},
+          "url": {"from": "iteration.fact.identity.url"}
+        }
+      }
+    },
+    {
+      "id": "write-downloaded-file",
+      "iterate": {
+        "facts": {
+          "type": "transfer",
+          "attributes": {"direction": "download"},
+          "identity_present": ["source", "output_path"]
+        }
+      },
+      "emit": {
+        "action": "WRITE_FILE",
+        "context": {
+          "transfer_source": {"const": "external"},
+          "path_type": {
+            "from": "iteration.fact.attributes.output_path_type"
+          }
+        },
+        "evidence": {
+          "source_command": {"from": "raw_command"},
+          "executable": {"from": "executable.normalized"},
+          "source_fact": {"from": "iteration.fact"},
+          "source_url": {"from": "iteration.fact.identity.source"},
+          "output_path": {"from": "iteration.fact.identity.output_path"}
+        }
+      }
     }
   ]
 }
