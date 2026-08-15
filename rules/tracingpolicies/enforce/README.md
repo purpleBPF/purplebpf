@@ -52,9 +52,46 @@ override action can be used only with syscalls and security_ hooks
 
 앞의 넷은 Tetragon 의 제약이라 다른 방법이 필요하다. 네트워크 차단은 Override 대신 `Sigkill` 을 쓰거나 네트워크 계층에서 막아야 한다. 뒤의 둘은 조건을 좁히면 만들 수 있다.
 
+## 관측판과 조건이 같아야 한다
+
+이름만 다른 두 파일이라 한쪽만 고치면 조용히 어긋난다. 실제로 `t1613` 에서 그랬다. 관측판을 좁혀 오탐을 없앴는데 차단판은 넓은 조건 그대로였다. 그 상태로 올리면 `df` 와 `/sys/fs/cgroup` 읽기까지 막힌다.
+
+어긋나면 대가가 크다. 관측판으로 잰 정밀도가 차단판의 정밀도가 아니게 된다. 오탐 한 건과 정상 동작이 막히는 것은 무게가 다르다.
+
+`matchActions` 를 selector 마다 붙였는지도 봐야 한다. 하나에만 붙이면 나머지 조건은 관측만 하고 안 막는데, 파일이 `enforce/` 아래 있으니 막히는 줄 알게 된다. `t1613` 차단판이 그 상태였다.
+
+둘 다 검사로 남겼다.
+
+```bash
+python tests/test_enforce_sync.py
+```
+
 ## 올릴 때 주의
 
 차단판을 전역으로 올리면 시스템 자체가 마비된다. 실측에서 `t1105` 차단판을 올린 순간 `/tmp` 실행이 막혀 `docker exec` 가 안 됐고, 그러면 Tetragon 을 조작할 수단까지 잃는다. 컨테이너를 다시 띄워야 복구된다.
+
+`t1613` 차단판에도 같은 성질이 있다. 올려두면 `docker run` 이 아예 실패한다.
+
+```
+mount callback failed on /tmp/containerd-mount...:
+open /tmp/containerd-mount.../.dockerenv: operation not permitted
+```
+
+도커가 컨테이너를 만들면서 `/.dockerenv` 를 직접 만들고 여는데, 그것을 정찰로 보고 막기 때문이다. 이미 떠 있는 컨테이너 안에서는 정상 동작(`df`, `ls /sys/fs/cgroup`)이 통과하고 정찰만 막히는 것을 확인했다. 막히는 것은 새 컨테이너 생성뿐이다.
+
+그래서 검증할 때는 컨테이너를 먼저 띄우고 그다음에 차단판을 올린다. 순서가 반대면 대상 컨테이너를 못 만든다.
+
+정책 파일을 `tetragon.tp.d/` 에 두고 시험하지 마라. 그 디렉터리는 재시작 때 자동으로 읽히므로 잘못된 정책을 남겨두면 Tetragon 이 뜨다가 죽는다. 컨테이너 안으로 직접 넣고 끝나면 지운다.
+
+```bash
+docker cp rules/tracingpolicies/enforce/<규칙>.yaml tetragon:/tmp/x.yaml
+docker exec tetragon tetra tracingpolicy delete <규칙 이름>
+docker exec tetragon tetra tracingpolicy add /tmp/x.yaml
+# 확인이 끝나면
+docker exec tetragon tetra tracingpolicy delete <규칙 이름>
+docker exec tetragon tetra tracingpolicy add /etc/tetragon/tetragon.tp.d/<규칙>.yaml
+docker exec tetragon rm -f /tmp/x.yaml
+```
 
 컨테이너를 한정해서 거는 방법을 찾아봤으나 이 환경에서는 안 된다. `podSelector` 는 쿠버네티스 파드 라벨을 보므로 도커 컨테이너 라벨과 맞지 않는다. `--enable-policy-filter` 를 켜면 정책은 붙지만 라벨 붙은 컨테이너도 안 막힌다.
 
