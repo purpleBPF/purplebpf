@@ -70,6 +70,7 @@ def collect_detections(context: AssetExecutionContext) -> MaterializeResult:
     mapper의 반환 코드를 따른다 — 의도적으로 pipefail을 켜지 않는다.
     """
     bash_command = (
+        f"cd {C.VM_REPO_ROOT} && source {C.VM_ENV_FILE} && "
         f"timeout {C.DETECTION_WINDOW_SECONDS} docker exec tetragon tetra getevents -o json "
         f"| python3 -m purplebpf.defensive.mapper.mapper"
     )

@@ -1,0 +1,33 @@
+[32m2026-08-15 22:38:24 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47393 - LOGS_CAPTURED - Capturing logs for process (pid: 47393).
+[32m2026-08-15 22:38:24 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47393 - test_coverage_dbt - STEP_START - Started execution of step "test_coverage_dbt".
+[32m2026-08-15 22:38:24 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - test_coverage_dbt - [test_coverage_dbt] 실행: /Users/kwonjunhui/Desktop/PurpleBPF/.venv/bin/dbt test --project-dir /Users/kwonjunhui/Desktop/PurpleBPF/dbt --profiles-dir /Users/kwonjunhui/Desktop/PurpleBPF/dbt
+[32m2026-08-15 22:38:27 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - test_coverage_dbt - [test_coverage_dbt] returncode=0
+[32m2026-08-15 22:38:27 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - test_coverage_dbt - [test_coverage_dbt] stdout:
+[0m13:38:25  Running with dbt=1.12.0
+[0m13:38:25  Registered adapter: duckdb=1.10.1
+[0m13:38:25  Found 3 models, 6 data tests, 1 source, 487 macros
+[0m13:38:25  
+[0m13:38:25  Concurrency: 1 threads (target='dev')
+[0m13:38:25  
+[0m13:38:26  1 of 6 START test assert_detects_not_greater_than_shots ........................ [RUN]
+[0m13:38:26  1 of 6 PASS assert_detects_not_greater_than_shots .............................. [[32mPASS[0m in 0.02s]
+[0m13:38:26  2 of 6 START test non_negative_coverage_detects ................................ [RUN]
+[0m13:38:26  2 of 6 PASS non_negative_coverage_detects ...................................... [[32mPASS[0m in 0.01s]
+[0m13:38:26  3 of 6 START test non_negative_coverage_shots .................................. [RUN]
+[0m13:38:26  3 of 6 PASS non_negative_coverage_shots ........................................ [[32mPASS[0m in 0.00s]
+[0m13:38:26  4 of 6 START test not_null_coverage_detects .................................... [RUN]
+[0m13:38:26  4 of 6 PASS not_null_coverage_detects .......................................... [[32mPASS[0m in 0.01s]
+[0m13:38:26  5 of 6 START test not_null_coverage_shots ...................................... [RUN]
+[0m13:38:26  5 of 6 PASS not_null_coverage_shots ............................................ [[32mPASS[0m in 0.00s]
+[0m13:38:26  6 of 6 START test not_null_coverage_technique .................................. [RUN]
+[0m13:38:26  6 of 6 PASS not_null_coverage_technique ........................................ [[32mPASS[0m in 0.01s]
+[0m13:38:26  
+[0m13:38:26  Finished running 6 data tests in 0 hours 0 minutes and 0.41 seconds (0.41s).
+[0m13:38:26  
+[0m13:38:26  [32mCompleted successfully[0m
+[0m13:38:26  
+[0m13:38:26  Done. PASS=6 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=6
+
+[32m2026-08-15 22:38:27 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47393 - test_coverage_dbt - STEP_OUTPUT - Yielded output "result" of type "Any". (Type check passed).
+[32m2026-08-15 22:38:27 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47393 - test_coverage_dbt - ASSET_MATERIALIZATION - Materialized value test_coverage_dbt.
+[32m2026-08-15 22:38:27 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 6f3092a2-149e-42db-9aee-01ccb642d9a0 - 47393 - test_coverage_dbt - STEP_SUCCESS - Finished execution of step "test_coverage_dbt" in 2.63s.

