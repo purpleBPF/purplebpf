@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from levels.level2.parser.command_parser import CommandParseError
-from levels.level2.validator import validate_shell as validate_level2_shell
+from ..level2.parser.command_parser import CommandParseError
+from ..level2.validator import validate_shell as validate_level2_shell
 
 from .engine.technique_action_validator import validate_technique_actions
 from .engine.technique_rule_provider import JsonTechniqueRuleProvider

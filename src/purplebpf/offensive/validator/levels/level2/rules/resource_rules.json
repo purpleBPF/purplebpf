@@ -130,6 +130,9 @@
           "fact_type": "namespace",
           "attribute": "kind",
           "attributes": {"operation": "enter"},
+          "identity": {
+            "target_pid": {"option_value_any": ["-t", "--target"]}
+          },
           "values": {
             "-m": "mount", "--mount": "mount",
             "-u": "uts", "--uts": "uts",
@@ -173,6 +176,21 @@
         {
           "extractor": "process_signal",
           "required": true
+        }
+      ]
+    },
+    "cat": {
+      "resolution": "none",
+      "requires": [],
+      "produces": [],
+      "facts": [
+        {
+          "extractor": "file_access",
+          "fact_type": "file_access",
+          "operation": "read",
+          "operands_from": 1,
+          "exclude_operands": ["-"],
+          "required": false
         }
       ]
     }

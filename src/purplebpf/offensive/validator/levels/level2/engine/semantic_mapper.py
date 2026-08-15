@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import urlsplit
 
+from .credential_classifier import JsonCredentialTargetClassifier
+
 
 Fact = dict[str, Any]
 Extractor = Callable[
@@ -158,6 +160,17 @@ def _extract_option_map(
 ) -> tuple[list[Fact], bool]:
     del classifiers
     mapping = spec["values"]
+    identity: dict[str, str] = {}
+    for name, source in spec.get("identity", {}).items():
+        if "const" in source:
+            value = source["const"]
+        else:
+            value = _first_option_value(
+                command, source.get("option_value_any", [])
+            )
+        if value is None:
+            return [], False
+        identity[name] = value
     facts = []
     for option in _options(command):
         value = mapping.get(option)
@@ -166,6 +179,7 @@ def _extract_option_map(
         facts.append(
             _fact(
                 spec["fact_type"],
+                identity=identity,
                 attributes={**spec.get("attributes", {}), spec["attribute"]: value},
                 evidence={"option": option},
             )
@@ -226,6 +240,48 @@ def _extract_mount(
             attributes=attributes,
         )
     ], True
+
+
+def _extract_file_access(
+    command: dict[str, Any], spec: dict[str, Any], classifiers: dict[str, Any]
+) -> tuple[list[Fact], bool]:
+    operands = _operands(command)
+    excluded = set(spec.get("exclude_operands", []))
+    selected = [
+        (position, path)
+        for position, path in sorted(operands.items())
+        if position >= spec.get("operands_from", 1) and path not in excluded
+    ]
+    if not selected:
+        return [], False
+
+    target_classifier = JsonCredentialTargetClassifier()
+    facts: list[Fact] = []
+    for position, raw_path in selected:
+        classification = target_classifier.classify(raw_path)
+        path = classification.get("normalized_path", raw_path)
+        attributes: dict[str, Any] = {"operation": spec["operation"]}
+        path_type = _path_class(path, classifiers)
+        if path_type is not None:
+            attributes["path_type"] = path_type
+        evidence: dict[str, Any] = {
+            "executable": command["executable"]["normalized"],
+            "operand": raw_path,
+            "operand_position": position,
+        }
+        if classification["classified"]:
+            attributes["data_type"] = classification["data_type"]
+            attributes["credential_type"] = classification["credential_type"]
+            evidence["classification_rule"] = classification["rule_id"]
+        facts.append(
+            _fact(
+                spec.get("fact_type", "file_access"),
+                identity={"path": path},
+                attributes=attributes,
+                evidence=evidence,
+            )
+        )
+    return facts, True
 
 
 def _extract_url_transfer(
@@ -313,6 +369,7 @@ def _extract_process_signal(
 
 
 _EXTRACTORS: dict[str, Extractor] = {
+    "file_access": _extract_file_access,
     "permission_mode": _extract_permission_mode,
     "option_map": _extract_option_map,
     "option_value": _extract_option_value,

@@ -165,16 +165,52 @@
     },
     {
       "id": "mount-filesystem",
-      "match": {
-        "executable": "mount",
-        "resource": {"direction": "produces", "type": "mount"}
+      "iterate": {
+        "facts": {
+          "type": "mount",
+          "identity_present": ["source", "target"]
+        }
       },
       "emit": {
         "action": "MOUNT_FILESYSTEM",
-        "context": {},
+        "context": {
+          "operation": {"from": "iteration.fact.attributes.operation"},
+          "source_type": {"from": "iteration.fact.attributes.source_type"},
+          "target_context": {
+            "from": "iteration.fact.attributes.target_context"
+          }
+        },
         "evidence": {
+          "source_command": {"from": "raw_command"},
           "executable": {"from": "executable.normalized"},
-          "resource": {"from": "matched_resource"}
+          "source_fact": {"from": "iteration.fact"},
+          "source": {"from": "iteration.fact.identity.source"},
+          "target": {"from": "iteration.fact.identity.target"}
+        }
+      }
+    },
+    {
+      "id": "enter-namespace",
+      "iterate": {
+        "facts": {
+          "type": "namespace",
+          "attributes": {"operation": "enter"}
+        }
+      },
+      "emit": {
+        "action": "ENTER_NAMESPACE",
+        "context": {
+          "namespace_type": {"from": "iteration.fact.attributes.kind"},
+          "namespace_context": {
+            "from": "iteration.fact.attributes.namespace_context"
+          }
+        },
+        "evidence": {
+          "source_command": {"from": "raw_command"},
+          "executable": {"from": "executable.normalized"},
+          "source_fact": {"from": "iteration.fact"},
+          "target_pid": {"from": "iteration.fact.identity.target_pid"},
+          "option": {"from": "iteration.fact.evidence.option"}
         }
       }
     },
@@ -223,6 +259,35 @@
           "source_fact": {"from": "iteration.fact"},
           "source_url": {"from": "iteration.fact.identity.source"},
           "output_path": {"from": "iteration.fact.identity.output_path"}
+        }
+      }
+    },
+    {
+      "id": "read-file-access",
+      "iterate": {
+        "facts": {
+          "type": "file_access",
+          "attributes": {"operation": "read"},
+          "identity_present": ["path"]
+        }
+      },
+      "emit": {
+        "action": "READ_FILE",
+        "context": {
+          "data_type": {"from": "iteration.fact.attributes.data_type"},
+          "credential_type": {
+            "from": "iteration.fact.attributes.credential_type"
+          },
+          "path_type": {"from": "iteration.fact.attributes.path_type"}
+        },
+        "evidence": {
+          "source_command": {"from": "raw_command"},
+          "executable": {"from": "executable.normalized"},
+          "source_fact": {"from": "iteration.fact"},
+          "path": {"from": "iteration.fact.identity.path"},
+          "classification_rule": {
+            "from": "iteration.fact.evidence.classification_rule"
+          }
         }
       }
     }
