@@ -3,7 +3,7 @@
   "kind": "normal",
   "goal": "배포 산출물의 체크섬 목록을 만들고 그것으로 산출물이 바뀌지 않았는지 확인한다.",
   "expect_silent": [
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "t1105-tmp-exec",
     "t1548-001-setuid-bit-set",
     "exec-file-capability",

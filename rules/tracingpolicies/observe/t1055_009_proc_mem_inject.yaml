@@ -10,6 +10,14 @@ spec:
   #
   # 두 번째 인자가 접근 종류이고 2 가 MAY_WRITE 다. 읽기는 뺀다.
   # 디버거와 모니터링 도구가 /proc 메모리를 읽는 것은 정상이다.
+  #
+  # 경로를 mem 으로 끝나는 것에 한정한다. /proc 아래 쓰기 전체를 잡으면
+  # 정상 동작이 늘 걸린다. 프로세스가 자기 oom_score_adj 를 조정하거나
+  # comm 에 이름을 적는 것은 평범한 일인데 둘 다 /proc 아래 쓰기다.
+  # 오탐 측정에서 실제로 잡혔다.
+  #
+  # 메모리를 고치는 길은 /proc/<pid>/mem 이고 스레드까지 치면
+  # /proc/<pid>/task/<tid>/mem 이다. 둘 다 mem 으로 끝난다.
   - call: "security_file_permission"
     syscall: false
     tags: [ "T1055.009", "pbpf:single" ]
@@ -24,6 +32,10 @@ spec:
         operator: "Prefix"
         values:
         - "/proc/"
+      - index: 0
+        operator: "Postfix"
+        values:
+        - "/mem"
       - index: 1
         operator: "Equal"
         values:

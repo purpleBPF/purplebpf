@@ -4,7 +4,7 @@
   "goal": "빌드 과정에서 임시 디렉터리에 중간 산출물을 만들고 합치는 동작이다",
   "expect_silent": [
     "t1105-tmp-exec",
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "exec-admin-tools"
   ],
   "steps": [

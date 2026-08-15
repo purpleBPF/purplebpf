@@ -3,7 +3,7 @@
   "kind": "trap",
   "goal": "이름이 memfd: 로 시작하는 파일을 디스크에 만들어 실행한다. 실행 경로는 /opt 아래 절대경로라서 memfd: 로 시작하지 않는다.",
   "expect_silent": [
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "t1105-tmp-exec",
     "t1548-001-setuid-bit-set",
     "exec-admin-tools"

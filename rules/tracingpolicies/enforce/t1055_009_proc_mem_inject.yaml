@@ -19,6 +19,9 @@ spec:
   #
   # 두 번째 인자가 접근 종류이고 2 가 MAY_WRITE 다. 읽기는 뺀다.
   # 디버거와 모니터링 도구가 /proc 메모리를 읽는 것은 정상이다.
+  #
+  # 경로를 mem 으로 끝나는 것에 한정한다. /proc 아래 쓰기 전체를 막으면
+  # 프로세스가 자기 oom_score_adj 나 comm 을 못 쓴다. 평범한 동작이다.
   - call: "security_file_permission"
     syscall: false
     tags: [ "T1055.009", "pbpf:single" ]
@@ -33,6 +36,10 @@ spec:
         operator: "Prefix"
         values:
         - "/proc/"
+      - index: 0
+        operator: "Postfix"
+        values:
+        - "/mem"
       - index: 1
         operator: "Equal"
         values:

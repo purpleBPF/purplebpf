@@ -5,7 +5,7 @@
   "expect_silent": [
     "t1562-001-defense-tamper",
     "t1611-namespace-change",
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "t1105-tmp-exec"
   ],
   "steps": [

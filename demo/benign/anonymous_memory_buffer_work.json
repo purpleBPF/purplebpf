@@ -3,7 +3,7 @@
   "kind": "normal",
   "goal": "프로세스 안 메모리에서만 데이터를 조립한다. 디스크에도 익명 메모리 실행에도 닿지 않는다.",
   "expect_silent": [
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "t1105-tmp-exec"
   ],
   "steps": [

@@ -12,15 +12,30 @@ import pathlib
 import re
 import sys
 
-BENIGN_DIR = pathlib.Path(__file__).resolve().parents[1] / "demo" / "benign"
+import yaml
 
-RULES = {
-    "t1548-001-setuid-bit-set", "t1548-003-sudo-abuse", "t1552-001-cred-file-read",
-    "t1552-005-cloud-metadata", "t1105-tmp-exec", "t1611-namespace-change",
-    "t1611-host-mount", "t1610-runtime-socket-connect", "t1613-container-discovery",
-    "t1620-fileless-exec", "t1562-001-defense-tamper", "t1055-008-ptrace-inject",
-    "t1055-009-proc-mem-inject", "exec-admin-tools", "exec-file-capability",
-}
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+BENIGN_DIR = ROOT / "demo" / "benign"
+OBSERVE_DIR = ROOT / "rules" / "tracingpolicies" / "observe"
+RULE_MAPPING = ROOT / "rules" / "rule_mapping.yaml"
+
+
+def _known_rules() -> set[str]:
+    """지금 있는 규칙 이름을 파일에서 읽는다.
+
+    목록을 여기 적어두면 규칙을 늘렸을 때 같이 안 고쳐서 어긋난다. 그러면
+    새 규칙을 expect_silent 에 쓰려다 이름이 틀렸다고 막힌다. 오탐을 재고
+    싶어도 선언을 못 하는 셈이라 그 규칙은 영영 조용해 보인다.
+    """
+    names = {
+        yaml.safe_load(p.read_text(encoding="utf-8"))["metadata"]["name"]
+        for p in OBSERVE_DIR.glob("*.yaml")
+    }
+    doc = yaml.safe_load(RULE_MAPPING.read_text(encoding="utf-8")) or {}
+    return names | set(doc.get("stream_rules") or {})
+
+
+RULES = _known_rules()
 
 # 건드리면 안 되는 것들. 컨테이너 안이라도 금지한다.
 FORBIDDEN = [

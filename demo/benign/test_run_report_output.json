@@ -6,7 +6,7 @@
     "t1105-tmp-exec",
     "t1562-001-defense-tamper",
     "t1055-009-proc-mem-inject",
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "t1055-008-ptrace-inject",
     "exec-admin-tools"
   ],

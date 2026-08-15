@@ -34,6 +34,11 @@ EVENT_BODY_KEYS = ("process_kprobe", "process_tracepoint", "process_lsm", "proce
 # 정책 없이 기본 exec 스트림에서 판정하는 탐지가 붙는 이벤트 타입.
 STREAM_EVENT_KEY = "process_exec"
 
+# 기법을 안 붙인 규칙의 탐지에 쓰는 값. detections.technique 이 NOT NULL 이라
+# 빈 값을 못 넣는다. 어떤 공격 기법과도 안 맞으므로 재현율에는 안 섞이고,
+# 오탐 집계는 technique 없이 컨테이너와 시간으로 조인하므로 그대로 세어진다.
+UNMAPPED_TECHNIQUE = "UNMAPPED"
+
 FRACTIONAL_SECONDS_RE = re.compile(r"(\.\d{6})\d*")
 
 INSERT_SQL = """
@@ -46,6 +51,7 @@ INSERT_SQL = """
 
 def main() -> None:
     rule_mapping = _load_rule_mapping()
+    unmapped_policies = _load_unmapped_policies()
     stream_rules = _load_stream_rules()
 
     database_url = os.environ.get("DATABASE_URL")
@@ -65,7 +71,7 @@ def main() -> None:
                 print(f"경고: JSON 파싱 실패, 건너뜀: {line[:200]}", file=sys.stderr)
                 continue
 
-            _handle_event(event, rule_mapping, conn)
+            _handle_event(event, rule_mapping, unmapped_policies, conn)
             _handle_stream_event(event, stream_rules, conn)
     except KeyboardInterrupt:
         print("\nCtrl+C로 종료한다.")
@@ -73,7 +79,7 @@ def main() -> None:
         conn.close()
 
 
-def _handle_event(event: dict, rule_mapping: dict, conn) -> None:
+def _handle_event(event: dict, rule_mapping: dict, unmapped_policies: set, conn) -> None:
     body = _extract_event_body(event)
     if body is None:
         return
@@ -82,10 +88,23 @@ def _handle_event(event: dict, rule_mapping: dict, conn) -> None:
     if not policy_name:
         return
 
+    # 기법을 안 붙인 규칙도 기록한다. 버리면 그 규칙의 오탐을 영영 못 본다.
+    # 기법이 없다는 것과 안 떠도 된다는 것은 다르다.
+    #
+    # 다만 아무거나 기록하면 안 된다. experiments/ 의 baseline 정책은 일부러
+    # 뚫리라고 만든 실험 장비인데, 그 발화가 오탐 데이터에 섞이면 규칙 품질
+    # 숫자가 실험 결과에 오염된다. 실제로 그렇게 섞여서 정상 워크로드 20건이
+    # baseline 발화로 오탐 판정을 받은 적이 있다.
+    #
+    # 그래서 양쪽 다 명시로 받는다. policies 에 있으면 그 기법, unmapped_policies
+    # 에 있으면 UNMAPPED, 둘 다 아니면 버린다.
     technique = rule_mapping.get(policy_name)
     if technique is None:
-        print(f"경고: rule_mapping.yaml에 없는 policy_name, 건너뜀: {policy_name}", file=sys.stderr)
-        return
+        if policy_name not in unmapped_policies:
+            print(f"경고: rule_mapping.yaml 에 없는 policy_name, 건너뜀: {policy_name}",
+                  file=sys.stderr)
+            return
+        technique = UNMAPPED_TECHNIQUE
 
     process = body.get("process") or {}
     binary_path = _truncate(process.get("binary"), 256)
@@ -159,6 +178,9 @@ def _stream_rule_hits(match: dict, binary: str, parent_binary: str, creds: dict)
         return (_ends_with_any(binary, match.get("child_postfix") or [])
                 and _ends_with_any(parent_binary, match.get("parent_postfix") or []))
 
+    if kind == "binary_prefix":
+        return any(binary.startswith(p) for p in match.get("values") or [])
+
     return False
 
 
@@ -230,6 +252,13 @@ def _load_rule_mapping() -> dict:
     if not mapping:
         raise RuntimeError(f"{RULE_MAPPING_PATH} 의 policies 섹션이 비어 있다.")
     return mapping
+
+
+def _load_unmapped_policies() -> set:
+    """기법 없이 오탐만 재는 규칙 이름. 없으면 빈 집합이다."""
+    with RULE_MAPPING_PATH.open(encoding="utf-8") as f:
+        doc = yaml.safe_load(f) or {}
+    return set(doc.get("unmapped_policies") or {})
 
 
 def _load_stream_rules() -> list:

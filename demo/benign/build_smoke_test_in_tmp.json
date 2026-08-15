@@ -5,10 +5,11 @@
   "expect_silent": [
     "t1548-001-setuid-bit-set",
     "exec-admin-tools",
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "t1613-container-discovery",
     "t1611-host-mount",
-    "t1552-001-cred-file-read"
+    "t1552-001-cred-file-read",
+    "t1105-tmp-exec"
   ],
   "steps": [
     {

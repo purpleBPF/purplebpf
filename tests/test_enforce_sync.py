@@ -25,6 +25,12 @@ OBSERVE = ROOT / "rules" / "tracingpolicies" / "observe"
 ENFORCE = ROOT / "rules" / "tracingpolicies" / "enforce"
 
 
+def hooks(doc: dict) -> list[str]:
+    """거는 훅 목록. 조건이 없는 훅은 selector 를 안 만들어서 조건 비교만으로는
+    안 잡힌다. 훅 자체가 빠지거나 늘어난 것을 보려면 따로 봐야 한다."""
+    return [kprobe["call"] for kprobe in doc["spec"]["kprobes"]]
+
+
 def selectors(doc: dict) -> list[tuple]:
     """(훅, matchActions 를 뺀 조건) 목록. 순서까지 같아야 한다."""
     out = []
@@ -55,6 +61,12 @@ def main() -> int:
                 f"{path.name}: metadata.name 이 다르다 "
                 f"({enforce['metadata']['name']} vs {observe['metadata']['name']}). "
                 "같은 이름이어야 모드가 바뀌어도 같은 규칙으로 집계된다"
+            )
+
+        if hooks(enforce) != hooks(observe):
+            problems.append(
+                f"{path.name}: 거는 훅이 다르다. "
+                f"차단판 {hooks(enforce)}, 관측판 {hooks(observe)}"
             )
 
         e, o = selectors(enforce), selectors(observe)

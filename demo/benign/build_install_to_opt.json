@@ -6,7 +6,7 @@
     "t1105-tmp-exec",
     "t1548-001-setuid-bit-set",
     "exec-admin-tools",
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "t1611-host-mount",
     "exec-file-capability"
   ],

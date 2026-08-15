@@ -3,7 +3,7 @@
   "kind": "trap",
   "goal": "파일 이름에 memfd 라는 글자가 들어갈 뿐 디스크에 있는 평범한 스크립트를 실행하는 동작이다",
   "expect_silent": [
-    "t1620-fileless-exec",
+    "fileless-fd-exec",
     "t1105-tmp-exec"
   ],
   "steps": [
