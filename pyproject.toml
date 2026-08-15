@@ -16,6 +16,8 @@ dependencies = [
     "pyarrow>=16.0",
     "duckdb>=1.0",
     "dbt-duckdb>=1.9",
+    "dagster>=1.8",
+    "dagster-webserver>=1.8",
 ]
 
 [build-system]
