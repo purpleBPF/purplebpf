@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "정상적인 패키지 설치 과정에서 임시 위치에 준비된 설치 헬퍼를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /var/tmp/pbpf-install-helper && chmod 755 /var/tmp/pbpf-install-helper",
+      "purpose": "패키지 설치 테스트용 안전한 헬퍼 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/var/tmp/pbpf-install-helper",
+      "purpose": "설치 과정에서 정상적인 임시 헬퍼를 실행한다."
+    }
+  ]
+}

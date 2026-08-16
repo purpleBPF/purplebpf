@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "관리자가 설정 백업 작업 중 AWS credentials 파일을 정상적으로 읽는다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.aws && printf '[default]\\naws_access_key_id = FAKECFGKEY\\naws_secret_access_key = FAKECFGSECRET\\n' > /root/.aws/credentials",
+      "purpose": "설정 백업 테스트용 가짜 AWS credentials를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cp /root/.aws/credentials /tmp/pbpf-aws-credentials-backup",
+      "purpose": "정상적인 설정 백업 과정에서 credentials 파일을 읽는다."
+    }
+  ]
+}

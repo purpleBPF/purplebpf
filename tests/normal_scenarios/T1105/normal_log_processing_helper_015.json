@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "운영 로그 처리 작업 중 임시 로그 처리 헬퍼를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-log-helper && chmod 755 /tmp/pbpf-log-helper",
+      "purpose": "안전한 바이너리를 이용해 로그 처리 헬퍼를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-log-helper",
+      "purpose": "정상적인 운영 과정에서 로그 처리 헬퍼를 실행한다."
+    }
+  ]
+}

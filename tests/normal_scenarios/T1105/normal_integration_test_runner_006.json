@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "통합 테스트 과정에서 임시 테스트 실행파일을 정상적으로 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-integration-runner && chmod 755 /tmp/pbpf-integration-runner",
+      "purpose": "안전한 바이너리를 이용해 통합 테스트용 실행파일를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-integration-runner",
+      "purpose": "정상적인 운영 과정에서 통합 테스트용 실행파일를 실행한다."
+    }
+  ]
+}

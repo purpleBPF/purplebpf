@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "CI 빌드 산출물을 공유하는 디렉터리에 정상적으로 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-build-artifacts",
+      "purpose": "빌드 결과물을 저장할 공유 디렉터리를 생성한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2775 /tmp/pbpf-build-artifacts",
+      "purpose": "빌드 산출물의 그룹 소유권 유지를 위해 SGID를 설정한다."
+    }
+  ]
+}

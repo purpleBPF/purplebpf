@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "서비스 관리용 내부 헬퍼에 SGID 권한을 설정하는 정상 작업을 재현한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-service-helper",
+      "purpose": "서비스 관리용 테스트 실행파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2755 /tmp/pbpf-service-helper",
+      "purpose": "서비스 운영 그룹 사용을 위한 SGID 권한을 설정한다."
+    }
+  ]
+}

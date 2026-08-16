@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "내부 데이터 처리 작업을 위한 제한된 공유 디렉터리에 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-internal-data",
+      "purpose": "내부 데이터 처리용 공유 디렉터리를 생성한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2770 /tmp/pbpf-internal-data",
+      "purpose": "허용된 그룹만 접근하면서 그룹 소유권을 상속하도록 SGID를 설정한다."
+    }
+  ]
+}

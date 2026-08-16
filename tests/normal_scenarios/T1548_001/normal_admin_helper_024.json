@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "관리자가 사용하는 내부 관리 도구 설치 과정에서 SUID 권한 설정을 재현한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-admin-helper",
+      "purpose": "내부 관리 도구 역할의 테스트 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod u+s /tmp/pbpf-admin-helper",
+      "purpose": "관리 도구 설치 중 발생할 수 있는 SUID 설정을 재현한다."
+    }
+  ]
+}

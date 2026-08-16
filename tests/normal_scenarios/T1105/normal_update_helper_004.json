@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "애플리케이션 업데이트 과정에서 임시 위치에 내려받은 업데이트 헬퍼를 정상적으로 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /var/tmp/pbpf-update-helper && chmod 755 /var/tmp/pbpf-update-helper",
+      "purpose": "업데이트 테스트용 안전한 임시 헬퍼를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/var/tmp/pbpf-update-helper",
+      "purpose": "정상적인 애플리케이션 업데이트 과정에서 헬퍼를 실행한다."
+    }
+  ]
+}

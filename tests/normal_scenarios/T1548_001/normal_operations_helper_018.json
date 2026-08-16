@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "운영 자동화 헬퍼 프로그램에 필요한 SUID 설정 상황을 정상 데이터로 재현한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-operations-helper",
+      "purpose": "운영 자동화용 테스트 헬퍼를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 4755 /tmp/pbpf-operations-helper",
+      "purpose": "운영 헬퍼에 SUID가 설정되는 정상 관리 상황을 재현한다."
+    }
+  ]
+}

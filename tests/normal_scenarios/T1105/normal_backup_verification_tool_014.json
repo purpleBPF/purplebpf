@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "백업 작업 완료 후 결과 검증을 위해 임시 도구를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /var/tmp/pbpf-backup-verifier && chmod 755 /var/tmp/pbpf-backup-verifier",
+      "purpose": "안전한 바이너리를 이용해 백업 검증 도구를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/var/tmp/pbpf-backup-verifier",
+      "purpose": "정상적인 운영 과정에서 백업 검증 도구를 실행한다."
+    }
+  ]
+}

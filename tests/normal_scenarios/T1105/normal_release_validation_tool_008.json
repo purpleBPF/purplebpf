@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "릴리스 검증 과정에서 임시 검증 도구를 정상적으로 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-release-validator && chmod 755 /tmp/pbpf-release-validator",
+      "purpose": "안전한 바이너리를 이용해 릴리스 검증 도구를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-release-validator",
+      "purpose": "정상적인 운영 과정에서 릴리스 검증 도구를 실행한다."
+    }
+  ]
+}

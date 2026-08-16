@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "애플리케이션이 실행 중 사용할 임시 인증 데이터 준비를 위해 ServiceAccount 토큰을 읽는다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /var/run/secrets/kubernetes.io/serviceaccount && printf 'fake-runtime-token\\n' > /var/run/secrets/kubernetes.io/serviceaccount/token",
+      "purpose": "실행 테스트용 ServiceAccount 토큰을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cp /var/run/secrets/kubernetes.io/serviceaccount/token /tmp/pbpf-runtime-token",
+      "purpose": "애플리케이션이 정상적인 실행 준비 과정에서 토큰을 읽어 임시 위치에 복사한다."
+    }
+  ]
+}

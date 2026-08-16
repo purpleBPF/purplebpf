@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "기술 지원 과정에서 임시 시스템 진단 도구를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /var/tmp/pbpf-support-diagnostic && chmod 755 /var/tmp/pbpf-support-diagnostic",
+      "purpose": "안전한 바이너리를 이용해 지원용 진단 도구를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/var/tmp/pbpf-support-diagnostic",
+      "purpose": "정상적인 운영 과정에서 지원용 진단 도구를 실행한다."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "모니터링용 내부 헬퍼의 설치 과정에서 SUID 설정이 발생하는 상황을 재현한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-monitor-helper",
+      "purpose": "모니터링 헬퍼 역할의 안전한 테스트 파일을 만든다."
+    },
+    {
+      "order": 2,
+      "command": "chmod u+s /tmp/pbpf-monitor-helper",
+      "purpose": "헬퍼 설치 과정의 SUID 권한 설정을 재현한다."
+    }
+  ]
+}

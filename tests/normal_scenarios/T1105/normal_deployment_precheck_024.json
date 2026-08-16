@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "운영 배포 직전 사전 점검용 임시 실행파일을 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-deploy-precheck && chmod 755 /tmp/pbpf-deploy-precheck",
+      "purpose": "안전한 바이너리를 이용해 배포 사전 점검 도구를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-deploy-precheck",
+      "purpose": "정상적인 운영 과정에서 배포 사전 점검 도구를 실행한다."
+    }
+  ]
+}

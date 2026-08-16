@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "운영 점검 스크립트가 AWS credentials 파일에 설정된 프로필 정보를 확인한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.aws && printf '[default]\\naws_access_key_id = FAKEKEY1\\naws_secret_access_key = FAKESECRET1\\n[staging]\\naws_access_key_id = FAKEKEY2\\naws_secret_access_key = FAKESECRET2\\n' > /root/.aws/credentials",
+      "purpose": "여러 프로필이 포함된 테스트용 AWS credentials 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "grep -c '^\\[' /root/.aws/credentials > /dev/null",
+      "purpose": "운영 점검 스크립트가 설정된 프로필 수를 확인하기 위해 파일을 읽는다."
+    }
+  ]
+}

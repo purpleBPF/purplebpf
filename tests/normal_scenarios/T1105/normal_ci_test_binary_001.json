@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "CI 테스트 과정에서 임시 디렉터리에 생성된 테스트 바이너리를 정상적으로 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-ci-test && chmod 755 /tmp/pbpf-ci-test",
+      "purpose": "CI 테스트에서 사용할 안전한 임시 실행파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-ci-test",
+      "purpose": "CI 파이프라인이 테스트 결과 확인을 위해 임시 바이너리를 실행한다."
+    }
+  ]
+}

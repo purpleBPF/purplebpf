@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "배포 자동화 도구가 SSH 연결 준비 과정에서 개인키 파일이 정상인지 확인한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_DEPLOY_PRIVATE_KEY\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "배포 연결 테스트용 가짜 SSH 개인키를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "head -n 1 /root/.ssh/id_rsa > /dev/null",
+      "purpose": "배포 도구가 SSH 연결 전 개인키 파일을 정상적으로 읽는다."
+    }
+  ]
+}

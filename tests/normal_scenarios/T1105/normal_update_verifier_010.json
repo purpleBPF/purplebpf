@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "소프트웨어 업데이트 후 정상 적용 여부를 확인하는 임시 검증기를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-update-verifier && chmod 755 /tmp/pbpf-update-verifier",
+      "purpose": "안전한 바이너리를 이용해 업데이트 검증기를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-update-verifier",
+      "purpose": "정상적인 운영 과정에서 업데이트 검증기를 실행한다."
+    }
+  ]
+}

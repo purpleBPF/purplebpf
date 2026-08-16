@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "관리자가 시스템 이전 전 SSH 개인키를 임시 보관하기 위해 파일을 읽는다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_ARCHIVE_PRIVATE_KEY\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "시스템 이전 테스트용 가짜 SSH 개인키를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cp /root/.ssh/id_rsa /tmp/pbpf-archived-id-rsa",
+      "purpose": "시스템 이전 전 정상적인 임시 보관을 위해 키 파일을 읽는다."
+    }
+  ]
+}

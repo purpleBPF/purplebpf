@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "관리자가 정상적인 백업 작업을 수행하면서 SSH 개인키 파일을 읽어 백업본을 생성한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_PRIVATE_KEY_FOR_BACKUP_TEST\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "백업 동작 검증에 사용할 테스트용 SSH 개인키 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cp /root/.ssh/id_rsa /tmp/pbpf-id-rsa-backup",
+      "purpose": "정상적인 관리 백업 과정에서 SSH 개인키 파일을 읽어 임시 백업 위치에 복사한다."
+    }
+  ]
+}

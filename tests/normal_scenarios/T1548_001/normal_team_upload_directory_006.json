@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "팀에서 공동으로 사용하는 업로드 디렉터리에 그룹 소유권 상속을 위해 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-team-upload",
+      "purpose": "팀 공용 업로드 디렉터리를 생성한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2775 /tmp/pbpf-team-upload",
+      "purpose": "새 파일이 동일 그룹을 상속하도록 SGID를 설정한다."
+    }
+  ]
+}

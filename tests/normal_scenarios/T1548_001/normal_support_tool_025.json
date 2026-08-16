@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "지원팀이 사용하는 공동 실행 도구에 SGID 권한을 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-support-tool",
+      "purpose": "지원팀 공동 사용을 위한 테스트 도구를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2755 /tmp/pbpf-support-tool",
+      "purpose": "지원팀 그룹 권한 사용을 위해 SGID를 설정한다."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "배포 자동화에 사용되는 내부 헬퍼의 SUID 설정 상황을 재현한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-deploy-helper",
+      "purpose": "배포 자동화용 테스트 헬퍼 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 4755 /tmp/pbpf-deploy-helper",
+      "purpose": "승인된 배포 헬퍼의 SUID 설정 상황을 재현한다."
+    }
+  ]
+}

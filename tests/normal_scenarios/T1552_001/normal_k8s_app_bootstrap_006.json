@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "Kubernetes 애플리케이션이 시작 과정에서 클러스터 인증 정보를 정상적으로 불러온다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /var/run/secrets/kubernetes.io/serviceaccount && printf 'fake-bootstrap-token\\n' > /var/run/secrets/kubernetes.io/serviceaccount/token",
+      "purpose": "애플리케이션 부트스트랩 테스트용 ServiceAccount 토큰을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cat /var/run/secrets/kubernetes.io/serviceaccount/token > /dev/null",
+      "purpose": "애플리케이션이 시작 과정에서 인증 토큰을 정상적으로 읽는다."
+    }
+  ]
+}

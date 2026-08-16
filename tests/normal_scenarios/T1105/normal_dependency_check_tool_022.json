@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "의존성 설치 후 정상 상태 확인을 위해 임시 검사 도구를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-dependency-check && chmod 755 /tmp/pbpf-dependency-check",
+      "purpose": "안전한 바이너리를 이용해 의존성 검사 도구를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-dependency-check",
+      "purpose": "정상적인 운영 과정에서 의존성 검사 도구를 실행한다."
+    }
+  ]
+}

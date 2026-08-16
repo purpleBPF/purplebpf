@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "클라우드 모니터링 도구가 AWS 인증 프로필 설정을 확인한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.aws && printf '[monitoring]\\naws_access_key_id = FAKEMONKEY\\naws_secret_access_key = FAKEMONSECRET\\n' > /root/.aws/credentials",
+      "purpose": "모니터링 테스트용 AWS 설정 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "head -n 3 /root/.aws/credentials > /dev/null",
+      "purpose": "모니터링 도구가 정상적인 설정 점검을 위해 credentials 파일을 읽는다."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "시스템 관리 작업에서 SSH 개인키 파일의 정상적인 사용 가능 여부를 확인하기 위해 파일을 읽는다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_PRIVATE_KEY_FOR_TESTING\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "실제 개인키가 아닌 테스트용 SSH 키 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "head -n 1 /root/.ssh/id_rsa > /dev/null",
+      "purpose": "관리 도구가 SSH 키 파일을 정상적으로 읽을 수 있는지 확인한다."
+    }
+  ]
+}

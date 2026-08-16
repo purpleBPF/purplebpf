@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "빌드 시스템 내부 헬퍼에 SGID 권한을 설정하는 정상 관리 작업을 재현한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-build-helper",
+      "purpose": "빌드 작업용 테스트 헬퍼를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod g+s /tmp/pbpf-build-helper",
+      "purpose": "빌드 그룹 권한 사용을 위해 SGID를 추가한다."
+    }
+  ]
+}

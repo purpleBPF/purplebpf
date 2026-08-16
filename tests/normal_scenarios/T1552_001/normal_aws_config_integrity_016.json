@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "운영 관리자가 AWS credentials 설정 파일의 무결성 확인 작업을 수행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.aws && printf '[default]\\naws_access_key_id = FAKEINTEGRITYKEY\\naws_secret_access_key = FAKEINTEGRITYSECRET\\n' > /root/.aws/credentials",
+      "purpose": "무결성 검사용 가짜 AWS credentials를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "sha256sum /root/.aws/credentials > /dev/null",
+      "purpose": "관리 도구가 credentials 파일의 체크섬을 계산하기 위해 내용을 읽는다."
+    }
+  ]
+}

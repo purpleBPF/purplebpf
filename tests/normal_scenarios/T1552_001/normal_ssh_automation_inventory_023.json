@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "인프라 자동화 도구가 원격 관리 준비 과정에서 SSH 개인키를 읽는다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_AUTOMATION_PRIVATE_KEY\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "인프라 자동화 테스트용 가짜 SSH 개인키를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cat /root/.ssh/id_rsa > /dev/null",
+      "purpose": "자동화 도구가 원격 연결 준비를 위해 키 파일을 정상적으로 읽는다."
+    }
+  ]
+}

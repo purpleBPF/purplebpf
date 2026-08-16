@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "서비스 운영 점검 과정에서 SSH 개인키 파일의 읽기 가능 여부를 확인한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_READABLE_PRIVATE_KEY\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "운영 점검 테스트용 가짜 SSH 개인키를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "test -r /root/.ssh/id_rsa && head -n 1 /root/.ssh/id_rsa > /dev/null",
+      "purpose": "서비스 운영 도구가 키 파일의 읽기 가능 여부를 정상적으로 확인한다."
+    }
+  ]
+}

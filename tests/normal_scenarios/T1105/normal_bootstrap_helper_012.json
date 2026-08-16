@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "애플리케이션 초기 설정 과정에서 임시 bootstrap 헬퍼를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /var/tmp/pbpf-bootstrap-helper && chmod 755 /var/tmp/pbpf-bootstrap-helper",
+      "purpose": "안전한 바이너리를 이용해 초기 설정 헬퍼를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/var/tmp/pbpf-bootstrap-helper",
+      "purpose": "정상적인 운영 과정에서 초기 설정 헬퍼를 실행한다."
+    }
+  ]
+}

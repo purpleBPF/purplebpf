@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "자동화 테스트에서 임시 테스트 하네스를 정상적으로 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-test-harness && chmod 755 /tmp/pbpf-test-harness",
+      "purpose": "안전한 바이너리를 이용해 자동화 테스트 하네스를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-test-harness",
+      "purpose": "정상적인 운영 과정에서 자동화 테스트 하네스를 실행한다."
+    }
+  ]
+}

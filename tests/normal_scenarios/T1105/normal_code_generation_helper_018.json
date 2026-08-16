@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "빌드 과정에서 임시 코드 생성 헬퍼를 정상적으로 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-codegen-helper && chmod 755 /tmp/pbpf-codegen-helper",
+      "purpose": "안전한 바이너리를 이용해 코드 생성 헬퍼를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-codegen-helper",
+      "purpose": "정상적인 운영 과정에서 코드 생성 헬퍼를 실행한다."
+    }
+  ]
+}

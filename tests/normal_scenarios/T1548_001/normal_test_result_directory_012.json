@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "테스트 결과를 여러 개발자가 공유하는 디렉터리에 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-test-results",
+      "purpose": "자동화 테스트 결과 저장용 디렉터리를 만든다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2775 /tmp/pbpf-test-results",
+      "purpose": "테스트 결과 파일의 그룹 상속을 위해 SGID를 설정한다."
+    }
+  ]
+}

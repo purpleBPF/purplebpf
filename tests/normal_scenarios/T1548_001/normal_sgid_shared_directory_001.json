@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "공유 디렉터리에서 그룹 소유권 상속을 위해 정상적으로 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-shared",
+      "purpose": "여러 사용자가 함께 사용할 공유 디렉터리를 생성한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2775 /tmp/pbpf-shared",
+      "purpose": "공유 디렉터리 내에서 생성되는 파일이 동일한 그룹을 상속하도록 SGID를 설정한다."
+    }
+  ]
+}

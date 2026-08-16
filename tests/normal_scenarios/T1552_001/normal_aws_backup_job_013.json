@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "백업 작업이 클라우드 스토리지 접근 설정을 불러오기 위해 AWS credentials 파일을 읽는다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.aws && printf '[backup]\\naws_access_key_id = FAKEBACKUPKEY\\naws_secret_access_key = FAKEBACKUPSECRET\\n' > /root/.aws/credentials",
+      "purpose": "백업 작업 테스트용 가짜 AWS credentials를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cat /root/.aws/credentials > /dev/null",
+      "purpose": "백업 프로세스가 정상적인 인증 설정 로딩 과정에서 파일을 읽는다."
+    }
+  ]
+}

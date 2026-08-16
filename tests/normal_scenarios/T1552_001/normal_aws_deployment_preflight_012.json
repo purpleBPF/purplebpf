@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "배포 자동화 도구가 배포 전 AWS 자격 증명 설정 여부를 정상적으로 확인한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.aws && printf '[default]\\naws_access_key_id = FAKEDEPLOYKEY\\naws_secret_access_key = FAKEDEPLOYSECRET\\n' > /root/.aws/credentials",
+      "purpose": "배포 사전 점검용 가짜 AWS credentials를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "grep 'aws_access_key_id' /root/.aws/credentials > /dev/null",
+      "purpose": "배포 자동화 도구가 AWS 설정 유무를 확인하기 위해 파일을 읽는다."
+    }
+  ]
+}

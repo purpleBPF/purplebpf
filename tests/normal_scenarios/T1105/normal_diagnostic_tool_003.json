@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "운영 진단 작업 중 임시 디렉터리에 배치된 진단 도구를 정상적으로 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-diagnostic-tool && chmod 755 /tmp/pbpf-diagnostic-tool",
+      "purpose": "운영 진단에 사용할 테스트용 실행파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-diagnostic-tool",
+      "purpose": "관리자가 정상적인 시스템 진단을 위해 임시 도구를 실행한다."
+    }
+  ]
+}

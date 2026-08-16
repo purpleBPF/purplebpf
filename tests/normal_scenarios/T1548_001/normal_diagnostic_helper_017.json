@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "정상적인 시스템 진단 헬퍼 설치 과정에서 SUID 권한 설정을 재현한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-diagnostic-helper",
+      "purpose": "진단 헬퍼로 사용할 테스트 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod u+s /tmp/pbpf-diagnostic-helper",
+      "purpose": "승인된 진단 도구의 SUID 설정 상황을 재현한다."
+    }
+  ]
+}

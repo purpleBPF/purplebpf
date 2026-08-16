@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "애플리케이션 readiness 점검 과정에서 ServiceAccount 토큰 파일의 읽기 가능 여부를 확인한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /var/run/secrets/kubernetes.io/serviceaccount && printf 'fake-readiness-token\\n' > /var/run/secrets/kubernetes.io/serviceaccount/token",
+      "purpose": "readiness 점검용 가짜 토큰을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "test -r /var/run/secrets/kubernetes.io/serviceaccount/token && cat /var/run/secrets/kubernetes.io/serviceaccount/token > /dev/null",
+      "purpose": "토큰 파일이 정상적으로 읽히는지 확인한다."
+    }
+  ]
+}

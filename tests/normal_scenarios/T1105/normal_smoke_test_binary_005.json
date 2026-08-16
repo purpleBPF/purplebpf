@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "배포 검증 과정에서 임시로 준비된 smoke test 바이너리를 정상적으로 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-smoke-test && chmod 755 /tmp/pbpf-smoke-test",
+      "purpose": "배포 검증에 사용할 안전한 smoke test 실행파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-smoke-test",
+      "purpose": "배포가 정상인지 확인하기 위해 임시 테스트 바이너리를 실행한다."
+    }
+  ]
+}

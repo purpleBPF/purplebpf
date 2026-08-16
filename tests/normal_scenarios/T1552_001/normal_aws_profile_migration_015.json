@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "설정 마이그레이션 도구가 기존 AWS credentials 내용을 읽어 새 설정으로 변환할 준비를 한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.aws && printf '[legacy]\\naws_access_key_id = FAKEOLDKEY\\naws_secret_access_key = FAKEOLDSECRET\\n' > /root/.aws/credentials",
+      "purpose": "마이그레이션 테스트용 기존 credentials 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cp /root/.aws/credentials /tmp/pbpf-aws-migration-source",
+      "purpose": "설정 마이그레이션을 위해 기존 credentials 파일을 정상적으로 읽는다."
+    }
+  ]
+}

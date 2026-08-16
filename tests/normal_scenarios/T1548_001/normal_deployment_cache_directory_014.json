@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "배포 캐시 파일을 운영팀이 공동 관리하도록 캐시 디렉터리에 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-deploy-cache",
+      "purpose": "배포 과정에서 사용할 캐시 디렉터리를 만든다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2775 /tmp/pbpf-deploy-cache",
+      "purpose": "운영팀 간 캐시 파일 그룹 권한 유지를 위해 SGID를 설정한다."
+    }
+  ]
+}

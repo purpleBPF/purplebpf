@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "관리 도구가 SSH 개인키 파일의 무결성을 확인한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_INTEGRITY_PRIVATE_KEY\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "무결성 검사 테스트용 가짜 SSH 키를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "sha256sum /root/.ssh/id_rsa > /dev/null",
+      "purpose": "관리 도구가 키 파일의 체크섬 계산을 위해 정상적으로 읽는다."
+    }
+  ]
+}

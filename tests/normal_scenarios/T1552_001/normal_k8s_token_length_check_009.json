@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "운영 진단 도구가 ServiceAccount 토큰이 비어 있지 않은지 정상적으로 검사한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /run/secrets/kubernetes.io/serviceaccount && printf 'fake-diagnostic-token\\n' > /run/secrets/kubernetes.io/serviceaccount/token",
+      "purpose": "진단용 ServiceAccount 토큰을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "wc -c < /run/secrets/kubernetes.io/serviceaccount/token > /dev/null",
+      "purpose": "운영 진단 도구가 토큰 파일 크기를 읽어 정상 생성 여부를 확인한다."
+    }
+  ]
+}

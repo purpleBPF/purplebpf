@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "모니터링 에이전트가 Kubernetes API 접근 준비 과정에서 ServiceAccount 토큰을 읽는다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /run/secrets/kubernetes.io/serviceaccount && printf 'fake-monitor-token\\n' > /run/secrets/kubernetes.io/serviceaccount/token",
+      "purpose": "모니터링 에이전트 테스트용 토큰을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "head -n 1 /run/secrets/kubernetes.io/serviceaccount/token > /dev/null",
+      "purpose": "모니터링 에이전트가 정상 인증 준비를 위해 토큰을 읽는다."
+    }
+  ]
+}

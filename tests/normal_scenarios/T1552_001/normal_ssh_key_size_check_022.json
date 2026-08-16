@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "운영 점검 도구가 SSH 개인키 파일이 정상적으로 생성되었는지 크기를 확인한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_SIZE_CHECK_PRIVATE_KEY\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "운영 점검용 가짜 SSH 개인키를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "wc -c < /root/.ssh/id_rsa > /dev/null",
+      "purpose": "키 파일이 비어 있지 않은지 확인하기 위해 정상적으로 내용을 읽는다."
+    }
+  ]
+}

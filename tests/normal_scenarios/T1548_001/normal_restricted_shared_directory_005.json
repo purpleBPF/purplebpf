@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "특정 그룹만 사용할 수 있는 공유 디렉터리에 정상적인 SGID 권한을 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-restricted-share",
+      "purpose": "특정 그룹이 공동으로 사용할 디렉터리를 생성한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2770 /tmp/pbpf-restricted-share",
+      "purpose": "그룹 내 파일 소유권 상속과 접근 제한을 위해 SGID 권한을 설정한다."
+    }
+  ]
+}

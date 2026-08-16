@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1552.001",
+  "goal": "시스템 마이그레이션 과정에서 기존 SSH 개인키 설정을 읽어 임시 위치로 복사한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /root/.ssh && printf 'FAKE_MIGRATION_PRIVATE_KEY\\n' > /root/.ssh/id_rsa && chmod 600 /root/.ssh/id_rsa",
+      "purpose": "시스템 마이그레이션 테스트용 가짜 SSH 개인키를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "cp /root/.ssh/id_rsa /tmp/pbpf-migration-id-rsa",
+      "purpose": "정상적인 마이그레이션을 위해 기존 키 파일을 읽는다."
+    }
+  ]
+}

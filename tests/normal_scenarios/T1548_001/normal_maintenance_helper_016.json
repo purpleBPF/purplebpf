@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "관리자가 사용하는 승인된 유지보수 헬퍼의 권한 설정을 재현하기 위해 SUID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-maintenance-helper",
+      "purpose": "안전한 바이너리를 이용해 유지보수 헬퍼 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 4755 /tmp/pbpf-maintenance-helper",
+      "purpose": "관리용 헬퍼의 SUID 권한 설정 상황을 재현한다."
+    }
+  ]
+}

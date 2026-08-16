@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "자동 생성된 보고서를 팀 구성원이 함께 관리하도록 보고서 디렉터리에 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-reports",
+      "purpose": "팀 공유 보고서 디렉터리를 생성한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod g+s /tmp/pbpf-reports",
+      "purpose": "보고서 파일의 그룹 소유권 상속을 위해 SGID를 활성화한다."
+    }
+  ]
+}

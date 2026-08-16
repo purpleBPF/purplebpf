@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "동일 그룹 사용자들이 사용하는 정상적인 공유 실행파일에 SGID 권한을 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-group-helper",
+      "purpose": "그룹 사용자들이 공유할 실행파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2755 /tmp/pbpf-group-helper",
+      "purpose": "공유 실행파일이 지정된 그룹 권한으로 동작할 수 있도록 SGID를 설정한다."
+    }
+  ]
+}

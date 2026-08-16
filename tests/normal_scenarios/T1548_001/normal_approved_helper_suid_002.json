@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "관리자가 승인된 로컬 헬퍼 프로그램에 필요한 SUID 권한을 정상적으로 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-approved-helper",
+      "purpose": "권한 설정 테스트에 사용할 승인된 로컬 헬퍼 파일을 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 4755 /tmp/pbpf-approved-helper",
+      "purpose": "관리 목적의 헬퍼 프로그램에 필요한 SUID 권한을 설정한다."
+    }
+  ]
+}

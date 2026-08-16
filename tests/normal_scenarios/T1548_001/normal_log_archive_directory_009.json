@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "로그 관리 작업에서 공동 로그 보관 디렉터리에 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-log-archive",
+      "purpose": "로그 아카이브용 디렉터리를 생성한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod 2775 /tmp/pbpf-log-archive",
+      "purpose": "로그 파일의 그룹 소유권을 일관되게 유지하도록 SGID를 설정한다."
+    }
+  ]
+}

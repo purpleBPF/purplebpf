@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "설정 배포 전 검증을 위해 임시 설정 검사 도구를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /tmp/pbpf-config-validator && chmod 755 /tmp/pbpf-config-validator",
+      "purpose": "안전한 바이너리를 이용해 설정 검증 도구를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/tmp/pbpf-config-validator",
+      "purpose": "정상적인 운영 과정에서 설정 검증 도구를 실행한다."
+    }
+  ]
+}

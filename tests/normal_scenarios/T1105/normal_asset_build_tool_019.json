@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1105",
+  "goal": "프론트엔드 자산 빌드 과정에서 임시 빌드 도구를 실행한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "cp /bin/true /var/tmp/pbpf-asset-builder && chmod 755 /var/tmp/pbpf-asset-builder",
+      "purpose": "안전한 바이너리를 이용해 자산 빌드 도구를 준비한다."
+    },
+    {
+      "order": 2,
+      "command": "/var/tmp/pbpf-asset-builder",
+      "purpose": "정상적인 운영 과정에서 자산 빌드 도구를 실행한다."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "팀 협업 디렉터리에서 생성되는 파일이 동일 그룹을 유지하도록 정상적으로 SGID를 설정한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "mkdir -p /tmp/pbpf-team-workspace",
+      "purpose": "팀원들이 공동으로 사용할 작업 디렉터리를 생성한다."
+    },
+    {
+      "order": 2,
+      "command": "chmod g+s /tmp/pbpf-team-workspace",
+      "purpose": "팀 작업물의 그룹 소유권이 일관되게 유지되도록 SGID를 설정한다."
+    }
+  ]
+}
