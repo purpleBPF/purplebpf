@@ -22,6 +22,7 @@ import logging
 import time
 from urllib.parse import parse_qs
 
+import requests
 from fastapi import FastAPI, Header, HTTPException, Request
 
 from purplebpf.common.config import get_slack_signing_secret
@@ -31,6 +32,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 
 MAX_REQUEST_AGE_SECONDS = 60 * 5  # 5분 넘게 지난 요청은 재전송(리플레이) 공격으로 보고 거부한다.
+RESPONSE_URL_TIMEOUT_SECONDS = 10
 
 DECISION_LABELS = {
     "approve_chain": ("✅", "승인됨"),
@@ -66,13 +68,25 @@ async def handle_interaction(
 
     original_blocks = payload.get("message", {}).get("blocks", [])
     updated_blocks = _replace_action_block(original_blocks, badge, label, username)
-
-    # replace_original=True로 응답하면 원래 메시지가 이 내용으로 바로 교체된다.
-    return {
+    update_payload = {
         "replace_original": True,
         "text": f"{badge} {technique_id} — {label} (by {username})",
         "blocks": updated_blocks,
     }
+
+    # response_url로 별도 요청을 보내서 원래 메시지를 갱신한다.
+    # (요청에 바로 응답하는 방식보다 response_url 방식이 더 안정적으로 동작한다.)
+    response_url = payload.get("response_url")
+    if response_url:
+        try:
+            requests.post(response_url, json=update_payload, timeout=RESPONSE_URL_TIMEOUT_SECONDS)
+        except requests.RequestException as exc:
+            logger.error("response_url로 메시지 갱신 실패: %s", exc)
+    else:
+        logger.warning("payload에 response_url이 없다.")
+
+    # Slack에는 빈 200 응답으로 "잘 받았다"는 것만 알려준다.
+    return {}
 
 
 def _verify_slack_signature(*, raw_body: bytes, timestamp: str | None, signature: str | None) -> None:
