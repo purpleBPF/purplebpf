@@ -129,6 +129,28 @@ stream_rules:
       process.binary 가 셸이고 parent.binary 가 서버 프로세스일 것.
       셸: /bin/sh /bin/bash /bin/dash /usr/bin/sh /usr/bin/bash /usr/bin/dash
       서버: nginx httpd apache2 postgres mysqld node java php-fpm gunicorn uwsgi
+    # 위 condition(산문)을 Mapper가 기계적으로 읽을 수 있게 그대로 옮긴 것.
+    # shell_binaries는 process.binary와 전체경로 완전일치, parent_contains는
+    # parent.binary에 부분문자열로 포함되는지로 본다(서버 바이너리가 실제로는
+    # /usr/sbin/nginx 같은 전체경로로 오므로).
+    shell_binaries:
+      - /bin/sh
+      - /bin/bash
+      - /bin/dash
+      - /usr/bin/sh
+      - /usr/bin/bash
+      - /usr/bin/dash
+    parent_contains:
+      - nginx
+      - httpd
+      - apache2
+      - postgres
+      - mysqld
+      - node
+      - java
+      - php-fpm
+      - gunicorn
+      - uwsgi
     requires: 없음. 기본 센서가 모든 exec 이벤트를 내보낸다
     note: |
       TracingPolicy 로 안 만든 이유가 있다. 부모 프로세스 조건을 커널 안에서

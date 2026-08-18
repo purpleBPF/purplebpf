@@ -26,4 +26,3 @@ VM_ENV_FILE = os.environ.get("PBPF_VM_ENV_FILE", "~/purplebpf.env")
 
 # --- 파이프라인 파라미터 ---
 TARGET_TECHNIQUE_ID = os.environ.get("PBPF_TARGET_TECHNIQUE", "T1059.004")
-DETECTION_WINDOW_SECONDS = int(os.environ.get("PBPF_DETECTION_WINDOW_SECONDS", "10"))
