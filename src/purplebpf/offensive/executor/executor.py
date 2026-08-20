@@ -179,6 +179,13 @@ def main() -> None:
         print("1차 필터에서 REJECT된 체인이라 실행을 건너뛴다.")
         return
 
+    from purplebpf.offensive.review.slack_notify import notify_review
+
+    notified = notify_review(chain, verdict)
+    print(f"=== Slack 2차 검수 알림: {'전송 성공' if notified else '전송 실패 (계속 진행)'} ===")
+    # 참고: 지금은 알림만 보내고 승인 대기 없이 바로 실행한다.
+    # 버튼 클릭(승인/반려) 콜백 수신은 아직 구현되지 않았다 (slack_notify.py 상단 docstring 참고).
+
     result = execute_chain(chain, round_id=args.round_id)
     print("=== 실행 결과 (execution_log 기록) ===")
     print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
