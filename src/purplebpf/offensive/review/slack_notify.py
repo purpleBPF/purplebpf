@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 REQUEST_TIMEOUT_SECONDS = 10
 MAX_BLOCK_TEXT_LENGTH = 2900  # Slack section text object의 3000자 제한에 여유를 둔다
+MAX_REVIEW_COMMAND_LENGTH = 500
 
 VERDICT_BADGES = {"PASS": "✅", "REVIEW": "🟡", "REJECT": "⛔"}
 
@@ -42,12 +43,134 @@ def notify_review(chain: dict, verdict: dict) -> bool:
     return True
 
 
+def notify_scenario_review(chain: dict, source: str, review_result: dict) -> dict:
+    """Adapt a REVIEW result to the existing Slack notification contract."""
+    context = _review_context(chain, source, review_result)
+    verdict = {
+        "verdict": "REVIEW",
+        "reasons": context["reason_texts"],
+        "review_context": context,
+    }
+    try:
+        sent = notify_review(chain, verdict)
+    except RuntimeError as exc:
+        if "SLACK_WEBHOOK_URL" in str(exc):
+            return {"type": "SLACK", "status": "NOT_CONFIGURED"}
+        logger.error("Slack REVIEW 알림 준비 실패: %s", type(exc).__name__)
+        return {"type": "SLACK", "status": "FAILED"}
+    except Exception as exc:
+        logger.error("Slack REVIEW 알림 실패: %s", type(exc).__name__)
+        return {"type": "SLACK", "status": "FAILED"}
+    return {"type": "SLACK", "status": "SENT" if sent else "FAILED"}
+
+
+def _review_context(chain: dict, source: str, review_result: dict) -> dict:
+    details = (
+        _validator_review_details(review_result)
+        if source == "RULE_VALIDATOR"
+        else _first_filter_review_details(review_result)
+    )
+    levels = sorted({detail["level"] for detail in details if detail.get("level")})
+    reasons = []
+    for detail in details:
+        reason = detail.get("reason")
+        if reason and reason not in reasons:
+            reasons.append(reason)
+    if not reasons:
+        reasons.append("REVIEW")
+
+    related = next(
+        (detail for detail in details if detail.get("step") is not None),
+        details[0] if details else {},
+    )
+    step = related.get("step")
+    command = related.get("command") or _command_for_step(chain, step)
+    return {
+        "source": source,
+        "levels": levels or [source],
+        "reason_texts": reasons,
+        "step": step,
+        "command": _truncate(command, MAX_REVIEW_COMMAND_LENGTH) if command else None,
+        "execution": "Blocked before Docker execution",
+        "next_action": "Human review required",
+    }
+
+
+def _first_filter_review_details(review_result: dict) -> list[dict]:
+    details: list[dict] = []
+    for reason in review_result.get("reasons") or []:
+        details.append({"level": "FIRST_FILTER", "reason": str(reason)})
+    for check_name, check in (review_result.get("checks") or {}).items():
+        if not isinstance(check, dict) or check.get("passed") is not False:
+            continue
+        for issue in check.get("issues") or []:
+            if isinstance(issue, dict):
+                reason = issue.get("code") or issue.get("message") or check_name
+                details.append(
+                    {
+                        "level": "FIRST_FILTER",
+                        "reason": str(reason),
+                        "step": issue.get("step_order"),
+                    }
+                )
+            else:
+                details.append({"level": "FIRST_FILTER", "reason": str(issue)})
+    return details
+
+
+def _validator_review_details(validation: dict) -> list[dict]:
+    details: list[dict] = []
+    for key, label in (("level1", "LEVEL1"), ("level2", "LEVEL2"), ("level3", "LEVEL3")):
+        level = validation.get(key)
+        if not isinstance(level, dict) or level.get("status") != "REVIEW":
+            continue
+        errors = level.get("errors") or []
+        if not errors:
+            details.append({"level": label, "reason": "REVIEW"})
+            continue
+        for error in errors:
+            if not isinstance(error, dict):
+                details.append({"level": label, "reason": str(error)})
+                continue
+            reason = error.get("code") or error.get("message") or "REVIEW"
+            details.append(
+                {
+                    "level": label,
+                    "reason": str(reason),
+                    "step": error.get("step"),
+                    "command": error.get("command"),
+                }
+            )
+    if not details:
+        final = validation.get("final")
+        if isinstance(final, dict):
+            details.append(
+                {
+                    "level": "FINAL",
+                    "reason": str(final.get("reason") or final.get("status") or "REVIEW"),
+                }
+            )
+    return details
+
+
+def _command_for_step(chain: dict, order) -> str | None:
+    if order is None:
+        return None
+    for step in chain.get("steps") or []:
+        if isinstance(step, dict) and step.get("order") == order:
+            command = step.get("command")
+            return command if isinstance(command, str) else None
+    return None
+
+
 def _build_blocks(chain: dict, verdict: dict) -> list[dict]:
     technique_id = chain.get("technique_id", "UNKNOWN")
     goal = chain.get("goal", "(없음)")
     steps = chain.get("steps") or []
     verdict_label = verdict.get("verdict", "UNKNOWN")
     badge = VERDICT_BADGES.get(verdict_label, "❔")
+    review_context = verdict.get("review_context")
+    verdict_heading = "검토 판정" if isinstance(review_context, dict) else "1차 필터 판정"
 
     blocks: list[dict] = [
         {
@@ -56,7 +179,7 @@ def _build_blocks(chain: dict, verdict: dict) -> list[dict]:
         },
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": f"*1차 필터 판정:* {badge} `{verdict_label}`"},
+            "text": {"type": "mrkdwn", "text": f"*{verdict_heading}:* {badge} `{verdict_label}`"},
         },
         {
             "type": "section",
@@ -67,12 +190,44 @@ def _build_blocks(chain: dict, verdict: dict) -> list[dict]:
     reasons = verdict.get("reasons") or []
     if reasons:
         reasons_text = "\n".join(f"• {reason}" for reason in reasons)
+        reasons_heading = "REVIEW 사유" if isinstance(review_context, dict) else "필터 사유"
         blocks.append(
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*필터 사유:*\n{_truncate(reasons_text)}",
+                    "text": f"*{reasons_heading}:*\n{_truncate(reasons_text)}",
+                },
+            }
+        )
+
+    if isinstance(review_context, dict):
+        source = review_context.get("source", "UNKNOWN")
+        levels = ", ".join(review_context.get("levels") or ["UNKNOWN"])
+        reason_text = ", ".join(review_context.get("reason_texts") or ["REVIEW"])
+        step = review_context.get("step")
+        command = review_context.get("command")
+        context_lines = [
+            f"*Review Source:* `{source}`",
+            f"*Review Level:* `{levels}`",
+            f"*Reason:* {reason_text}",
+        ]
+        if step is not None:
+            context_lines.append(f"*Related Step:* `{step}`")
+        if command:
+            context_lines.append(f"*Command:* `{command}`")
+        context_lines.extend(
+            [
+                f"*Execution:* {review_context.get('execution')}",
+                f"*Next:* {review_context.get('next_action')}",
+            ]
+        )
+        blocks.append(
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": _truncate("\n".join(context_lines)),
                 },
             }
         )

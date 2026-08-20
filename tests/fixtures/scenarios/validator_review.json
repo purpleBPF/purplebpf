@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1552.005",
+  "goal": "Exercise an unsupported command review result.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "socat TCP:169.254.169.254:80 -",
+      "purpose": "Use a command outside the fully supported validation subset."
+    }
+  ]
+}

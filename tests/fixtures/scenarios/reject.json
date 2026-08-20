@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1552.005",
+  "goal": "Exercise deterministic shell syntax rejection.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "echo \"unclosed",
+      "purpose": "Contain an unclosed shell quote."
+    }
+  ]
+}

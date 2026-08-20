@@ -1,9 +1,9 @@
 import unittest
 
-from levels.level2.engine import JsonCredentialTargetClassifier
-from levels.level2.validator import validate_command
-from levels.level3.mapper import map_actions
-from levels.level3.validator import validate_scenario as validate_level3
+from purplebpf.offensive.validator.levels.level2.engine import JsonCredentialTargetClassifier
+from purplebpf.offensive.validator.levels.level2.validator import validate_command
+from purplebpf.offensive.validator.levels.level3.mapper import map_actions
+from purplebpf.offensive.validator.levels.level3.validator import validate_scenario as validate_level3
 
 
 class CredentialTargetClassifierTests(unittest.TestCase):

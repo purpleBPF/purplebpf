@@ -5,14 +5,14 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from levels.level2.parser.metadata_provider import JsonMetadataProvider
-from levels.level2.support_tier import resolve_support_tier
-from levels.level2.tools.metadata_generator import (
+from purplebpf.offensive.validator.levels.level2.parser.metadata_provider import JsonMetadataProvider
+from purplebpf.offensive.validator.levels.level2.support_tier import resolve_support_tier
+from purplebpf.offensive.validator.levels.level2.tools.metadata_generator import (
     extract_options,
     generate_candidate,
 )
-from levels.level2.validator import validate_shell
-from levels.level3.mapper import map_actions
+from purplebpf.offensive.validator.levels.level2.validator import validate_shell
+from purplebpf.offensive.validator.levels.level3.mapper import map_actions
 
 
 class MetadataGeneratorTests(unittest.TestCase):
@@ -56,10 +56,10 @@ class MetadataGeneratorTests(unittest.TestCase):
             stdout="demo 1.0\n", stderr="", returncode=0
         )
         with patch(
-            "levels.level2.tools.metadata_generator.shutil.which",
+            "purplebpf.offensive.validator.levels.level2.tools.metadata_generator.shutil.which",
             return_value="/usr/bin/demo",
         ), patch(
-            "levels.level2.tools.metadata_generator._run_documentation",
+            "purplebpf.offensive.validator.levels.level2.tools.metadata_generator._run_documentation",
             side_effect=[help_without_options, man_with_options, version],
         ):
             candidate = generate_candidate("demo")
@@ -68,7 +68,7 @@ class MetadataGeneratorTests(unittest.TestCase):
 
     def test_missing_command_is_generation_failure_not_validation_error(self):
         with patch(
-            "levels.level2.tools.metadata_generator.shutil.which", return_value=None
+            "purplebpf.offensive.validator.levels.level2.tools.metadata_generator.shutil.which", return_value=None
         ):
             candidate = generate_candidate("not-installed-here")
 

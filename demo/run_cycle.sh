@@ -45,10 +45,15 @@ sleep 6
 echo "=== 공격 실행 (round ${ROUND}) ==="
 for c in "${CHAINS[@]}"; do
   printf '%-12s ' "$c"
-  $PY -m purplebpf.offensive.executor.executor \
-      --chain-file "demo/chains/$c.json" --round-id "$ROUND" 2>&1 \
+  if EXECUTOR_OUTPUT=$($PY -m purplebpf.offensive.executor.executor \
+      --chain-file "demo/chains/$c.json" --round-id "$ROUND" 2>&1); then
+    EXECUTOR_RC=0
+  else
+    EXECUTOR_RC=$?
+  fi
+  printf '%s\n' "$EXECUTOR_OUTPUT" \
     | grep -E '"(success|container_id|run_id)"' | tr -d ' ",' | tr '\n' ' ' || true
-  echo
+  printf 'exit_code=%d\n' "$EXECUTOR_RC"
 done
 
 echo "=== Mapper 종료 대기 ==="

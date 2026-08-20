@@ -1,14 +1,14 @@
 import unittest
 
-from levels.level2.parser import (
+from purplebpf.offensive.validator.levels.level2.parser import (
     CommandParseError,
     extract_command_invocations,
     parse_command,
 )
-from levels.level2.usage_stats import collect_command_usage
-from levels.level2.validator import validate_scenario, validate_shell
-from levels.level3.mapper import map_actions
-from levels.level3.validator import validate_scenario as validate_level3
+from purplebpf.offensive.validator.levels.level2.usage_stats import collect_command_usage
+from purplebpf.offensive.validator.levels.level2.validator import validate_scenario, validate_shell
+from purplebpf.offensive.validator.levels.level3.mapper import map_actions
+from purplebpf.offensive.validator.levels.level3.validator import validate_scenario as validate_level3
 
 
 class GenericExtractionTests(unittest.TestCase):

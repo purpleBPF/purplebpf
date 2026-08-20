@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1611",
+  "goal": "Exercise the existing T1611 ordering review rule.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "chroot /mnt/host",
+      "purpose": "Attempt chroot without a preceding mount step."
+    }
+  ]
+}

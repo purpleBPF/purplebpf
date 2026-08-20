@@ -2,9 +2,9 @@ import json
 import unittest
 from pathlib import Path
 
-from levels.level2.validator import validate_command, validate_scenario
-from levels.level3.mapper import map_actions
-from levels.level2.support_tier import resolve_support_tier
+from purplebpf.offensive.validator.levels.level2.validator import validate_command, validate_scenario
+from purplebpf.offensive.validator.levels.level3.mapper import map_actions
+from purplebpf.offensive.validator.levels.level2.support_tier import resolve_support_tier
 
 
 def facts(command: str, fact_type: str):
