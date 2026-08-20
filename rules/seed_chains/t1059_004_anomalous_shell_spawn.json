@@ -1,0 +1,16 @@
+{
+  "technique_id": "T1059.004",
+  "goal": "취약한 웹 서버가 침해당해 셸을 자식으로 띄우는 상황을 재현해, anomalous-shell-spawn(T1059.004) 탐지 규칙이 서버->셸 프로세스 트리를 정확히 잡는지 검증한다.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "printf '#!/bin/bash\\nexec /bin/bash -c \"whoami; id\"\\n' > /usr/sbin/nginx && chmod +x /usr/sbin/nginx",
+      "purpose": "합성 서버 바이너리를 만든다. 실제 nginx 취약점 익스플로잇 대신, 관측하려는 프로세스 트리(서버->셸)만 결정적으로 재현하는 최소 구성이다. 경로에 nginx가 들어가야 anomalous-shell-spawn의 parent_contains 조건과 맞는다."
+    },
+    {
+      "order": 2,
+      "command": "/usr/sbin/nginx",
+      "purpose": "합성 서버가 침해당해 셸을 spawn하는 순간을 재현한다. 이 bash 프로세스의 parent.binary가 /usr/sbin/nginx로 잡혀야 anomalous-shell-spawn 조건(process=셸, parent=서버)을 만족한다."
+    }
+  ]
+}

@@ -1,4 +1,8 @@
-""""공격 실행 → 탐지 수집 → 측정 갱신"을 순서대로 묶는 수동 트리거 파이프라인.
+""""공격 실행 → 측정 갱신"을 순서대로 묶는 수동 트리거 파이프라인.
+
+탐지 수집(Mapper)은 이 파이프라인에 없다 — asset으로 돌리면 "공격 뒤에 수집 시작"
+타이밍 때문에 이벤트를 놓쳐(detects=0) Dagster 밖에서 상시 데몬으로 띄워둔다.
+Mapper가 항상 켜져 있으므로 공격이 나가면 자동으로 잡힌다.
 
 정해진 스케줄은 없다 — Dagster UI에서 "Materialize all"을 누르거나
 `dagster asset materialize`로 사람이 직접 시작시켰을 때만 돈다.
@@ -62,25 +66,6 @@ def run_attack_round(context: AssetExecutionContext) -> MaterializeResult:
 
 
 @asset(deps=[run_attack_round])
-def collect_detections(context: AssetExecutionContext) -> MaterializeResult:
-    """Lima VM 안에서 지정 시간만큼 탐지 이벤트를 모아 Mapper로 detections에 적재한다.
-
-    `timeout`으로 걸어둔 tetra getevents는 정상적으로도 SIGTERM(반환 코드 124)으로
-    끝나므로, 파이프(`|`)의 최종 반환 코드는 (bash 기본 동작대로) 오른쪽인
-    mapper의 반환 코드를 따른다 — 의도적으로 pipefail을 켜지 않는다.
-    """
-    bash_command = (
-        f"cd {C.VM_REPO_ROOT} && source {C.VM_ENV_FILE} && "
-        f"timeout {C.DETECTION_WINDOW_SECONDS} docker exec tetragon tetra getevents -o json "
-        f"| python3 -m purplebpf.defensive.mapper.mapper"
-    )
-    cmd = _limactl_shell(bash_command)
-    result = _run_shell(context, "collect_detections", cmd)
-    _require_success("탐지 수집(Mapper)", cmd, result)
-    return _materialize_result("collect_detections", cmd, result)
-
-
-@asset(deps=[collect_detections])
 def sync_iceberg(context: AssetExecutionContext) -> MaterializeResult:
     """맥 호스트에서 Postgres의 detections를 로컬 Iceberg 테이블로 동기화한다."""
     cmd = [str(C.VENV_PYTHON), "-m", "purplebpf.analysis.iceberg_setup"]
