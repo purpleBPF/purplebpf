@@ -278,11 +278,18 @@ def map_arguments(
     argv = parsed_command["argv"]
     metadata = provider.get(executable["normalized"])
 
+    redirect_data = (
+        {"redirects": parsed_command["redirects"]}
+        if parsed_command.get("redirects")
+        else {}
+    )
+
     if metadata is None:
         return {
             "raw_command": parsed_command["raw_command"],
             "executable": executable,
             "argv": argv,
+            **redirect_data,
             "support_tier": "generic",
             "elements": [],
             "cli_validation": _validation(None, "UNSUPPORTED_COMMAND"),
@@ -293,6 +300,7 @@ def map_arguments(
         "raw_command": parsed_command["raw_command"],
         "executable": executable,
         "argv": argv,
+        **redirect_data,
         "support_tier": "metadata",
         "elements": elements,
         "cli_validation": cli_validation,

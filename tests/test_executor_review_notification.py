@@ -215,6 +215,29 @@ class ExecutorReviewNotificationTests(unittest.TestCase):
         self.assertEqual(result["notification"]["status"], "FAILED")
         from_env.assert_not_called()
 
+    def test_slack_failure_does_not_cancel_demo_review_override(self):
+        container = Mock(short_id="container-id")
+        docker_client = Mock()
+        docker_client.containers.run.return_value = container
+        notification = {"type": "SLACK", "status": "FAILED"}
+        with patch.object(
+            executor, "_validate_execution_gate", return_value=gate("REVIEW", VALIDATOR_REVIEW)
+        ), patch.object(
+            executor, "_notify_scenario_review", return_value=notification
+        ), patch.object(
+            executor.docker, "from_env", return_value=docker_client
+        ), patch.object(
+            executor, "_run_step", return_value=(0, "ok")
+        ), patch.object(
+            executor, "_insert_execution_log", return_value={"success": True}
+        ):
+            result = executor.execute_chain(CHAIN, allow_review=True)
+
+        docker_client.containers.run.assert_called_once()
+        self.assertTrue(result["success"])
+        self.assertTrue(result["review_override"])
+        self.assertEqual(result["notification"], notification)
+
     def test_missing_slack_configuration_is_not_configured(self):
         with patch.object(
             slack_notify,

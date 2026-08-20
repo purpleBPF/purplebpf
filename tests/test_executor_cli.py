@@ -84,7 +84,7 @@ class ExecutorCliTests(unittest.TestCase):
         self.assertEqual(exit_code, executor.EXIT_SUCCESS)
         generate.assert_called_once_with("T1552.005")
         first_filter.assert_called_once_with(CHAIN)
-        execute.assert_called_once_with(CHAIN, round_id=9)
+        execute.assert_called_once_with(CHAIN, round_id=9, allow_review=False)
         self.assertEqual(result["status"], "EXECUTED")
         self.assertEqual(result["decision"], "PASS")
         self.assertEqual(result["step_results"], execution["step_results"])
@@ -102,7 +102,7 @@ class ExecutorCliTests(unittest.TestCase):
         self.assertEqual(exit_code, executor.EXIT_SUCCESS)
         generate.assert_not_called()
         first_filter.assert_called_once_with(CHAIN)
-        execute.assert_called_once_with(CHAIN, round_id=4)
+        execute.assert_called_once_with(CHAIN, round_id=4, allow_review=False)
         self.assertEqual(result["status"], "EXECUTED")
 
     def test_first_filter_review_blocks_execution(self):
@@ -114,6 +114,24 @@ class ExecutorCliTests(unittest.TestCase):
         self.assertEqual(result["decision"], "REVIEW")
         self.assertEqual(result["blocked_by"], "FIRST_FILTER")
         self.assertEqual(result["first_filter"], verdict)
+        self.assertFalse(result["execution_allowed"])
+        self.assertFalse(result["review_override"])
+
+    def test_allow_review_continues_after_first_filter_review(self):
+        verdict = {"verdict": "REVIEW", "checks": {}, "reasons": ["review"]}
+        execution = {"run_id": 2, "success": True, "step_results": []}
+        exit_code, result, _, _, execute = self._run(
+            ["--allow-review"],
+            filter_result=verdict,
+            execution_result=execution,
+        )
+
+        self.assertEqual(exit_code, executor.EXIT_SUCCESS)
+        execute.assert_called_once_with(CHAIN, round_id=1, allow_review=True)
+        self.assertEqual(result["validation_status"], "REVIEW")
+        self.assertTrue(result["execution_allowed"])
+        self.assertEqual(result["execution_policy"], "DEMO_ALLOW_REVIEW")
+        self.assertTrue(result["review_override"])
 
     def test_first_filter_reject_blocks_execution(self):
         verdict = {"verdict": "REJECT", "checks": {}, "reasons": ["invalid"]}
@@ -123,6 +141,17 @@ class ExecutorCliTests(unittest.TestCase):
         execute.assert_not_called()
         self.assertEqual(result["decision"], "FAIL")
         self.assertEqual(result["blocked_by"], "FIRST_FILTER")
+
+    def test_allow_review_does_not_override_first_filter_reject(self):
+        verdict = {"verdict": "REJECT", "checks": {}, "reasons": ["invalid"]}
+        exit_code, result, _, _, execute = self._run(
+            ["--allow-review"], filter_result=verdict
+        )
+
+        self.assertEqual(exit_code, executor.EXIT_REJECTED)
+        execute.assert_not_called()
+        self.assertFalse(result["execution_allowed"])
+        self.assertFalse(result["review_override"])
 
     def test_unknown_first_filter_status_fails_closed(self):
         exit_code, result, _, _, execute = self._run(
@@ -146,6 +175,28 @@ class ExecutorCliTests(unittest.TestCase):
 
         self.assertEqual(exit_code, executor.EXIT_REVIEW)
         self.assertEqual(result["blocked_by"], "RULE_VALIDATOR")
+
+    def test_review_override_success_and_failure_follow_execution_result(self):
+        for success, expected_exit in (
+            (True, executor.EXIT_SUCCESS),
+            (False, executor.EXIT_EXECUTION_FAILED),
+        ):
+            with self.subTest(success=success):
+                execution = {
+                    "run_id": 3,
+                    "success": success,
+                    "step_results": [{"order": 1, "exit_code": 0 if success else 1}],
+                    "validation_status": "REVIEW",
+                }
+                exit_code, result, _, _, execute = self._run(
+                    ["--allow-review"], execution_result=execution
+                )
+
+                self.assertEqual(exit_code, expected_exit)
+                execute.assert_called_once_with(CHAIN, round_id=1, allow_review=True)
+                self.assertEqual(result["validation_status"], "REVIEW")
+                self.assertTrue(result["execution_allowed"])
+                self.assertTrue(result["review_override"])
 
     def test_rule_validator_fail_returns_two(self):
         execution = {

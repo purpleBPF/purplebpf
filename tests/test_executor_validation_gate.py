@@ -69,7 +69,7 @@ class ExecutorValidationGateTests(unittest.TestCase):
         module.validate_scenario_pipeline = validator
         return module, validator
 
-    def _execute_with_blocked_dependencies(self, validator_module):
+    def _execute_with_blocked_dependencies(self, validator_module, *, allow_review=False):
         docker_client = Mock()
         with patch.dict(
             sys.modules,
@@ -77,7 +77,7 @@ class ExecutorValidationGateTests(unittest.TestCase):
         ), patch.object(executor.docker, "from_env", return_value=docker_client) as from_env, patch.object(
             executor, "_run_step"
         ) as run_step, patch.object(executor, "_insert_execution_log") as insert_log:
-            result = executor.execute_chain(CHAIN)
+            result = executor.execute_chain(CHAIN, allow_review=allow_review)
         return result, from_env, docker_client.containers.run, run_step, insert_log
 
     def _assert_blocked(self, validation, expected_decision, expected_reason):
@@ -118,10 +118,43 @@ class ExecutorValidationGateTests(unittest.TestCase):
         validator.assert_called_once_with(CHAIN)
         from_env.assert_called_once_with()
         docker_client.containers.run.assert_called_once()
+        container_options = docker_client.containers.run.call_args.kwargs
+        self.assertIs(container_options["privileged"], False)
+        self.assertEqual(container_options["network_mode"], "bridge")
+        self.assertIsNone(container_options["pid_mode"])
+        self.assertEqual(container_options["cap_add"], [])
+        self.assertEqual(container_options["security_opt"], ["no-new-privileges"])
+        self.assertNotIn("volumes", container_options)
         run_step.assert_called_once_with(container, CHAIN["steps"][0]["command"])
         insert_log.assert_called_once()
+        container.remove.assert_called_once_with(force=True)
         self.assertEqual(result["run_id"], 7)
         self.assertEqual(result["step_results"][0]["exit_code"], 0)
+        self.assertEqual(result["validation_status"], "PASS")
+        self.assertTrue(result["execution_allowed"])
+        self.assertEqual(result["execution_policy"], "STANDARD")
+        self.assertFalse(result["review_override"])
+
+    def test_execution_policy_matrix_is_fail_closed(self):
+        cases = (
+            (("PASS",), False, "PASS", True, False),
+            (("PASS",), True, "PASS", True, False),
+            (("REVIEW",), False, "REVIEW", False, False),
+            (("REVIEW",), True, "REVIEW", True, True),
+            (("REJECT",), True, "REJECT", False, False),
+            (("FAIL",), True, "FAIL", False, False),
+            (("ERROR",), True, "ERROR", False, False),
+            (("UNKNOWN",), True, "ERROR", False, False),
+            (("REVIEW", "REJECT"), True, "REJECT", False, False),
+        )
+        for statuses, allow_review, status, allowed, override in cases:
+            with self.subTest(statuses=statuses, allow_review=allow_review):
+                result = executor.decide_execution(statuses, allow_review)
+                self.assertEqual(result["validation_status"], status)
+                self.assertEqual(result["execution_allowed"], allowed)
+                self.assertEqual(result["review_override"], override)
+                expected_policy = "DEMO_ALLOW_REVIEW" if override else "STANDARD"
+                self.assertEqual(result["execution_policy"], expected_policy)
 
     def test_level1_failure_blocks_direct_execution(self):
         result = self._assert_blocked(
@@ -131,12 +164,58 @@ class ExecutorValidationGateTests(unittest.TestCase):
         )
         self.assertEqual(result["status"], "SKIPPED")
 
+    def test_allow_review_does_not_override_direct_failure(self):
+        validation = validation_result("FAIL", None, None, "REJECT")
+        module, validator = self._validator_module(result=validation)
+        result, from_env, container_run, run_step, insert_log = (
+            self._execute_with_blocked_dependencies(module, allow_review=True)
+        )
+
+        validator.assert_called_once_with(CHAIN)
+        self.assertEqual(result["decision"], "FAIL")
+        self.assertFalse(result["execution_allowed"])
+        self.assertFalse(result["review_override"])
+        from_env.assert_not_called()
+        container_run.assert_not_called()
+        run_step.assert_not_called()
+        insert_log.assert_not_called()
+
     def test_execute_chain_direct_call_cannot_bypass_gate(self):
         self._assert_blocked(
             validation_result("PASS", "REVIEW", "REVIEW", "REVIEW"),
             "REVIEW",
             "VALIDATION_REVIEW",
         )
+
+    def test_execute_chain_direct_call_allows_review_only_when_explicit(self):
+        validation = validation_result("PASS", "REVIEW", "PASS", "REVIEW")
+        module, validator = self._validator_module(result=validation)
+        container = Mock(short_id="container-id")
+        docker_client = Mock()
+        docker_client.containers.run.return_value = container
+
+        with patch.dict(
+            sys.modules,
+            {"purplebpf.offensive.validator.main": module},
+        ), patch.object(
+            executor, "_notify_scenario_review", return_value={"status": "SENT"}
+        ) as notify, patch.object(
+            executor.docker, "from_env", return_value=docker_client
+        ) as from_env, patch.object(
+            executor, "_run_step", return_value=(0, "ok")
+        ), patch.object(
+            executor, "_insert_execution_log", return_value={"run_id": 8, "success": True}
+        ):
+            result = executor.execute_chain(CHAIN, allow_review=True)
+
+        validator.assert_called_once_with(CHAIN)
+        notify.assert_called_once_with(CHAIN, "RULE_VALIDATOR", validation)
+        from_env.assert_called_once_with()
+        docker_client.containers.run.assert_called_once()
+        self.assertEqual(result["validation_status"], "REVIEW")
+        self.assertTrue(result["execution_allowed"])
+        self.assertEqual(result["execution_policy"], "DEMO_ALLOW_REVIEW")
+        self.assertTrue(result["review_override"])
 
     def test_level2_reject_blocks_execution(self):
         self._assert_blocked(

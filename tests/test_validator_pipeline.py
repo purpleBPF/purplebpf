@@ -93,6 +93,45 @@ class ScenarioPipelineTests(unittest.TestCase):
         self.assertEqual(result["final"]["status"], "REVIEW")
         self.assertIsNone(result["final"]["stopped_at"])
 
+    def test_level2_review_is_not_overridden_by_level3_pass(self):
+        level2_result = {
+            "level": 2,
+            "status": "REVIEW",
+            "steps": [],
+            "errors": [{"code": "UNSUPPORTED_COMMAND"}],
+            "resource_state": [],
+        }
+        level3_result = {"level": 3, "status": "PASS"}
+        with patch.object(
+            pipeline, "check_shell_syntax", return_value=_level1()
+        ), patch.object(
+            pipeline, "validate_level2", return_value=level2_result
+        ), patch.object(
+            pipeline, "validate_level3", return_value=level3_result
+        ):
+            result = pipeline.validate_scenario_pipeline(PASSING_SCENARIO)
+
+        self.assertEqual(result["final"], {
+            "status": "REVIEW",
+            "stopped_at": None,
+            "reason": "LEVEL2_REVIEW",
+        })
+
+    def test_validator_exception_is_reported_as_error(self):
+        with patch.object(
+            pipeline, "check_shell_syntax", return_value=_level1()
+        ), patch.object(
+            pipeline, "validate_level2", side_effect=RuntimeError("unavailable")
+        ):
+            result = pipeline.validate_scenario_pipeline(PASSING_SCENARIO)
+
+        self.assertEqual(result["level2"]["status"], "ERROR")
+        self.assertEqual(result["final"], {
+            "status": "ERROR",
+            "stopped_at": "level2",
+            "reason": "LEVEL2_ERROR",
+        })
+
     def test_level3_reuses_level2_output_without_fallback_analysis(self):
         level2_result = {
             "level": 2,
@@ -140,6 +179,51 @@ class ScenarioPipelineTests(unittest.TestCase):
         fallback.assert_not_called()
         self.assertEqual(result["level3"]["status"], "PASS")
         self.assertEqual(result["final"]["status"], "PASS")
+
+
+class ValidationStatusAggregationTests(unittest.TestCase):
+    @staticmethod
+    def level(status):
+        return {"status": status}
+
+    def test_supported_status_combinations(self):
+        cases = (
+            ("PASS", "PASS", "PASS", "PASS"),
+            ("PASS", "REVIEW", "PASS", "REVIEW"),
+            ("PASS", "PASS", "REVIEW", "REVIEW"),
+            ("PASS", "REVIEW", "REVIEW", "REVIEW"),
+            ("PASS", "PASS", "REJECT", "REJECT"),
+        )
+        for level1, level2, level3, expected in cases:
+            with self.subTest(level1=level1, level2=level2, level3=level3):
+                final = pipeline.aggregate_validation_status(
+                    self.level(level1), self.level(level2), self.level(level3)
+                )
+                self.assertEqual(final["status"], expected)
+
+    def test_valid_early_stops_are_not_missing_result_errors(self):
+        level1_reject = pipeline.aggregate_validation_status(
+            self.level("FAIL"), None, None
+        )
+        level2_reject = pipeline.aggregate_validation_status(
+            self.level("PASS"), self.level("REJECT"), None
+        )
+
+        self.assertEqual(level1_reject["status"], "REJECT")
+        self.assertEqual(level1_reject["stopped_at"], "level1")
+        self.assertEqual(level2_reject["status"], "REJECT")
+        self.assertEqual(level2_reject["stopped_at"], "level2")
+
+    def test_unknown_or_missing_results_are_errors(self):
+        unknown = pipeline.aggregate_validation_status(
+            self.level("PASS"), self.level("UNKNOWN"), self.level("PASS")
+        )
+        missing = pipeline.aggregate_validation_status(
+            self.level("PASS"), self.level("PASS"), None
+        )
+
+        self.assertEqual(unknown["status"], "ERROR")
+        self.assertEqual(missing["status"], "ERROR")
 
 
 class ScenarioCliTests(unittest.TestCase):

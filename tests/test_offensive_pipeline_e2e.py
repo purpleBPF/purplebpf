@@ -168,6 +168,80 @@ class OffensivePipelineE2ETests(unittest.TestCase):
         self.assertEqual(run["result"]["blocked_by"], "RULE_VALIDATOR")
         self.assertEqual(run["result"]["notification"]["status"], "SENT")
 
+    def test_allow_review_executes_after_first_filter_review(self):
+        scenario = load_fixture("first_filter_review.json")
+        run = self._run_cli(
+            [
+                "--chain-file",
+                str(FIXTURES / "first_filter_review.json"),
+                "--allow-review",
+            ],
+            validator_result=validation(),
+        )
+
+        self.assertEqual(run["exit_code"], executor.EXIT_SUCCESS)
+        run["validator"].assert_called_once_with(scenario)
+        run["container_run"].assert_called_once()
+        self.assertEqual(run["slack"].call_count, 1)
+        self.assertEqual(run["result"]["validation_status"], "REVIEW")
+        self.assertTrue(run["result"]["review_override"])
+
+    def test_allow_review_executes_after_validator_review(self):
+        review = validation(level2="REVIEW", level3="PASS", final="REVIEW")
+        run = self._run_cli(
+            [
+                "--chain-file",
+                str(FIXTURES / "validator_review.json"),
+                "--allow-review",
+            ],
+            validator_result=review,
+        )
+
+        self.assertEqual(run["exit_code"], executor.EXIT_SUCCESS)
+        run["container_run"].assert_called_once()
+        run["slack"].assert_called_once()
+        self.assertEqual(run["result"]["validation_status"], "REVIEW")
+        self.assertTrue(run["result"]["review_override"])
+
+    def test_allow_review_executes_when_both_gates_review(self):
+        review = validation(level2="REVIEW", level3="PASS", final="REVIEW")
+        run = self._run_cli(
+            [
+                "--chain-file",
+                str(FIXTURES / "first_filter_review.json"),
+                "--allow-review",
+            ],
+            validator_result=review,
+        )
+
+        self.assertEqual(run["exit_code"], executor.EXIT_SUCCESS)
+        run["container_run"].assert_called_once()
+        self.assertEqual(run["slack"].call_count, 2)
+        self.assertTrue(run["result"]["review_override"])
+
+    def test_allow_review_never_overrides_validator_reject_or_error(self):
+        cases = (
+            (validation(level2="REJECT", level3=None, final="REJECT"), None, executor.EXIT_REJECTED),
+            (None, RuntimeError("validator unavailable"), executor.EXIT_SYSTEM_ERROR),
+        )
+        for validator_result, validator_error, expected_exit in cases:
+            with self.subTest(expected_exit=expected_exit):
+                run = self._run_cli(
+                    [
+                        "--chain-file",
+                        str(FIXTURES / "first_filter_review.json"),
+                        "--allow-review",
+                    ],
+                    validator_result=validator_result,
+                    validator_error=validator_error,
+                )
+
+                self.assertEqual(run["exit_code"], expected_exit)
+                run["from_env"].assert_not_called()
+                run["run_step"].assert_not_called()
+                self.assertFalse(run["result"]["execution_allowed"])
+                self.assertFalse(run["result"]["review_override"])
+
     def test_e2e_004_validator_reject_blocks_without_slack_or_db(self):
         rejection = validation(level2="REJECT", level3=None, final="REJECT")
         run = self._run_cli(

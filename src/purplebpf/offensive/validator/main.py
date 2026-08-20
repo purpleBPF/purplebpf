@@ -33,9 +33,11 @@ def _validate_input(scenario: Any) -> dict[str, Any]:
 def _validate_level1(scenario: dict[str, Any]) -> dict[str, Any]:
     steps = []
     passed = True
+    tool_failed = False
     for step in scenario["steps"]:
         result = check_shell_syntax(step["command"])
         passed = passed and result["passed"]
+        tool_failed = tool_failed or result.get("tool_error") is not None
         steps.append(
             {
                 "order": step["order"],
@@ -43,25 +45,25 @@ def _validate_level1(scenario: dict[str, Any]) -> dict[str, Any]:
                 "passed": result["passed"],
                 "exit_code": result["exit_code"],
                 "diagnostics": result["diagnostics"],
+                "diagnostic_items": result.get("diagnostic_items", []),
+                "tool_error": result.get("tool_error"),
             }
         )
     return {
         "level": 1,
         "check": "shell_syntax",
-        "status": "PASS" if passed else "FAIL",
+        "status": "ERROR" if tool_failed else "PASS" if passed else "FAIL",
         "steps": steps,
     }
 
 
 def _result(
     scenario: dict[str, Any],
-    level1: dict[str, Any],
+    level1: dict[str, Any] | None,
     level2: dict[str, Any] | None,
     level3: dict[str, Any] | None,
     *,
-    status: str,
-    stopped_at: str | None,
-    reason: str,
+    final: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "scenario": {
@@ -71,59 +73,113 @@ def _result(
         "level1": level1,
         "level2": level2,
         "level3": level3,
-        "final": {
-            "status": status,
-            "stopped_at": stopped_at,
-            "reason": reason,
-        },
+        "final": final,
+    }
+
+
+def _level_status(level: dict[str, Any] | None) -> str | None:
+    return level.get("status") if isinstance(level, dict) else None
+
+
+def _final(status: str, stopped_at: str | None, reason: str) -> dict[str, Any]:
+    return {"status": status, "stopped_at": stopped_at, "reason": reason}
+
+
+def aggregate_validation_status(
+    level1: dict[str, Any] | None,
+    level2: dict[str, Any] | None,
+    level3: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Aggregate Levels 1-3 while recognizing valid early-stop shapes."""
+    level1_status = _level_status(level1)
+    level2_status = _level_status(level2)
+    level3_status = _level_status(level3)
+
+    if level1_status == "ERROR" and level2 is None and level3 is None:
+        return _final("ERROR", "level1", "LEVEL1_ERROR")
+    if level1_status == "FAIL" and level2 is None and level3 is None:
+        return _final("REJECT", "level1", "LEVEL1_SYNTAX_FAILURE")
+    if level1_status != "PASS":
+        return _final("ERROR", "level1", "VALIDATION_RESULT_INVALID")
+
+    if level2_status == "ERROR" and level3 is None:
+        return _final("ERROR", "level2", "LEVEL2_ERROR")
+    if level2_status in {"FAIL", "REJECT"} and level3 is None:
+        return _final("REJECT", "level2", "LEVEL2_REJECT")
+    if level2_status not in {"PASS", "REVIEW"}:
+        return _final("ERROR", "level2", "VALIDATION_RESULT_INVALID")
+
+    if level3_status == "ERROR":
+        return _final("ERROR", "level3", "LEVEL3_ERROR")
+    if level3_status in {"FAIL", "REJECT"}:
+        return _final("REJECT", None, "LEVEL3_REJECT")
+    if level3_status not in {"PASS", "REVIEW"}:
+        return _final("ERROR", "level3", "VALIDATION_RESULT_INVALID")
+
+    if level2_status == "REVIEW":
+        return _final("REVIEW", None, "LEVEL2_REVIEW")
+    if level3_status == "REVIEW":
+        return _final("REVIEW", None, "LEVEL3_REVIEW")
+    return _final("PASS", None, "LEVEL3_CORE_MATCH")
+
+
+def _exception_level(level: int, exc: Exception) -> dict[str, Any]:
+    return {
+        "level": level,
+        "status": "ERROR",
+        "errors": [
+            {
+                "code": f"LEVEL{level}_ERROR",
+                "message": f"{type(exc).__name__}: {exc}",
+            }
+        ],
     }
 
 
 def validate_scenario_pipeline(scenario: dict[str, Any]) -> dict[str, Any]:
     """Run Level 1, Level 2, and Level 3 using the integration gate policy."""
     scenario = _validate_input(scenario)
-    level1_result = _validate_level1(scenario)
+    try:
+        level1_result = _validate_level1(scenario)
+    except Exception as exc:
+        level1_result = _exception_level(1, exc)
     if level1_result["status"] != "PASS":
         return _result(
             scenario,
             level1_result,
             None,
             None,
-            status="REJECT",
-            stopped_at="level1",
-            reason="LEVEL1_SYNTAX_FAILURE",
+            final=aggregate_validation_status(level1_result, None, None),
         )
 
-    level2_result = validate_level2(scenario)
-    if level2_result["status"] == "REJECT":
+    try:
+        level2_result = validate_level2(scenario)
+    except Exception as exc:
+        level2_result = _exception_level(2, exc)
+    if level2_result["status"] not in {"PASS", "REVIEW"}:
         return _result(
             scenario,
             level1_result,
             level2_result,
             None,
-            status="REJECT",
-            stopped_at="level2",
-            reason="LEVEL2_REJECT",
+            final=aggregate_validation_status(level1_result, level2_result, None),
         )
 
-    level3_result = validate_level3(
-        scenario,
-        level2_output=level2_result,
-    )
-    level3_status = level3_result["status"]
-    reason = {
-        "PASS": "LEVEL3_CORE_MATCH",
-        "REVIEW": "LEVEL3_REVIEW",
-        "REJECT": "LEVEL3_REJECT",
-    }[level3_status]
+    try:
+        level3_result = validate_level3(
+            scenario,
+            level2_output=level2_result,
+        )
+    except Exception as exc:
+        level3_result = _exception_level(3, exc)
     return _result(
         scenario,
         level1_result,
         level2_result,
         level3_result,
-        status=level3_status,
-        stopped_at=None,
-        reason=reason,
+        final=aggregate_validation_status(
+            level1_result, level2_result, level3_result
+        ),
     )
 
 

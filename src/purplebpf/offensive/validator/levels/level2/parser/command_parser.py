@@ -20,6 +20,27 @@ class CommandParseError(ValueError):
 
 MAX_NESTED_SHELL_DEPTH = 3
 _SHELL_INTERPRETERS = {"bash", "sh"}
+_SIMPLE_REDIRECTS = {">", ">>", "<"}
+
+
+def _parse_redirect(part: Any, source: str) -> dict[str, Any]:
+    redirect_type = getattr(part, "type", None)
+    if redirect_type not in _SIMPLE_REDIRECTS:
+        raise CommandParseError(
+            f"unsupported shell redirect: {redirect_type}"
+        )
+    if getattr(part, "input", None) is not None:
+        raise CommandParseError("explicit file-descriptor redirects are unsupported")
+
+    target = getattr(part, "output", None)
+    if target is None or target.kind != "word" or getattr(target, "parts", None):
+        raise CommandParseError("dynamic shell redirect targets are unsupported")
+    start, end = part.pos
+    return {
+        "operator": redirect_type,
+        "target": target.word,
+        "raw": source[start:end],
+    }
 
 
 def _parse_command_node(command_node: Any, source: str) -> dict[str, Any]:
@@ -29,7 +50,11 @@ def _parse_command_node(command_node: Any, source: str) -> dict[str, Any]:
         )
 
     words: list[str] = []
+    redirects: list[dict[str, Any]] = []
     for part in command_node.parts:
+        if part.kind == "redirect":
+            redirects.append(_parse_redirect(part, source))
+            continue
         if part.kind != "word":
             raise CommandParseError(
                 f"unsupported shell structure in command: {part.kind}"
@@ -50,7 +75,7 @@ def _parse_command_node(command_node: Any, source: str) -> dict[str, Any]:
         raise CommandParseError("command does not contain a valid executable")
 
     start, end = command_node.pos
-    return {
+    result = {
         "raw_command": source[start:end],
         "executable": {
             "raw": executable_raw,
@@ -58,6 +83,9 @@ def _parse_command_node(command_node: Any, source: str) -> dict[str, Any]:
         },
         "argv": words[1:],
     }
+    if redirects:
+        result["redirects"] = redirects
+    return result
 
 
 def _nested_shell_source(invocation: dict[str, Any]) -> str | None:
@@ -179,9 +207,9 @@ def extract_command_invocations(
 def parse_command(command: str) -> dict[str, Any]:
     """Parse one simple shell command and return its executable and argv.
 
-    Supported commands consist only of shell words.  Shell control structures,
-    pipelines, redirects, assignments, and expansions are rejected rather than
-    being interpreted incompletely.
+    Supported commands consist of shell words and simple file redirects. Shell
+    control structures, pipelines, assignments, expansions, and complex
+    redirects are rejected rather than being interpreted incompletely.
     """
     if not isinstance(command, str):
         raise CommandParseError("command must be a string")

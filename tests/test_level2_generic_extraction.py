@@ -111,6 +111,43 @@ class GenericExtractionTests(unittest.TestCase):
         with self.assertRaises(CommandParseError):
             extract_command_invocations("if true; then echo x")
 
+    def test_simple_file_redirects_preserve_command_and_target(self):
+        cases = (
+            ('echo "value" > /tmp/file', "echo", ["value"], ">"),
+            ('echo "value" >> /tmp/file', "echo", ["value"], ">>"),
+            ("cat < /tmp/file", "cat", [], "<"),
+        )
+        for source, executable, argv, operator in cases:
+            with self.subTest(source=source):
+                result = validate_shell(source)["commands"][0]
+                self.assertEqual(result["executable"]["normalized"], executable)
+                self.assertEqual(result["argv"], argv)
+                self.assertEqual(result["redirects"], [
+                    {
+                        "operator": operator,
+                        "target": "/tmp/file",
+                        "raw": f"{operator} /tmp/file",
+                    }
+                ])
+
+    def test_simple_redirects_do_not_become_parser_errors(self):
+        for command in (
+            'echo "value" > /tmp/file',
+            'echo "value" >> /tmp/file',
+            "cat < /tmp/file",
+        ):
+            with self.subTest(command=command):
+                result = validate_scenario(
+                    {"steps": [{"order": 1, "command": command}]}
+                )
+                self.assertNotIn(
+                    "PARSER_ERROR", {error["code"] for error in result["errors"]}
+                )
+
+    def test_complex_file_descriptor_redirect_remains_unsupported(self):
+        with self.assertRaises(CommandParseError):
+            extract_command_invocations("echo value 2>/tmp/error")
+
     def test_generic_executable_can_still_map_without_tier_branch(self):
         invocation = validate_shell("/tmp/payload")["commands"][0]
         mapped = map_actions(invocation)

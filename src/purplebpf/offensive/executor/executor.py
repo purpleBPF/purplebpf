@@ -34,6 +34,10 @@ EXIT_REVIEW = 3
 EXIT_SYSTEM_ERROR = 4
 EXIT_INVALID_INPUT = 5
 
+STANDARD_EXECUTION_POLICY = "STANDARD"
+DEMO_ALLOW_REVIEW_POLICY = "DEMO_ALLOW_REVIEW"
+_KNOWN_EXECUTION_STATUSES = {"PASS", "REVIEW", "REJECT", "FAIL", "ERROR"}
+
 INSERT_EXECUTION_LOG = text(
     """
     INSERT INTO execution_log
@@ -137,9 +141,52 @@ def _notify_scenario_review(chain: dict, source: str, review_result: dict) -> di
         return {"type": "SLACK", "status": "FAILED"}
 
 
-def execute_chain(chain: dict, round_id: int = 1) -> dict:
+def decide_execution(
+    validation_results: Sequence[str | None], allow_review: bool = False
+) -> dict:
+    """Apply the fail-closed execution policy without changing validator verdicts."""
+    statuses = tuple(validation_results)
+    if not statuses or any(status not in _KNOWN_EXECUTION_STATUSES for status in statuses):
+        validation_status = "ERROR"
+        execution_allowed = False
+    elif "ERROR" in statuses:
+        validation_status = "ERROR"
+        execution_allowed = False
+    elif "REJECT" in statuses or "FAIL" in statuses:
+        validation_status = "REJECT" if "REJECT" in statuses else "FAIL"
+        execution_allowed = False
+    elif "REVIEW" in statuses:
+        validation_status = "REVIEW"
+        execution_allowed = allow_review
+    else:
+        validation_status = "PASS"
+        execution_allowed = True
+
+    review_override = validation_status == "REVIEW" and execution_allowed
+    return {
+        "validation_status": validation_status,
+        "execution_allowed": execution_allowed,
+        "execution_policy": (
+            DEMO_ALLOW_REVIEW_POLICY
+            if review_override
+            else STANDARD_EXECUTION_POLICY
+        ),
+        "review_override": review_override,
+    }
+
+
+def execute_chain(
+    chain: dict, round_id: int = 1, allow_review: bool = False
+) -> dict:
     gate = _validate_execution_gate(chain)
-    if gate["decision"] != "PASS":
+    policy = decide_execution((gate["decision"],), allow_review=allow_review)
+    notification = None
+    if gate["decision"] == "REVIEW":
+        notification = _notify_scenario_review(
+            chain, "RULE_VALIDATOR", gate["validation"]
+        )
+
+    if not policy["execution_allowed"]:
         result = {
             "status": "ERROR" if gate["decision"] == "ERROR" else "SKIPPED",
             "decision": gate["decision"],
@@ -153,11 +200,10 @@ def execute_chain(chain: dict, round_id: int = 1) -> dict:
                 else {}
             ),
             **({"error": gate["error"]} if "error" in gate else {}),
+            **policy,
         }
-        if gate["decision"] == "REVIEW":
-            result["notification"] = _notify_scenario_review(
-                chain, "RULE_VALIDATOR", gate["validation"]
-            )
+        if notification is not None:
+            result["notification"] = notification
         return result
 
     technique_id = chain["technique_id"]
@@ -206,17 +252,24 @@ def execute_chain(chain: dict, round_id: int = 1) -> dict:
         except docker.errors.NotFound:
             pass
 
-    record = _insert_execution_log(
-        round_id=round_id,
-        chain_id=chain_id,
-        technique=technique_id,
-        channel=CHANNEL,
-        success=success,
-        started_at=started_at,
-        finished_at=finished_at,
-        container_id=container_id,
+    record = dict(
+        _insert_execution_log(
+            round_id=round_id,
+            chain_id=chain_id,
+            technique=technique_id,
+            channel=CHANNEL,
+            success=success,
+            started_at=started_at,
+            finished_at=finished_at,
+            container_id=container_id,
+        )
     )
     record["step_results"] = step_results
+    record.update(policy)
+    if "validation" in gate:
+        record["validation"] = gate["validation"]
+    if notification is not None:
+        record["notification"] = notification
     return record
 
 
@@ -270,7 +323,7 @@ def _cli_error(reason: str, error: Exception | str) -> dict:
     }
 
 
-def _first_filter_blocked_result(verdict: dict) -> dict:
+def _first_filter_blocked_result(verdict: dict, allow_review: bool = False) -> dict:
     verdict_status = verdict.get("verdict")
     if verdict_status == "REVIEW":
         status = "SKIPPED"
@@ -292,6 +345,7 @@ def _first_filter_blocked_result(verdict: dict) -> dict:
         "reason": reason,
         "first_filter": verdict,
         "step_results": [],
+        **decide_execution((verdict_status,), allow_review=allow_review),
     }
 
 
@@ -360,6 +414,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="체인 JSON 파일. 지정하면 Neo4j·gemma 생성을 건너뛴다 "
         "(0라운드 씨앗 체인이나 룰팩 검증용)",
     )
+    parser.add_argument(
+        "--allow-review",
+        action="store_true",
+        help="초기 MVP 데모에서 REVIEW 판정을 유지한 채 실행을 허용한다",
+    )
     try:
         args = parser.parse_args(argv)
     except SystemExit as exc:
@@ -395,19 +454,32 @@ def main(argv: Sequence[str] | None = None) -> int:
         _print_cli_result(result)
         return EXIT_SYSTEM_ERROR
 
-    if not isinstance(verdict, dict) or verdict.get("verdict") != "PASS":
-        result = _first_filter_blocked_result(
-            verdict if isinstance(verdict, dict) else {"verdict": None}
+    verdict_status = verdict.get("verdict") if isinstance(verdict, dict) else None
+    first_filter_policy = decide_execution(
+        (verdict_status,), allow_review=args.allow_review
+    )
+    first_filter_notification = None
+    if verdict_status == "REVIEW":
+        first_filter_notification = _notify_scenario_review(
+            chain, "FIRST_FILTER", verdict
         )
-        if result["decision"] == "REVIEW":
-            result["notification"] = _notify_scenario_review(
-                chain, "FIRST_FILTER", result["first_filter"]
-            )
+
+    if not first_filter_policy["execution_allowed"]:
+        result = _first_filter_blocked_result(
+            verdict if isinstance(verdict, dict) else {"verdict": None},
+            allow_review=args.allow_review,
+        )
+        if first_filter_notification is not None:
+            result["notification"] = first_filter_notification
         _print_cli_result(result)
         return _exit_code_for_result(result)
 
     try:
-        execution_result = execute_chain(chain, round_id=args.round_id)
+        execution_result = execute_chain(
+            chain,
+            round_id=args.round_id,
+            allow_review=args.allow_review,
+        )
     except Exception as exc:
         result = _cli_error("EXECUTOR_ERROR", exc)
         result["first_filter"] = verdict
@@ -415,6 +487,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         return EXIT_SYSTEM_ERROR
 
     result = _normalize_execution_result(execution_result, verdict)
+    executor_validation_status = result.get("validation_status")
+    if executor_validation_status is None:
+        executor_validation_status = (
+            "PASS" if result.get("status") == "EXECUTED" else result.get("decision")
+        )
+    result.update(
+        decide_execution(
+            (verdict_status, executor_validation_status),
+            allow_review=args.allow_review,
+        )
+    )
+    if first_filter_notification is not None:
+        result["first_filter_notification"] = first_filter_notification
     _print_cli_result(result)
     return _exit_code_for_result(result)
 
