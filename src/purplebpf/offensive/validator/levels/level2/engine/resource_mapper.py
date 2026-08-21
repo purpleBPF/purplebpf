@@ -30,6 +30,14 @@ def _options(elements: list[dict[str, Any]]) -> set[str]:
     }
 
 
+def _option_values(elements: list[dict[str, Any]]) -> dict[str, str]:
+    return {
+        element["option"]: element["raw"]
+        for element in elements
+        if element.get("type") == "option_value"
+    }
+
+
 def _condition_matches(effect: dict[str, Any], present_options: set[str]) -> bool:
     condition = effect.get("when", {})
     option_any = set(condition.get("option_any", []))
@@ -39,24 +47,48 @@ def _condition_matches(effect: dict[str, Any], present_options: set[str]) -> boo
     )
 
 
+def _source_value(
+    source: dict[str, Any],
+    operands: dict[int, str],
+    option_values: dict[str, str],
+    current_operand: str | None,
+) -> str | None:
+    if "first_available" in source:
+        for candidate in source["first_available"]:
+            value = _source_value(
+                candidate, operands, option_values, current_operand
+            )
+            if value is not None:
+                return value
+        return None
+    if "const" in source:
+        return source["const"]
+    if source.get("operand") == "current":
+        return current_operand
+    if "option_value_any" in source:
+        return next(
+            (
+                option_values[option]
+                for option in source["option_value_any"]
+                if option in option_values
+            ),
+            None,
+        )
+    return operands.get(source["operand"])
+
+
 def _identity(
     specification: dict[str, Any],
     operands: dict[int, str],
+    option_values: dict[str, str],
     current_operand: str | None,
 ) -> dict[str, str] | None:
     identity: dict[str, str] = {}
     for name, source in specification.items():
-        if "const" in source:
-            identity[name] = source["const"]
-        elif source.get("operand") == "current":
-            if current_operand is None:
-                return None
-            identity[name] = current_operand
-        else:
-            value = operands.get(source["operand"])
-            if value is None:
-                return None
-            identity[name] = value
+        value = _source_value(source, operands, option_values, current_operand)
+        if value is None:
+            return None
+        identity[name] = value
     return identity
 
 
@@ -69,6 +101,7 @@ def _resolve_effects(
         if element.get("type") == "operand"
     }
     present_options = _options(elements)
+    option_values = _option_values(elements)
     resources: list[Resource] = []
     unresolved = False
 
@@ -86,14 +119,16 @@ def _resolve_effects(
             if not selected:
                 unresolved = True
             for operand in selected:
-                identity = _identity(effect["identity"], operands, operand)
+                identity = _identity(
+                    effect["identity"], operands, option_values, operand
+                )
                 if identity is None:
                     unresolved = True
                 else:
                     resources.append(Resource.create(effect["type"], identity))
             continue
 
-        identity = _identity(effect["identity"], operands, None)
+        identity = _identity(effect["identity"], operands, option_values, None)
         if identity is None:
             unresolved = True
         else:

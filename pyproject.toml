@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "a self-evolving coverage loop for container runtime"
 requires-python = ">=3.10"
 dependencies = [
+    "bashlex>=0.18",
     "alembic>=1.13",
     "psycopg2-binary>=2.9",
     "sqlalchemy>=2.0",

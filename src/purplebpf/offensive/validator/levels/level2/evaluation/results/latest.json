@@ -1,0 +1,1522 @@
+{
+  "schema_version": 1,
+  "dataset": "/home/ubuntu/purplebpf/src/purplebpf/offensive/validator/levels/level2/evaluation/data/ground_truth.json",
+  "total_cases": 100,
+  "category_counts": {
+    "composition": 15,
+    "tier1": 60,
+    "tier2": 25
+  },
+  "subject_counts": {
+    "cat": 5,
+    "chmod": 10,
+    "composition": 15,
+    "curl": 10,
+    "grep": 5,
+    "kill": 10,
+    "mount": 10,
+    "nsenter": 10,
+    "pkill": 5,
+    "tar": 5,
+    "unshare": 10,
+    "wget": 5
+  },
+  "command_extraction": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 120,
+    "fp": 0,
+    "fn": 0,
+    "order_accuracy": 1.0,
+    "order_mismatches": 0
+  },
+  "cli_validation": {
+    "accuracy": 1.0,
+    "correct": 85,
+    "total": 85,
+    "valid_to_invalid": 0,
+    "invalid_to_valid": 0,
+    "expected_valid_actual_unknown": 0,
+    "expected_invalid_actual_unknown": 0,
+    "false_invalid": 0,
+    "false_valid": 0,
+    "confusion_matrix": {
+      "VALID": {
+        "VALID": 62,
+        "INVALID": 0,
+        "UNKNOWN": 0
+      },
+      "INVALID": {
+        "VALID": 0,
+        "INVALID": 23,
+        "UNKNOWN": 0
+      },
+      "UNKNOWN": {
+        "VALID": 0,
+        "INVALID": 0,
+        "UNKNOWN": 0
+      }
+    }
+  },
+  "argument_mapping": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 167,
+    "fp": 0,
+    "fn": 0,
+    "by_type": {
+      "option": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 72,
+        "fp": 0,
+        "fn": 0
+      },
+      "option_value": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 25,
+        "fp": 0,
+        "fn": 0
+      },
+      "operand": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 70,
+        "fp": 0,
+        "fn": 0
+      }
+    }
+  },
+  "resource": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 28,
+    "fp": 0,
+    "fn": 0
+  },
+  "fact": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 69,
+    "fp": 0,
+    "fn": 0
+  },
+  "tier": {
+    "accuracy": 1.0,
+    "correct": 120,
+    "total": 120,
+    "confusion_matrix": {
+      "FULL": {
+        "FULL": 71,
+        "METADATA": 0,
+        "GENERIC": 0,
+        "MISSING": 0
+      },
+      "METADATA": {
+        "FULL": 0,
+        "METADATA": 34,
+        "GENERIC": 0,
+        "MISSING": 0
+      },
+      "GENERIC": {
+        "FULL": 0,
+        "METADATA": 0,
+        "GENERIC": 15,
+        "MISSING": 0
+      }
+    }
+  },
+  "per_subject": {
+    "cat": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 4,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 1,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 4,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 4,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 5,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "chmod": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 7,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 3,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 14,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 10,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "composition": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 35,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "total": 0,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 35,
+        "total": 35,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 11,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 9,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 15,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "curl": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 7,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 3,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 15,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 4,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 6,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 2,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 14,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 10,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "grep": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 4,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 1,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 4,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 8,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 5,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "kill": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 7,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 3,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 4,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 8,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 10,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "mount": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 7,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 3,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 7,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 10,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "nsenter": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 7,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 3,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 34,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 20,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 7,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 7,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 10,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "pkill": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 4,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 1,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 3,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 4,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 5,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "tar": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 4,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 1,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 16,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 10,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 5,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "unshare": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 7,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 3,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 12,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 12,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 10,
+        "total": 10,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 10,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    },
+    "wget": {
+      "command_extraction": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "order_accuracy": 1.0,
+        "order_mismatches": 0
+      },
+      "cli_validation": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "valid_to_invalid": 0,
+        "invalid_to_valid": 0,
+        "expected_valid_actual_unknown": 0,
+        "expected_invalid_actual_unknown": 0,
+        "false_invalid": 0,
+        "false_valid": 0,
+        "confusion_matrix": {
+          "VALID": {
+            "VALID": 4,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          },
+          "INVALID": {
+            "VALID": 0,
+            "INVALID": 1,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "VALID": 0,
+            "INVALID": 0,
+            "UNKNOWN": 0
+          }
+        }
+      },
+      "argument_mapping": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 9,
+        "fp": 0,
+        "fn": 0,
+        "by_type": {
+          "option": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 3,
+            "fp": 0,
+            "fn": 0
+          },
+          "option_value": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0
+          },
+          "operand": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 4,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "resource": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "fact": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "tier": {
+        "accuracy": 1.0,
+        "correct": 5,
+        "total": 5,
+        "confusion_matrix": {
+          "FULL": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "METADATA": {
+            "FULL": 0,
+            "METADATA": 5,
+            "GENERIC": 0,
+            "MISSING": 0
+          },
+          "GENERIC": {
+            "FULL": 0,
+            "METADATA": 0,
+            "GENERIC": 0,
+            "MISSING": 0
+          }
+        }
+      }
+    }
+  },
+  "failed_case_count": 0,
+  "failure_count": 0,
+  "failures": []
+}

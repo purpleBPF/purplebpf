@@ -1,0 +1,11 @@
+{
+  "technique_id": "T1552.005",
+  "goal": "Read cloud instance metadata in the isolated test container.",
+  "steps": [
+    {
+      "order": 1,
+      "command": "curl http://169.254.169.254/latest/meta-data/",
+      "purpose": "Request the metadata endpoint."
+    }
+  ]
+}

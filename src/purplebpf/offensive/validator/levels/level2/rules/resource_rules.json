@@ -1,4 +1,12 @@
 {
+  "classifiers": {
+    "path_prefix_groups": {
+      "temporary": ["/tmp/", "/var/tmp/", "/dev/shm/"]
+    },
+    "endpoint_addresses": {
+      "169.254.169.254": "cloud_metadata"
+    }
+  },
   "commands": {
     "touch": {
       "resolution": "required",
@@ -12,6 +20,14 @@
     },
     "chmod": {
       "resolution": "required",
+      "facts": [
+        {
+          "extractor": "permission_mode",
+          "mode_operand": 1,
+          "targets_from": 2,
+          "required": true
+        }
+      ],
       "requires": [
         {
           "type": "file",
@@ -29,18 +45,57 @@
     },
     "mount": {
       "resolution": "required",
+      "facts": [
+        {
+          "extractor": "mount",
+          "source_operand": 1,
+          "target_operand": 2,
+          "source_options": ["--source"],
+          "target_options": ["--target"],
+          "bind_options": ["-B", "--bind"],
+          "type_options": ["-t", "--types"],
+          "required": true
+        }
+      ],
       "produces": [
         {
           "type": "mount",
           "identity": {
-            "source": {"operand": 1},
-            "target": {"operand": 2}
+            "source": {
+              "first_available": [
+                {"option_value_any": ["--source"]},
+                {"operand": 1}
+              ]
+            },
+            "target": {
+              "first_available": [
+                {"option_value_any": ["--target"]},
+                {"operand": 2}
+              ]
+            }
           }
         }
       ]
     },
     "unshare": {
       "resolution": "required",
+      "facts": [
+        {
+          "extractor": "option_map",
+          "fact_type": "namespace",
+          "attribute": "kind",
+          "attributes": {"operation": "create"},
+          "values": {
+            "-m": "mount", "--mount": "mount",
+            "-u": "uts", "--uts": "uts",
+            "-i": "ipc", "--ipc": "ipc",
+            "-n": "net", "--net": "net",
+            "-p": "pid", "--pid": "pid",
+            "-U": "user", "--user": "user"
+          },
+          "required": true
+        }
+      ],
       "produces": [
         {"type": "namespace", "when": {"option_any": ["-m", "--mount"]}, "identity": {"kind": {"const": "mount"}}},
         {"type": "namespace", "when": {"option_any": ["-u", "--uts"]}, "identity": {"kind": {"const": "uts"}}},
@@ -56,6 +111,88 @@
       "resolution": "none",
       "requires": [],
       "produces": []
+    },
+    "nsenter": {
+      "resolution": "none",
+      "requires": [],
+      "produces": [],
+      "facts": [
+        {
+          "extractor": "option_value",
+          "fact_type": "process",
+          "options": ["-t", "--target"],
+          "identity": "target_pid",
+          "attributes": {"role": "namespace_target"},
+          "required": true
+        },
+        {
+          "extractor": "option_map",
+          "fact_type": "namespace",
+          "attribute": "kind",
+          "attributes": {"operation": "enter"},
+          "identity": {
+            "target_pid": {"option_value_any": ["-t", "--target"]}
+          },
+          "values": {
+            "-m": "mount", "--mount": "mount",
+            "-u": "uts", "--uts": "uts",
+            "-i": "ipc", "--ipc": "ipc",
+            "-n": "net", "--net": "net",
+            "-p": "pid", "--pid": "pid",
+            "-U": "user", "--user": "user"
+          },
+          "required": true
+        }
+      ]
+    },
+    "curl": {
+      "resolution": "none",
+      "requires": [],
+      "produces": [
+        {
+          "type": "file",
+          "when": {"option_any": ["-o", "--output"]},
+          "identity": {
+            "path": {"option_value_any": ["-o", "--output"]}
+          }
+        }
+      ],
+      "facts": [
+        {
+          "extractor": "url_transfer",
+          "output_options": ["-o", "--output"],
+          "remote_name_options": ["-O", "--remote-name"],
+          "request_options": ["-X", "--request"],
+          "url_options": ["--url"],
+          "required": true
+        }
+      ]
+    },
+    "kill": {
+      "resolution": "none",
+      "requires": [],
+      "produces": [],
+      "facts": [
+        {
+          "extractor": "process_signal",
+          "required": true
+        }
+      ]
+    },
+    "cat": {
+      "resolution": "none",
+      "requires": [],
+      "produces": [],
+      "facts": [
+        {
+          "extractor": "file_access",
+          "fact_type": "file_access",
+          "operation": "read",
+          "operands_from": 1,
+          "exclude_operands": ["-"],
+          "required": false
+        }
+      ]
     }
   }
 }

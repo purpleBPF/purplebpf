@@ -26,6 +26,40 @@ def _resources(
     return level2_result.get("resources", {}).get(direction, [])
 
 
+def _is_subset(expected: dict[str, Any], actual: Any) -> bool:
+    if not isinstance(actual, dict):
+        return False
+    return all(
+        key in actual
+        and (
+            _is_subset(value, actual[key])
+            if isinstance(value, dict)
+            else actual[key] == value
+        )
+        for key, value in expected.items()
+    )
+
+
+def _fact_matches(fact: dict[str, Any], specification: dict[str, Any]) -> bool:
+    if fact.get("type") != specification.get("type"):
+        return False
+
+    for section in ("identity", "attributes", "evidence"):
+        expected = specification.get(section)
+        if expected is not None and not _is_subset(expected, fact.get(section)):
+            return False
+
+        actual = fact.get(section, {})
+        if not isinstance(actual, dict):
+            actual = {}
+        if any(
+            field not in actual
+            for field in specification.get(f"{section}_present", [])
+        ):
+            return False
+    return True
+
+
 def _path_group(path: Any, path_groups: dict[str, list[str]]) -> str | None:
     if not isinstance(path, str):
         return None
@@ -74,6 +108,7 @@ def _matches(
             return None
 
     state: dict[str, Any] = {
+        "raw_command": level2_result.get("raw_command"),
         "executable": executable,
         "operand": operands,
     }
@@ -110,12 +145,23 @@ def _iterations(
             if element.get("type") == "option" and element.get("raw") in values
         ]
 
-    resource_spec = iterate["resources"]
-    return [
-        {"resource": resource}
-        for resource in _resources(level2_result, resource_spec["direction"])
-        if resource.get("type") == resource_spec["type"]
-    ]
+    if "facts" in iterate:
+        fact_specification = iterate["facts"]
+        return [
+            {"fact": fact}
+            for fact in level2_result.get("facts", [])
+            if _fact_matches(fact, fact_specification)
+        ]
+
+    if "resources" in iterate:
+        resource_spec = iterate["resources"]
+        return [
+            {"resource": resource}
+            for resource in _resources(level2_result, resource_spec["direction"])
+            if resource.get("type") == resource_spec["type"]
+        ]
+
+    raise ActionRuleError(f"unsupported iteration in rule {rule['id']}")
 
 
 def _resolve_value(

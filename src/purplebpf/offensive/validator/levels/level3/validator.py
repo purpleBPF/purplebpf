@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from levels.level2.parser.command_parser import CommandParseError
-from levels.level2.validator import validate_command as validate_level2_command
+from ..level2.parser.command_parser import CommandParseError
+from ..level2.validator import validate_shell as validate_level2_shell
 
 from .engine.technique_action_validator import validate_technique_actions
 from .engine.technique_rule_provider import JsonTechniqueRuleProvider
@@ -32,8 +32,38 @@ def _map_step(
     order = step["order"]
     command = step["command"]
     try:
-        level2_result = existing_level2.get(order) or validate_level2_command(command)
-        action_result = map_actions(level2_result, action_rule_provider)
+        level2_result = existing_level2.get(order)
+        if level2_result is None:
+            shell_result = validate_level2_shell(command)
+            if (
+                len(shell_result["commands"]) == 1
+                and "nested_commands" not in shell_result["commands"][0]
+            ):
+                level2_result = shell_result["commands"][0]
+            else:
+                level2_result = shell_result
+
+        def flatten(results: list[dict[str, Any]]):
+            for result in results:
+                yield result
+                yield from flatten(result.get("nested_commands", []))
+
+        invocation_results = (
+            list(flatten(level2_result["commands"]))
+            if "commands" in level2_result
+            else [level2_result]
+        )
+        actions = []
+        for invocation_result in invocation_results:
+            mapped = map_actions(invocation_result, action_rule_provider)
+            actions.extend(mapped["actions"])
+        action_result = {
+            "actions": actions,
+            "action_validation": {
+                "mapped": bool(actions),
+                "code": None if actions else UNMAPPED_ACTION,
+            },
+        }
     except CommandParseError as exc:
         level2_result = None
         action_result = {
