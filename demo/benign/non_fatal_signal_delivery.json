@@ -1,6 +1,7 @@
 {
   "label": "non_fatal_signal_delivery",
   "kind": "trap",
+  "technique_id": "T1562.001",
   "goal": "설정 다시 읽기나 상태 보고 용도로 SIGURG(23), SIGUSR1(10), SIGHUP(1) 을 보낸다. 규칙이 보는 9번과 15번이 아니다.",
   "expect_silent": [
     "t1562-001-defense-tamper",

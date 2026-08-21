@@ -1,0 +1,618 @@
+{
+  "summary": {
+    "total": 24,
+    "pass": 0,
+    "review": 19,
+    "reject": 5,
+    "error": 0,
+    "semantic_reject": 1,
+    "level2_coverage_reject": 3,
+    "level1_reject": 1,
+    "other_reject": 0,
+    "benign_pass_count": 0,
+    "pass_rate": 0.0,
+    "review_rate": 0.7916666666666666,
+    "reject_rate": 0.20833333333333334,
+    "semantic_reject_rate": 0.041666666666666664,
+    "coverage_reject_rate": 0.125,
+    "benign_pass_rate": 0.0,
+    "false_positive_candidate_rate": 0.0
+  },
+  "technique_summary": {
+    "T1105": {
+      "total": 6,
+      "pass": 0,
+      "review": 4,
+      "reject": 2,
+      "error": 0
+    },
+    "T1548.001": {
+      "total": 3,
+      "pass": 0,
+      "review": 3,
+      "reject": 0,
+      "error": 0
+    },
+    "T1552.001": {
+      "total": 3,
+      "pass": 0,
+      "review": 3,
+      "reject": 0,
+      "error": 0
+    },
+    "T1552.005": {
+      "total": 1,
+      "pass": 0,
+      "review": 1,
+      "reject": 0,
+      "error": 0
+    },
+    "T1562.001": {
+      "total": 4,
+      "pass": 0,
+      "review": 2,
+      "reject": 2,
+      "error": 0
+    },
+    "T1610": {
+      "total": 2,
+      "pass": 0,
+      "review": 1,
+      "reject": 1,
+      "error": 0
+    },
+    "T1611": {
+      "total": 1,
+      "pass": 0,
+      "review": 1,
+      "reject": 0,
+      "error": 0
+    },
+    "T1620": {
+      "total": 4,
+      "pass": 0,
+      "review": 4,
+      "reject": 0,
+      "error": 0
+    }
+  },
+  "cases": [
+    {
+      "file": "chmod_plain_permissions.json",
+      "label": "chmod_plain_permissions",
+      "kind": "trap",
+      "technique_id": "T1548.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNRESOLVED_SEMANTIC",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "command semantics are valid but outside the current full-support subset",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "chmod_octal_lookalike.json",
+      "label": "chmod_octal_lookalike",
+      "kind": "trap",
+      "technique_id": "T1548.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "app_log_write_rotate.json",
+      "label": "app_log_write_rotate",
+      "kind": "normal",
+      "technique_id": "T1548.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "cred_file_write_only.json",
+      "label": "cred_file_write_only",
+      "kind": "trap",
+      "technique_id": "T1552.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "cred_path_prefix_boundary.json",
+      "label": "cred_path_prefix_boundary",
+      "kind": "trap",
+      "technique_id": "T1552.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INSUFFICIENT_ACTION_CONTEXT"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "aws_config_read.json",
+      "label": "aws_config_read",
+      "kind": "trap",
+      "technique_id": "T1552.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INSUFFICIENT_ACTION_CONTEXT"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "local_network_check_not_metadata.json",
+      "label": "local_network_check_not_metadata",
+      "kind": "trap",
+      "technique_id": "T1552.005",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "unsupported shell redirect: >&",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "namespace_inspect_no_syscall.json",
+      "label": "namespace_inspect_no_syscall",
+      "kind": "trap",
+      "technique_id": "T1611",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "explicit file-descriptor redirects are unsupported",
+        "unsupported shell expansion in word: commandsubstitution",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "socket_named_file_access.json",
+      "label": "socket_named_file_access",
+      "kind": "trap",
+      "technique_id": "T1610",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REJECT",
+      "final_status": "REJECT",
+      "stopped_at": null,
+      "final_reason": "LEVEL3_REJECT",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "TECHNIQUE_ACTION_MISMATCH"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Scenario Actions do not satisfy a supported Technique core pattern"
+      ],
+      "category": "semantic_reject"
+    },
+    {
+      "file": "app_unix_socket_ipc.json",
+      "label": "app_unix_socket_ipc",
+      "kind": "trap",
+      "technique_id": "T1610",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2015",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 852)",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "tmp_lookalike_paths.json",
+      "label": "tmp_lookalike_paths",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "tmp_read_only.json",
+      "label": "tmp_read_only",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "explicit file-descriptor redirects are unsupported",
+        "CLI metadata is unavailable or insufficient",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "tmp_write_no_exec.json",
+      "label": "tmp_write_no_exec",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "exec_outside_tmp.json",
+      "label": "exec_outside_tmp",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INSUFFICIENT_ACTION_CONTEXT"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "shm_write_no_exec.json",
+      "label": "shm_write_no_exec",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "INSUFFICIENT_ACTION_CONTEXT"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "request_temp_file_roundtrip.json",
+      "label": "request_temp_file_roundtrip",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2012",
+        "SC2015",
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "Use find instead of ls to better handle non-alphanumeric filenames.",
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 1383)",
+        "CLI metadata is unavailable or insufficient",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "memfd_named_cache_file.json",
+      "label": "memfd_named_cache_file",
+      "kind": "trap",
+      "technique_id": "T1620",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "memfd_named_script.json",
+      "label": "memfd_named_script",
+      "kind": "trap",
+      "technique_id": "T1620",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "anonymous_memory_buffer_work.json",
+      "label": "anonymous_memory_buffer_work",
+      "kind": "normal",
+      "technique_id": "T1620",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "stdin_piped_code_execution.json",
+      "label": "stdin_piped_code_execution",
+      "kind": "trap",
+      "technique_id": "T1620",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "kill_zero_liveness_check.json",
+      "label": "kill_zero_liveness_check",
+      "kind": "trap",
+      "technique_id": "T1562.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse nested shell command at depth 1: unsupported shell operator: &",
+        "unsupported shell expansion in word: commandsubstitution",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "non_fatal_signal_delivery.json",
+      "label": "non_fatal_signal_delivery",
+      "kind": "trap",
+      "technique_id": "T1562.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse nested shell command at depth 1: unsupported shell operator: &",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "graceful_shutdown_sigterm.json",
+      "label": "graceful_shutdown_sigterm",
+      "kind": "trap",
+      "technique_id": "T1562.001",
+      "level1_status": "FAIL",
+      "level2_status": null,
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level1",
+      "final_reason": "LEVEL1_SYNTAX_FAILURE",
+      "error_codes": [
+        "SC2046"
+      ],
+      "error_messages": [
+        "Quote this to prevent word splitting."
+      ],
+      "category": "level1_reject"
+    },
+    {
+      "file": "worker_drain_on_sigint.json",
+      "label": "worker_drain_on_sigint",
+      "kind": "trap",
+      "technique_id": "T1562.001",
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "SC2126",
+        "SC2015",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "INVALID_OPTION",
+        "UNMAPPED_ARGUMENT"
+      ],
+      "error_messages": [
+        "Consider using 'grep -c' instead of 'grep|wc -l'.",
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 916)",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 {
   "label": "graceful_shutdown_sigterm",
   "kind": "trap",
+  "technique_id": "T1562.001",
   "goal": "배포 스크립트가 옛 작업을 15번 시그널로 정상 종료시킨다. 한계: 규칙이 15번을 그대로 보기 때문에 이 정상 동작에서도 t1562-001-defense-tamper 가 뜬다. 시그널 번호만으로는 정상 정리와 방어 무력화를 가를 수 없다는 것을 보여주는 항목이라 그 규칙은 expect_silent 에 넣지 않는다.",
   "expect_silent": [
     "t1055-008-ptrace-inject",

@@ -1,6 +1,7 @@
 {
   "label": "request_temp_file_roundtrip",
   "kind": "trap",
+  "technique_id": "T1105",
   "goal": "요청 본문을 임시 파일에 저장하고 크기를 응답한 뒤 곧바로 지우는 업로드 처리 흐름이다. 임시 파일은 /tmp 에 생기지만 실행되지 않는다.",
   "expect_silent": [
     "t1105-tmp-exec",

@@ -1,6 +1,7 @@
 {
   "label": "cred_path_prefix_boundary",
   "kind": "trap",
+  "technique_id": "T1552.001",
   "goal": "자격증명 경로와 이름만 비슷하고 감시 접두사에는 걸리지 않는 파일을 읽는다. 초안의 id_rsa.pub 과 credentials.example 은 규칙이 Prefix 매칭이라 그대로 걸리므로 접두사 밖 이름으로 바꿨다",
   "expect_silent": [
     "t1552-001-cred-file-read"

@@ -1,6 +1,7 @@
 {
   "label": "memfd_named_cache_file",
   "kind": "trap",
+  "technique_id": "T1620",
   "goal": "이름에 memfd가 들어간 디스크 캐시 파일을 만들고 읽는다. 실행하지 않고 데이터로만 다룬다.",
   "expect_silent": [
     "fileless-fd-exec",

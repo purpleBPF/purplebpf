@@ -1,6 +1,7 @@
 {
   "label": "tmp_read_only",
   "kind": "trap",
+  "technique_id": "T1105",
   "goal": "임시 경로에 실행 파일까지 내려받아 두지만 읽기만 하고 한 번도 실행하지 않는 캐시 동작이다",
   "expect_silent": [
     "t1105-tmp-exec"

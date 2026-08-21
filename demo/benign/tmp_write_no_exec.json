@@ -1,6 +1,7 @@
 {
   "label": "tmp_write_no_exec",
   "kind": "trap",
+  "technique_id": "T1105",
   "goal": "임시 디렉터리에 스크립트 파일을 만들어 두기만 하고 실행하지 않는 동작이다",
   "expect_silent": [
     "t1105-tmp-exec",
@@ -14,16 +15,26 @@
     },
     {
       "order": 2,
-      "purpose": "실행 권한만 부여한다. setuid 비트는 켜지 않는다",
-      "command": "chmod 755 /tmp/stage-a/run.sh && ls -l /tmp/stage-a"
+      "purpose": "스크립트 파일 resource를 등록한다. 실행은 하지 않는다",
+      "command": "touch /tmp/stage-a/run.sh"
     },
     {
       "order": 3,
+      "purpose": "실행 권한만 부여한다. setuid 비트는 켜지 않는다",
+      "command": "chmod 755 /tmp/stage-a/run.sh"
+    },
+    {
+      "order": 4,
+      "purpose": "파일 권한을 확인한다. 실행은 하지 않는다",
+      "command": "ls -l /tmp/stage-a"
+    },
+    {
+      "order": 5,
       "purpose": "파일 내용을 확인만 하고 실행하지 않는다",
       "command": "wc -l /tmp/stage-a/run.sh && grep -c echo /tmp/stage-a/run.sh"
     },
     {
-      "order": 4,
+      "order": 6,
       "purpose": "만든 파일을 정리한다",
       "command": "rm -rf /tmp/stage-a"
     }

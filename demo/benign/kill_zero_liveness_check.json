@@ -1,6 +1,7 @@
 {
   "label": "kill_zero_liveness_check",
   "kind": "trap",
+  "technique_id": "T1562.001",
   "goal": "감시 스크립트가 시그널 0으로 백그라운드 작업이 살아있는지만 확인한다. 종료 시그널을 보내지 않으므로 방어 무력화로 볼 수 없다.",
   "expect_silent": [
     "t1562-001-defense-tamper",
@@ -21,7 +22,7 @@
     {
       "order": 3,
       "purpose": "끝난 pid 에 다시 시그널 0을 보내 이제 없다는 것을 확인한다.",
-      "command": "kill -0 $(cat /tmp/pb-liveness/worker.pid) 2>/dev/null && echo still-listed || echo exited"
+      "command": "kill -0 \"$(cat /tmp/pb-liveness/worker.pid)\" 2>/dev/null && echo still-listed || echo exited"
     },
     {
       "order": 4,

@@ -1,6 +1,7 @@
 {
   "label": "shm_write_no_exec",
   "kind": "trap",
+  "technique_id": "T1105",
   "goal": "공유 메모리 영역을 프로세스 간 데이터 전달에만 쓰고 실행은 하지 않는 동작이다",
   "expect_silent": [
     "t1105-tmp-exec",
@@ -19,11 +20,21 @@
     },
     {
       "order": 3,
-      "purpose": "권한을 좁힌다. 실행이나 setuid 는 하지 않는다",
-      "command": "chmod 750 /dev/shm/ipc/state && ls -l /dev/shm/ipc"
+      "purpose": "상태 파일 resource를 등록한다. 실행은 하지 않는다",
+      "command": "touch /dev/shm/ipc/state"
     },
     {
       "order": 4,
+      "purpose": "권한을 좁힌다. 실행이나 setuid 는 하지 않는다",
+      "command": "chmod 750 /dev/shm/ipc/state"
+    },
+    {
+      "order": 5,
+      "purpose": "상태 파일 권한을 확인한다. 실행은 하지 않는다",
+      "command": "ls -l /dev/shm/ipc"
+    },
+    {
+      "order": 6,
       "purpose": "공유 메모리 파일을 정리한다",
       "command": "rm -rf /dev/shm/ipc"
     }

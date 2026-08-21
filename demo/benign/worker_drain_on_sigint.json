@@ -1,6 +1,7 @@
 {
   "label": "worker_drain_on_sigint",
   "kind": "trap",
+  "technique_id": "T1562.001",
   "goal": "배포 직전에 워커에 SIGINT 을 보내 처리 중인 작업만 끝내고 스스로 빠지게 하는 마무리 흐름이다.",
   "expect_silent": [
     "t1562-001-defense-tamper",

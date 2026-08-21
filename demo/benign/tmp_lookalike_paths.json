@@ -1,6 +1,7 @@
 {
   "label": "tmp_lookalike_paths",
   "kind": "trap",
+  "technique_id": "T1105",
   "goal": "경로에 tmp 라는 글자가 들어가지만 임시 디렉터리는 아닌 곳에서 실행하는 동작이다",
   "expect_silent": [
     "t1105-tmp-exec"

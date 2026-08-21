@@ -1,6 +1,7 @@
 {
   "label": "app_unix_socket_ipc",
   "kind": "trap",
+  "technique_id": "T1610",
   "goal": "애플리케이션이 자기 유닉스 소켓을 열어 워커와 상태를 주고받는 내부 통신 흐름이다. 소켓 경로는 컨테이너 런타임 소켓이 아니다.",
   "expect_silent": [
     "t1610-runtime-socket-connect",

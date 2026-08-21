@@ -1,6 +1,7 @@
 {
   "label": "local_network_check_not_metadata",
   "kind": "trap",
+  "technique_id": "T1552.005",
   "goal": "네트워크 설정을 점검하고 루프백으로만 연결을 시도한다. 파일 안에 169.254.169.254 문자열이 있어도 클라우드 메타데이터 주소로 나가지는 않는다.",
   "expect_silent": [
     "t1552-005-cloud-metadata",

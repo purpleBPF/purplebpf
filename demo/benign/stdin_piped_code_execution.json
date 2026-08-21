@@ -1,6 +1,7 @@
 {
   "label": "stdin_piped_code_execution",
   "kind": "trap",
+  "technique_id": "T1620",
   "goal": "코드를 파일로 남기지 않고 표준입력으로 넘겨 실행한다. 실행되는 것은 디스크의 인터프리터라서 익명 메모리 실행과 다르다.",
   "expect_silent": [
     "fileless-fd-exec",

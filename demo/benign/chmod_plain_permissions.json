@@ -1,6 +1,7 @@
 {
   "label": "chmod_plain_permissions",
   "kind": "trap",
+  "technique_id": "T1548.001",
   "goal": "배포 스크립트가 파일 권한을 평범하게 맞추는 동작을 흉내낸다. setuid 비트는 건드리지 않는다",
   "expect_silent": [
     "t1548-001-setuid-bit-set",
@@ -10,20 +11,25 @@
     {
       "order": 1,
       "purpose": "작업 디렉터리와 대상 파일을 만든다",
-      "command": "mkdir -p /var/tmp/pbpf-perm && touch /var/tmp/pbpf-perm/app.sh /var/tmp/pbpf-perm/data.txt"
+      "command": "mkdir -p /var/tmp/pbpf-perm"
     },
     {
       "order": 2,
+      "purpose": "권한 변경 대상 파일을 만든다",
+      "command": "touch /var/tmp/pbpf-perm/app.sh /var/tmp/pbpf-perm/data.txt"
+    },
+    {
+      "order": 3,
       "purpose": "실행 파일과 데이터 파일에 숫자 모드로 권한을 준다",
       "command": "chmod 755 /var/tmp/pbpf-perm/app.sh && chmod 644 /var/tmp/pbpf-perm/data.txt"
     },
     {
-      "order": 3,
+      "order": 4,
       "purpose": "기호 모드로도 권한을 조정한다",
       "command": "chmod u+x /var/tmp/pbpf-perm/data.txt && chmod g-w /var/tmp/pbpf-perm/app.sh && chmod a+r /var/tmp/pbpf-perm/data.txt"
     },
     {
-      "order": 4,
+      "order": 5,
       "purpose": "결과를 확인하고 만든 파일을 지운다. 실행은 하지 않는다",
       "command": "ls -l /var/tmp/pbpf-perm && rm -rf /var/tmp/pbpf-perm"
     }

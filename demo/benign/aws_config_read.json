@@ -1,6 +1,7 @@
 {
   "label": "aws_config_read",
   "kind": "trap",
+  "technique_id": "T1552.001",
   "goal": "AWS 도구가 자격증명이 아닌 프로파일 설정 파일만 읽는 동작을 흉내낸다. 값 추출은 awk 대신 cut 으로 바꿔 최소 이미지에서도 돌게 했다",
   "expect_silent": [
     "t1552-001-cred-file-read",

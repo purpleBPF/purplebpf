@@ -1,6 +1,7 @@
 {
   "label": "namespace_inspect_no_syscall",
   "kind": "trap",
+  "technique_id": "T1611",
   "goal": "네임스페이스 상태를 들여다보는 관리 작업이다. 한계가 있는 항목이라 초안을 고쳤다. 초안은 unshare 와 mount 를 실제로 부르고 실패를 전제했는데, 두 규칙은 조건이 없어 호출만 하면 뜨고 unshare -U 는 도커 기본 설정에서 성공할 수 있다. 결국 규칙 정밀도가 아니라 컨테이너 격리 설정을 재는 항목이 되므로, 호출을 빼고 링크 읽기와 도구 존재 확인만 남겼다.",
   "expect_silent": [
     "t1611-namespace-change",

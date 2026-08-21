@@ -1,6 +1,7 @@
 {
   "label": "app_log_write_rotate",
   "kind": "normal",
+  "technique_id": "T1548.001",
   "goal": "서비스가 로그를 쌓고 파일을 돌려가며 새로 여는 평범한 동작이다",
   "expect_silent": [
     "t1548-001-setuid-bit-set",
@@ -19,11 +20,21 @@
     },
     {
       "order": 3,
-      "purpose": "기존 로그를 옮기고 새 로그를 연 뒤 권한을 맞춘다",
-      "command": "mv /var/log/pbpf-app/app.log /var/log/pbpf-app/app.log.1 && echo 'rotated' > /var/log/pbpf-app/app.log && chmod 640 /var/log/pbpf-app/app.log"
+      "purpose": "기존 로그를 옮기고 새 로그를 연다",
+      "command": "mv /var/log/pbpf-app/app.log /var/log/pbpf-app/app.log.1 && echo 'rotated' > /var/log/pbpf-app/app.log"
     },
     {
       "order": 4,
+      "purpose": "새 로그 파일 resource를 등록한다",
+      "command": "touch /var/log/pbpf-app/app.log"
+    },
+    {
+      "order": 5,
+      "purpose": "새 로그 파일 권한을 맞춘다",
+      "command": "chmod 640 /var/log/pbpf-app/app.log"
+    },
+    {
+      "order": 6,
       "purpose": "옮긴 로그의 끝을 확인하고 정리한다",
       "command": "tail -1 /var/log/pbpf-app/app.log.1 && rm -rf /var/log/pbpf-app"
     }

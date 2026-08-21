@@ -1,6 +1,7 @@
 {
   "label": "socket_named_file_access",
   "kind": "trap",
+  "technique_id": "T1610",
   "goal": "런타임 소켓과 같은 이름의 일반 파일을 다룬다. /var/run/docker.sock 경로까지 그대로 쓰되 유닉스 소켓 연결이 아니라 파일 열기라서 규칙이 조용해야 한다. 경로가 아니라 훅 선택이 맞는지 시험하는 항목이다.",
   "expect_silent": [
     "t1610-runtime-socket-connect",
