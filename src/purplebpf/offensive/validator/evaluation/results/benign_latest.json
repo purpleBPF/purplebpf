@@ -1,22 +1,47 @@
 {
   "summary": {
-    "total": 24,
+    "total": 74,
     "pass": 0,
-    "review": 19,
-    "reject": 5,
+    "review": 59,
+    "reject": 15,
     "error": 0,
     "semantic_reject": 1,
-    "level2_coverage_reject": 3,
-    "level1_reject": 1,
+    "level2_coverage_reject": 8,
+    "level1_reject": 6,
     "other_reject": 0,
     "benign_pass_count": 0,
     "pass_rate": 0.0,
-    "review_rate": 0.7916666666666666,
-    "reject_rate": 0.20833333333333334,
-    "semantic_reject_rate": 0.041666666666666664,
-    "coverage_reject_rate": 0.125,
+    "review_rate": 0.7972972972972973,
+    "reject_rate": 0.20270270270270271,
+    "error_rate": 0.0,
+    "semantic_reject_rate": 0.013513513513513514,
+    "coverage_reject_rate": 0.10810810810810811,
     "benign_pass_rate": 0.0,
     "false_positive_candidate_rate": 0.0
+  },
+  "kind_summary": {
+    "normal": {
+      "total": 23,
+      "pass": 0,
+      "review": 21,
+      "reject": 2,
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 0.9130434782608695,
+      "reject_rate": 0.08695652173913043,
+      "error_rate": 0.0
+    },
+    "trap": {
+      "total": 51,
+      "pass": 0,
+      "review": 38,
+      "reject": 13,
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 0.7450980392156863,
+      "reject_rate": 0.2549019607843137,
+      "error_rate": 0.0
+    }
   },
   "technique_summary": {
     "T1105": {
@@ -24,63 +49,171 @@
       "pass": 0,
       "review": 4,
       "reject": 2,
-      "error": 0
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 0.6666666666666666,
+      "reject_rate": 0.3333333333333333,
+      "error_rate": 0.0
     },
     "T1548.001": {
       "total": 3,
       "pass": 0,
       "review": 3,
       "reject": 0,
-      "error": 0
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 1.0,
+      "reject_rate": 0.0,
+      "error_rate": 0.0
     },
     "T1552.001": {
       "total": 3,
       "pass": 0,
       "review": 3,
       "reject": 0,
-      "error": 0
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 1.0,
+      "reject_rate": 0.0,
+      "error_rate": 0.0
     },
     "T1552.005": {
       "total": 1,
       "pass": 0,
       "review": 1,
       "reject": 0,
-      "error": 0
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 1.0,
+      "reject_rate": 0.0,
+      "error_rate": 0.0
     },
     "T1562.001": {
       "total": 4,
       "pass": 0,
       "review": 2,
       "reject": 2,
-      "error": 0
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 0.5,
+      "reject_rate": 0.5,
+      "error_rate": 0.0
     },
     "T1610": {
       "total": 2,
       "pass": 0,
       "review": 1,
       "reject": 1,
-      "error": 0
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 0.5,
+      "reject_rate": 0.5,
+      "error_rate": 0.0
     },
     "T1611": {
       "total": 1,
       "pass": 0,
       "review": 1,
       "reject": 0,
-      "error": 0
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 1.0,
+      "reject_rate": 0.0,
+      "error_rate": 0.0
     },
     "T1620": {
       "total": 4,
       "pass": 0,
       "review": 4,
       "reject": 0,
-      "error": 0
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 1.0,
+      "reject_rate": 0.0,
+      "error_rate": 0.0
+    },
+    "UNKNOWN": {
+      "total": 50,
+      "pass": 0,
+      "review": 40,
+      "reject": 10,
+      "error": 0,
+      "pass_rate": 0.0,
+      "review_rate": 0.8,
+      "reject_rate": 0.2,
+      "error_rate": 0.0
     }
   },
   "cases": [
     {
-      "file": "chmod_plain_permissions.json",
-      "label": "chmod_plain_permissions",
+      "file": "admin_tool_lookalike_names.json",
+      "label": "admin_tool_lookalike_names",
       "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "unsupported shell redirect: >&",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "anonymous_memory_buffer_work.json",
+      "label": "anonymous_memory_buffer_work",
+      "kind": "normal",
+      "technique_id": "T1620",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "app_config_read_update.json",
+      "label": "app_config_read_update",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "app_log_write_rotate.json",
+      "label": "app_log_write_rotate",
+      "kind": "normal",
       "technique_id": "T1548.001",
       "level1_status": "PASS",
       "level2_status": "REVIEW",
@@ -90,13 +223,311 @@
       "final_reason": "LEVEL2_REVIEW",
       "error_codes": [
         "UNSUPPORTED_COMMAND",
-        "UNRESOLVED_SEMANTIC",
         "UNMAPPED_ACTION"
       ],
       "error_messages": [
         "CLI metadata is unavailable or insufficient",
-        "command semantics are valid but outside the current full-support subset",
         "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "app_runtime_dir_lifecycle.json",
+      "label": "app_runtime_dir_lifecycle",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "unsupported shell expansion in word: parameter",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "app_unix_socket_ipc.json",
+      "label": "app_unix_socket_ipc",
+      "kind": "trap",
+      "technique_id": "T1610",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2015",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 852)",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "artifact_checksum_manifest.json",
+      "label": "artifact_checksum_manifest",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "unsupported shell expansion in word: commandsubstitution",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "attr_preserving_copy.json",
+      "label": "attr_preserving_copy",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "PARSER_ERROR",
+        "UNRESOLVED_SEMANTIC",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "explicit file-descriptor redirects are unsupported",
+        "command semantics are valid but outside the current full-support subset",
+        "unsupported shell redirect: >&",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "aws_config_read.json",
+      "label": "aws_config_read",
+      "kind": "trap",
+      "technique_id": "T1552.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INSUFFICIENT_ACTION_CONTEXT"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "background_worker_lifecycle.json",
+      "label": "background_worker_lifecycle",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "FAIL",
+      "level2_status": null,
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level1",
+      "final_reason": "LEVEL1_SYNTAX_FAILURE",
+      "error_codes": [
+        "SC2046"
+      ],
+      "error_messages": [
+        "Quote this to prevent word splitting."
+      ],
+      "category": "level1_reject"
+    },
+    {
+      "file": "backup_copy_verify_remove.json",
+      "label": "backup_copy_verify_remove",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "unsupported shell structure in command: assignment",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "build_install_to_opt.json",
+      "label": "build_install_to_opt",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "unsupported shell structure in command: assignment",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "build_smoke_test_in_tmp.json",
+      "label": "build_smoke_test_in_tmp",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "unsupported shell redirect: >&",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "build_temp_artifacts.json",
+      "label": "build_temp_artifacts",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "cache_keyspace_expiry_sweep.json",
+      "label": "cache_keyspace_expiry_sweep",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2086",
+        "SC2012",
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ARGUMENT",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Double quote to prevent globbing and word splitting.",
+        "Use find instead of ls to better handle non-alphanumeric filenames.",
+        "unsupported shell structure: compound",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "capability_doc_string_not_xattr.json",
+      "label": "capability_doc_string_not_xattr",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "checkpoint_write_and_recover.json",
+      "label": "checkpoint_write_and_recover",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2012",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Use find instead of ls to better handle non-alphanumeric filenames.",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
       ],
       "category": "review"
     },
@@ -122,9 +553,9 @@
       "category": "review"
     },
     {
-      "file": "app_log_write_rotate.json",
-      "label": "app_log_write_rotate",
-      "kind": "normal",
+      "file": "chmod_plain_permissions.json",
+      "label": "chmod_plain_permissions",
+      "kind": "trap",
       "technique_id": "T1548.001",
       "level1_status": "PASS",
       "level2_status": "REVIEW",
@@ -134,11 +565,108 @@
       "final_reason": "LEVEL2_REVIEW",
       "error_codes": [
         "UNSUPPORTED_COMMAND",
+        "UNRESOLVED_SEMANTIC",
         "UNMAPPED_ACTION"
       ],
       "error_messages": [
         "CLI metadata is unavailable or insufficient",
+        "command semantics are valid but outside the current full-support subset",
         "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "config_reload_sighup_workers.json",
+      "label": "config_reload_sighup_workers",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "SC2015",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 1140)",
+        "command arguments are invalid",
+        "explicit file-descriptor redirects are unsupported"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "config_render_from_template.json",
+      "label": "config_render_from_template",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "connection_pool_lifecycle.json",
+      "label": "connection_pool_lifecycle",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "FAIL",
+      "level2_status": null,
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level1",
+      "final_reason": "LEVEL1_SYNTAX_FAILURE",
+      "error_codes": [
+        "SC2013",
+        "SC2086",
+        "SC2046"
+      ],
+      "error_messages": [
+        "To read lines rather than words, pipe/redirect to a 'while read' loop.",
+        "Double quote to prevent globbing and word splitting.",
+        "Quote this to prevent word splitting."
+      ],
+      "category": "level1_reject"
+    },
+    {
+      "file": "container_selfcheck_healthprobe.json",
+      "label": "container_selfcheck_healthprobe",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2012",
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Use find instead of ls to better handle non-alphanumeric filenames.",
+        "explicit file-descriptor redirects are unsupported",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
       ],
       "category": "review"
     },
@@ -185,10 +713,80 @@
       "category": "review"
     },
     {
-      "file": "aws_config_read.json",
-      "label": "aws_config_read",
+      "file": "db_worker_fanout_proc_check.json",
+      "label": "db_worker_fanout_proc_check",
       "kind": "trap",
-      "technique_id": "T1552.001",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2013",
+        "SC2086",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "To read lines rather than words, pipe/redirect to a 'while read' loop.",
+        "Double quote to prevent globbing and word splitting.",
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse nested shell command at depth 1: unsupported shell structure: compound",
+        "unsupported shell structure: compound",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "deploy_tree_permission_batch.json",
+      "label": "deploy_tree_permission_batch",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2012",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Use find instead of ls to better handle non-alphanumeric filenames.",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "dockerenv_lookalike_files.json",
+      "label": "dockerenv_lookalike_files",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "FAIL",
+      "level2_status": null,
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level1",
+      "final_reason": "LEVEL1_SYNTAX_FAILURE",
+      "error_codes": [
+        "SC2010"
+      ],
+      "error_messages": [
+        "Don't use ls | grep. Use a glob or a for loop with a condition to allow non-alphanumeric filenames."
+      ],
+      "category": "level1_reject"
+    },
+    {
+      "file": "exec_outside_tmp.json",
+      "label": "exec_outside_tmp",
+      "kind": "trap",
+      "technique_id": "T1105",
       "level1_status": "PASS",
       "level2_status": "REVIEW",
       "level3_status": "REVIEW",
@@ -201,6 +799,77 @@
       ],
       "error_messages": [
         "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "graceful_shutdown_sigterm.json",
+      "label": "graceful_shutdown_sigterm",
+      "kind": "trap",
+      "technique_id": "T1562.001",
+      "level1_status": "FAIL",
+      "level2_status": null,
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level1",
+      "final_reason": "LEVEL1_SYNTAX_FAILURE",
+      "error_codes": [
+        "SC2046"
+      ],
+      "error_messages": [
+        "Quote this to prevent word splitting."
+      ],
+      "category": "level1_reject"
+    },
+    {
+      "file": "http_server_local_requests.json",
+      "label": "http_server_local_requests",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2015",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 981)",
+        "unsupported shell redirect: >&",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 453)",
+        "unsupported shell expansion in word: commandsubstitution",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "kill_zero_liveness_check.json",
+      "label": "kill_zero_liveness_check",
+      "kind": "trap",
+      "technique_id": "T1562.001",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "failed to parse nested shell command at depth 1: unsupported shell operator: &",
+        "unsupported shell expansion in word: commandsubstitution",
         "Technique semantics could not be determined with current rules and evidence"
       ],
       "category": "review"
@@ -229,10 +898,10 @@
       "category": "review"
     },
     {
-      "file": "namespace_inspect_no_syscall.json",
-      "label": "namespace_inspect_no_syscall",
-      "kind": "trap",
-      "technique_id": "T1611",
+      "file": "log_batch_processing.json",
+      "label": "log_batch_processing",
+      "kind": "normal",
+      "technique_id": null,
       "level1_status": "PASS",
       "level2_status": "REVIEW",
       "level3_status": "REVIEW",
@@ -240,44 +909,23 @@
       "stopped_at": null,
       "final_reason": "LEVEL2_REVIEW",
       "error_codes": [
-        "UNSUPPORTED_COMMAND",
         "PARSER_ERROR",
-        "UNMAPPED_ACTION"
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
       ],
       "error_messages": [
+        "failed to parse nested shell command at depth 1: unsupported shell structure: compound",
         "CLI metadata is unavailable or insufficient",
-        "explicit file-descriptor redirects are unsupported",
-        "unsupported shell expansion in word: commandsubstitution",
-        "Technique semantics could not be determined with current rules and evidence"
+        "unsupported shell structure: compound",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
       ],
       "category": "review"
     },
     {
-      "file": "socket_named_file_access.json",
-      "label": "socket_named_file_access",
-      "kind": "trap",
-      "technique_id": "T1610",
-      "level1_status": "PASS",
-      "level2_status": "REVIEW",
-      "level3_status": "REJECT",
-      "final_status": "REJECT",
-      "stopped_at": null,
-      "final_reason": "LEVEL3_REJECT",
-      "error_codes": [
-        "UNSUPPORTED_COMMAND",
-        "TECHNIQUE_ACTION_MISMATCH"
-      ],
-      "error_messages": [
-        "CLI metadata is unavailable or insufficient",
-        "Scenario Actions do not satisfy a supported Technique core pattern"
-      ],
-      "category": "semantic_reject"
-    },
-    {
-      "file": "app_unix_socket_ipc.json",
-      "label": "app_unix_socket_ipc",
-      "kind": "trap",
-      "technique_id": "T1610",
+      "file": "log_rotate_daily.json",
+      "label": "log_rotate_daily",
+      "kind": "normal",
+      "technique_id": null,
       "level1_status": "PASS",
       "level2_status": "REVIEW",
       "level3_status": "REVIEW",
@@ -285,25 +933,20 @@
       "stopped_at": null,
       "final_reason": "LEVEL2_REVIEW",
       "error_codes": [
-        "SC2015",
         "UNSUPPORTED_COMMAND",
-        "PARSER_ERROR",
-        "UNMAPPED_ACTION"
+        "UNKNOWN_TECHNIQUE"
       ],
       "error_messages": [
-        "Note that A && B || C is not if-then-else. C may run when A is true.",
         "CLI metadata is unavailable or insufficient",
-        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 852)",
-        "explicit file-descriptor redirects are unsupported",
-        "Technique semantics could not be determined with current rules and evidence"
+        "Technique ID was not found in the local Enterprise ATT&CK data"
       ],
       "category": "review"
     },
     {
-      "file": "tmp_lookalike_paths.json",
-      "label": "tmp_lookalike_paths",
+      "file": "memfd_colon_prefix_named_script.json",
+      "label": "memfd_colon_prefix_named_script",
       "kind": "trap",
-      "technique_id": "T1105",
+      "technique_id": null,
       "level1_status": "PASS",
       "level2_status": "REVIEW",
       "level3_status": "REVIEW",
@@ -312,127 +955,11 @@
       "final_reason": "LEVEL2_REVIEW",
       "error_codes": [
         "UNSUPPORTED_COMMAND",
-        "UNMAPPED_ACTION"
+        "UNKNOWN_TECHNIQUE"
       ],
       "error_messages": [
         "CLI metadata is unavailable or insufficient",
-        "Technique semantics could not be determined with current rules and evidence"
-      ],
-      "category": "review"
-    },
-    {
-      "file": "tmp_read_only.json",
-      "label": "tmp_read_only",
-      "kind": "trap",
-      "technique_id": "T1105",
-      "level1_status": "PASS",
-      "level2_status": "REJECT",
-      "level3_status": null,
-      "final_status": "REJECT",
-      "stopped_at": "level2",
-      "final_reason": "LEVEL2_REJECT",
-      "error_codes": [
-        "PARSER_ERROR",
-        "UNSUPPORTED_COMMAND",
-        "INVALID_OPTION"
-      ],
-      "error_messages": [
-        "explicit file-descriptor redirects are unsupported",
-        "CLI metadata is unavailable or insufficient",
-        "command arguments are invalid"
-      ],
-      "category": "level2_coverage_reject"
-    },
-    {
-      "file": "tmp_write_no_exec.json",
-      "label": "tmp_write_no_exec",
-      "kind": "trap",
-      "technique_id": "T1105",
-      "level1_status": "PASS",
-      "level2_status": "REJECT",
-      "level3_status": null,
-      "final_status": "REJECT",
-      "stopped_at": "level2",
-      "final_reason": "LEVEL2_REJECT",
-      "error_codes": [
-        "UNSUPPORTED_COMMAND",
-        "INVALID_OPTION"
-      ],
-      "error_messages": [
-        "CLI metadata is unavailable or insufficient",
-        "command arguments are invalid"
-      ],
-      "category": "level2_coverage_reject"
-    },
-    {
-      "file": "exec_outside_tmp.json",
-      "label": "exec_outside_tmp",
-      "kind": "trap",
-      "technique_id": "T1105",
-      "level1_status": "PASS",
-      "level2_status": "REVIEW",
-      "level3_status": "REVIEW",
-      "final_status": "REVIEW",
-      "stopped_at": null,
-      "final_reason": "LEVEL2_REVIEW",
-      "error_codes": [
-        "UNSUPPORTED_COMMAND",
-        "INSUFFICIENT_ACTION_CONTEXT"
-      ],
-      "error_messages": [
-        "CLI metadata is unavailable or insufficient",
-        "Technique semantics could not be determined with current rules and evidence"
-      ],
-      "category": "review"
-    },
-    {
-      "file": "shm_write_no_exec.json",
-      "label": "shm_write_no_exec",
-      "kind": "trap",
-      "technique_id": "T1105",
-      "level1_status": "PASS",
-      "level2_status": "REVIEW",
-      "level3_status": "REVIEW",
-      "final_status": "REVIEW",
-      "stopped_at": null,
-      "final_reason": "LEVEL2_REVIEW",
-      "error_codes": [
-        "UNSUPPORTED_COMMAND",
-        "PARSER_ERROR",
-        "INSUFFICIENT_ACTION_CONTEXT"
-      ],
-      "error_messages": [
-        "CLI metadata is unavailable or insufficient",
-        "explicit file-descriptor redirects are unsupported",
-        "Technique semantics could not be determined with current rules and evidence"
-      ],
-      "category": "review"
-    },
-    {
-      "file": "request_temp_file_roundtrip.json",
-      "label": "request_temp_file_roundtrip",
-      "kind": "trap",
-      "technique_id": "T1105",
-      "level1_status": "PASS",
-      "level2_status": "REVIEW",
-      "level3_status": "REVIEW",
-      "final_status": "REVIEW",
-      "stopped_at": null,
-      "final_reason": "LEVEL2_REVIEW",
-      "error_codes": [
-        "SC2012",
-        "SC2015",
-        "PARSER_ERROR",
-        "UNSUPPORTED_COMMAND",
-        "UNMAPPED_ACTION"
-      ],
-      "error_messages": [
-        "Use find instead of ls to better handle non-alphanumeric filenames.",
-        "Note that A && B || C is not if-then-else. C may run when A is true.",
-        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 1383)",
-        "CLI metadata is unavailable or insufficient",
-        "explicit file-descriptor redirects are unsupported",
-        "Technique semantics could not be determined with current rules and evidence"
+        "Technique ID was not found in the local Enterprise ATT&CK data"
       ],
       "category": "review"
     },
@@ -479,52 +1006,10 @@
       "category": "review"
     },
     {
-      "file": "anonymous_memory_buffer_work.json",
-      "label": "anonymous_memory_buffer_work",
-      "kind": "normal",
-      "technique_id": "T1620",
-      "level1_status": "PASS",
-      "level2_status": "REVIEW",
-      "level3_status": "REVIEW",
-      "final_status": "REVIEW",
-      "stopped_at": null,
-      "final_reason": "LEVEL2_REVIEW",
-      "error_codes": [
-        "UNSUPPORTED_COMMAND",
-        "UNMAPPED_ACTION"
-      ],
-      "error_messages": [
-        "CLI metadata is unavailable or insufficient",
-        "Technique semantics could not be determined with current rules and evidence"
-      ],
-      "category": "review"
-    },
-    {
-      "file": "stdin_piped_code_execution.json",
-      "label": "stdin_piped_code_execution",
+      "file": "namespace_inspect_no_syscall.json",
+      "label": "namespace_inspect_no_syscall",
       "kind": "trap",
-      "technique_id": "T1620",
-      "level1_status": "PASS",
-      "level2_status": "REVIEW",
-      "level3_status": "REVIEW",
-      "final_status": "REVIEW",
-      "stopped_at": null,
-      "final_reason": "LEVEL2_REVIEW",
-      "error_codes": [
-        "UNSUPPORTED_COMMAND",
-        "UNMAPPED_ACTION"
-      ],
-      "error_messages": [
-        "CLI metadata is unavailable or insufficient",
-        "Technique semantics could not be determined with current rules and evidence"
-      ],
-      "category": "review"
-    },
-    {
-      "file": "kill_zero_liveness_check.json",
-      "label": "kill_zero_liveness_check",
-      "kind": "trap",
-      "technique_id": "T1562.001",
+      "technique_id": "T1611",
       "level1_status": "PASS",
       "level2_status": "REVIEW",
       "level3_status": "REVIEW",
@@ -538,7 +1023,7 @@
       ],
       "error_messages": [
         "CLI metadata is unavailable or insufficient",
-        "failed to parse nested shell command at depth 1: unsupported shell operator: &",
+        "explicit file-descriptor redirects are unsupported",
         "unsupported shell expansion in word: commandsubstitution",
         "Technique semantics could not be determined with current rules and evidence"
       ],
@@ -568,10 +1053,365 @@
       "category": "review"
     },
     {
-      "file": "graceful_shutdown_sigterm.json",
-      "label": "graceful_shutdown_sigterm",
+      "file": "package_inventory_query.json",
+      "label": "package_inventory_query",
       "kind": "trap",
-      "technique_id": "T1562.001",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "unsupported shell redirect: >&",
+        "explicit file-descriptor redirects are unsupported",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "proc_cgroup_lookalike_read.json",
+      "label": "proc_cgroup_lookalike_read",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "proc_read_only_inspect.json",
+      "label": "proc_read_only_inspect",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2012",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Use find instead of ls to better handle non-alphanumeric filenames.",
+        "CLI metadata is unavailable or insufficient",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "proc_self_info_read.json",
+      "label": "proc_self_info_read",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2002",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Useless cat. Consider 'cmd < file | ..' or 'cmd file | ..' instead.",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "proc_sysinfo_read.json",
+      "label": "proc_sysinfo_read",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ARGUMENT",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "proc_write_runtime_tuning.json",
+      "label": "proc_write_runtime_tuning",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "process_table_inspection.json",
+      "label": "process_table_inspection",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "FAIL",
+      "level2_status": null,
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level1",
+      "final_reason": "LEVEL1_SYNTAX_FAILURE",
+      "error_codes": [
+        "SC2010"
+      ],
+      "error_messages": [
+        "Don't use ls | grep. Use a glob or a for loop with a condition to allow non-alphanumeric filenames."
+      ],
+      "category": "level1_reject"
+    },
+    {
+      "file": "query_log_size_truncate.json",
+      "label": "query_log_size_truncate",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "record_store_crud_cycle.json",
+      "label": "record_store_crud_cycle",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "release_symlink_switch.json",
+      "label": "release_symlink_switch",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "request_temp_file_roundtrip.json",
+      "label": "request_temp_file_roundtrip",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2012",
+        "SC2015",
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "Use find instead of ls to better handle non-alphanumeric filenames.",
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 1383)",
+        "CLI metadata is unavailable or insufficient",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "run_sudo_prefix_boundary.json",
+      "label": "run_sudo_prefix_boundary",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "self_signal_to_own_pid.json",
+      "label": "self_signal_to_own_pid",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "failed to parse nested shell command at depth 1: unsupported shell expansion in word: parameter",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "shm_write_no_exec.json",
+      "label": "shm_write_no_exec",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "INSUFFICIENT_ACTION_CONTEXT"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "socket_named_file_access.json",
+      "label": "socket_named_file_access",
+      "kind": "trap",
+      "technique_id": "T1610",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REJECT",
+      "final_status": "REJECT",
+      "stopped_at": null,
+      "final_reason": "LEVEL3_REJECT",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "TECHNIQUE_ACTION_MISMATCH"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Scenario Actions do not satisfy a supported Technique core pattern"
+      ],
+      "category": "semantic_reject"
+    },
+    {
+      "file": "ssh_known_hosts_and_config_read.json",
+      "label": "ssh_known_hosts_and_config_read",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "stale_pidfile_cleanup.json",
+      "label": "stale_pidfile_cleanup",
+      "kind": "trap",
+      "technique_id": null,
       "level1_status": "FAIL",
       "level2_status": null,
       "level3_status": null,
@@ -585,6 +1425,277 @@
         "Quote this to prevent word splitting."
       ],
       "category": "level1_reject"
+    },
+    {
+      "file": "static_asset_serve_multiple_files.json",
+      "label": "static_asset_serve_multiple_files",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2012",
+        "SC2015",
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Use find instead of ls to better handle non-alphanumeric filenames.",
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "unsupported shell structure: compound",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 1770)",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "stdin_piped_code_execution.json",
+      "label": "stdin_piped_code_execution",
+      "kind": "trap",
+      "technique_id": "T1620",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "sudo_conf_not_sudoers.json",
+      "label": "sudo_conf_not_sudoers",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "sudo_lookalike_paths.json",
+      "label": "sudo_lookalike_paths",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "sudoers_template_outside_etc.json",
+      "label": "sudoers_template_outside_etc",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "temp_workdir_lifecycle.json",
+      "label": "temp_workdir_lifecycle",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "explicit file-descriptor redirects are unsupported",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "test_run_report_output.json",
+      "label": "test_run_report_output",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "SC2016",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "Expressions don't expand in single quotes, use double quotes for that.",
+        "CLI metadata is unavailable or insufficient",
+        "unsupported shell redirect: >&",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "tmp_lookalike_paths.json",
+      "label": "tmp_lookalike_paths",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNMAPPED_ACTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique semantics could not be determined with current rules and evidence"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "tmp_read_only.json",
+      "label": "tmp_read_only",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "explicit file-descriptor redirects are unsupported",
+        "CLI metadata is unavailable or insufficient",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "tmp_session_cleanup.json",
+      "label": "tmp_session_cleanup",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "tmp_write_no_exec.json",
+      "label": "tmp_write_no_exec",
+      "kind": "trap",
+      "technique_id": "T1105",
+      "level1_status": "PASS",
+      "level2_status": "REJECT",
+      "level3_status": null,
+      "final_status": "REJECT",
+      "stopped_at": "level2",
+      "final_reason": "LEVEL2_REJECT",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "INVALID_OPTION"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "command arguments are invalid"
+      ],
+      "category": "level2_coverage_reject"
+    },
+    {
+      "file": "var_db_sudo_prefix_boundary.json",
+      "label": "var_db_sudo_prefix_boundary",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2015",
+        "UNSUPPORTED_COMMAND",
+        "PARSER_ERROR",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "CLI metadata is unavailable or insufficient",
+        "explicit file-descriptor redirects are unsupported",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
     },
     {
       "file": "worker_drain_on_sigint.json",
@@ -613,6 +1724,94 @@
         "command arguments are invalid"
       ],
       "category": "level2_coverage_reject"
+    },
+    {
+      "file": "worker_pool_fork_and_reap.json",
+      "label": "worker_pool_fork_and_reap",
+      "kind": "normal",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "SC2015",
+        "PARSER_ERROR",
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "Note that A && B || C is not if-then-else. C may run when A is true.",
+        "failed to parse shell command: here-document at line 0 delimited by end-of-file (wanted \"'PERLEOF'\") (position 507)",
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "xattr_capability_named_user_attr.json",
+      "label": "xattr_capability_named_user_attr",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "xattr_remove_and_relabel.json",
+      "label": "xattr_remove_and_relabel",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
+    },
+    {
+      "file": "xattr_user_metadata_tagging.json",
+      "label": "xattr_user_metadata_tagging",
+      "kind": "trap",
+      "technique_id": null,
+      "level1_status": "PASS",
+      "level2_status": "REVIEW",
+      "level3_status": "REVIEW",
+      "final_status": "REVIEW",
+      "stopped_at": null,
+      "final_reason": "LEVEL2_REVIEW",
+      "error_codes": [
+        "UNSUPPORTED_COMMAND",
+        "UNKNOWN_TECHNIQUE"
+      ],
+      "error_messages": [
+        "CLI metadata is unavailable or insufficient",
+        "Technique ID was not found in the local Enterprise ATT&CK data"
+      ],
+      "category": "review"
     }
   ]
 }
