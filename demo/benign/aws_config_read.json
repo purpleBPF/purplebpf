@@ -1,0 +1,26 @@
+{
+  "label": "aws_config_read",
+  "kind": "trap",
+  "goal": "AWS 도구가 자격증명이 아닌 프로파일 설정 파일만 읽는 동작을 흉내낸다. 값 추출은 awk 대신 cut 으로 바꿔 최소 이미지에서도 돌게 했다",
+  "expect_silent": [
+    "t1552-001-cred-file-read",
+    "t1552-005-cloud-metadata"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "리전 정보만 담은 설정 파일을 만든다",
+      "command": "mkdir -p /root/.aws && printf '[default]\\nregion = ap-northeast-2\\n' > /root/.aws/config"
+    },
+    {
+      "order": 2,
+      "purpose": "설정 파일을 읽어 리전 값을 뽑는다. 메타데이터 주소로 나가지 않는다",
+      "command": "cat /root/.aws/config && grep region /root/.aws/config && grep region /root/.aws/config | cut -d= -f2"
+    },
+    {
+      "order": 3,
+      "purpose": "디렉터리를 확인하고 만든 파일을 지운다",
+      "command": "ls -l /root/.aws && rm -f /root/.aws/config"
+    }
+  ]
+}

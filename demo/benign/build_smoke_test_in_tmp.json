@@ -1,0 +1,36 @@
+{
+  "label": "build_smoke_test_in_tmp",
+  "kind": "normal",
+  "goal": "빌드 직후 임시 작업 디렉터리에서 산출물을 그 자리에서 실행해 확인한다. /tmp 안에서 실행하므로 t1105-tmp-exec 는 뜨는 것이 맞고, 나머지 규칙이 조용한지를 본다.",
+  "expect_silent": [
+    "t1548-001-setuid-bit-set",
+    "exec-admin-tools",
+    "fileless-fd-exec",
+    "t1613-container-discovery",
+    "t1611-host-mount",
+    "t1552-001-cred-file-read",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "임시 작업 디렉터리에 빌드 산출물로 쓸 스모크 테스트 스크립트를 만든다.",
+      "command": "mkdir -p /tmp/ci-work/out && printf '%s\\n' '#!/bin/sh' 'echo smoke-ok' > /tmp/ci-work/out/smoke.sh && chmod 0755 /tmp/ci-work/out/smoke.sh && ls -l /tmp/ci-work/out"
+    },
+    {
+      "order": 2,
+      "purpose": "임시 경로에 있는 산출물을 그 자리에서 실행한다.",
+      "command": "/tmp/ci-work/out/smoke.sh"
+    },
+    {
+      "order": 3,
+      "purpose": "실행 결과를 같은 임시 경로에 기록한다.",
+      "command": "/tmp/ci-work/out/smoke.sh > /tmp/ci-work/out/smoke.log 2>&1 && cat /tmp/ci-work/out/smoke.log"
+    },
+    {
+      "order": 4,
+      "purpose": "임시 작업 디렉터리를 통째로 지운다.",
+      "command": "rm -rf /tmp/ci-work"
+    }
+  ]
+}

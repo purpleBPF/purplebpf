@@ -1,0 +1,31 @@
+{
+  "label": "proc_write_runtime_tuning",
+  "kind": "trap",
+  "goal": "컨테이너 런타임과 앱이 흔히 하는 /proc 아래 설정 쓰기를 흉내낸다. 한계: t1055-009 는 /proc/ 접두사 + MAY_WRITE 전체를 잡으므로 이 워크로드에서 반드시 뜬다. 규칙을 /proc/<pid>/mem 으로 좁혀야 한다는 근거 자료로 남기고 expect_silent 에서는 뺐다",
+  "expect_silent": [
+    "t1613-container-discovery",
+    "t1055-008-ptrace-inject"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "현재 OOM 점수 조정값을 읽는다",
+      "command": "cat /proc/self/oom_score_adj"
+    },
+    {
+      "order": 2,
+      "purpose": "OOM 점수 조정값을 올린다. 값을 올리는 방향은 권한 없이도 된다",
+      "command": "echo 200 > /proc/self/oom_score_adj || true"
+    },
+    {
+      "order": 3,
+      "purpose": "자기 프로세스 이름을 바꾼다",
+      "command": "echo pbpf-worker > /proc/self/comm || true"
+    },
+    {
+      "order": 4,
+      "purpose": "바뀐 값을 확인한다",
+      "command": "cat /proc/self/oom_score_adj && cat /proc/self/comm"
+    }
+  ]
+}

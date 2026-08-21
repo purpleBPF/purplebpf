@@ -1,0 +1,32 @@
+{
+  "label": "request_temp_file_roundtrip",
+  "kind": "trap",
+  "goal": "요청 본문을 임시 파일에 저장하고 크기를 응답한 뒤 곧바로 지우는 업로드 처리 흐름이다. 임시 파일은 /tmp 에 생기지만 실행되지 않는다.",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1562-001-defense-tamper",
+    "fileless-fd-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "요청을 받아 임시 파일에 쓰고 지우는 서버 스크립트를 만든다.",
+      "command": "mkdir -p /srv/upload && cat > /srv/upload/srv.pl <<'PERLEOF'\nuse strict; use warnings;\nuse IO::Socket::INET;\nuse File::Temp qw(tempfile);\nmy $srv = IO::Socket::INET->new(LocalAddr=>'127.0.0.1', LocalPort=>8082,\n                                Listen=>5, ReuseAddr=>1, Proto=>'tcp') or die \"bind: $!\";\nmy $pid = fork(); die \"fork: $!\" unless defined $pid;\nif (!$pid) {\n    for (1..3) {\n        my $c = $srv->accept() or next;\n        my $len = 0;\n        while (my $line = <$c>) {\n            $line =~ s/\\r?\\n$//;\n            last if $line eq '';\n            $len = $1 if $line =~ /^Content-Length:\\s*(\\d+)/i;\n        }\n        my $body = '';\n        read($c, $body, $len) if $len;\n        my ($fh, $path) = tempfile(\"req-XXXXXX\", DIR => \"/tmp\");\n        print $fh $body; close $fh;\n        my $size = -s $path;\n        unlink $path;\n        print $c \"HTTP/1.0 200 OK\\r\\nContent-Length: \" . length($size) . \"\\r\\n\\r\\n$size\";\n        close $c;\n    }\n    exit 0;\n}\nfor my $i (0..2) {\n    my $c = IO::Socket::INET->new(PeerAddr=>'127.0.0.1', PeerPort=>8082, Proto=>'tcp')\n        or die \"connect: $!\";\n    my $body = \"payload-$i\";\n    print $c \"POST /upload HTTP/1.0\\r\\nContent-Length: \" . length($body) . \"\\r\\n\\r\\n$body\";\n    my @resp = <$c>;\n    print \"stored bytes $resp[-1]\\n\";\n    close $c;\n}\nwaitpid($pid, 0);\nclose $srv;\nprint \"server closed\\n\";\nPERLEOF\nperl -c /srv/upload/srv.pl"
+    },
+    {
+      "order": 2,
+      "purpose": "서버를 띄워 요청 세 건을 처리하게 하고 스스로 끝나게 한다. 시그널은 쓰지 않는다.",
+      "command": "perl /srv/upload/srv.pl"
+    },
+    {
+      "order": 3,
+      "purpose": "임시 파일이 남지 않았는지 확인한다.",
+      "command": "ls /tmp/req-* 2>/dev/null | wc -l"
+    },
+    {
+      "order": 4,
+      "purpose": "스크립트와 작업 디렉터리를 지운다.",
+      "command": "rm -rf /srv/upload && ls /srv || true"
+    }
+  ]
+}

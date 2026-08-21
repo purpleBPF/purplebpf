@@ -1,0 +1,36 @@
+{
+  "label": "proc_self_info_read",
+  "kind": "trap",
+  "goal": "자기 프로세스 정보를 /proc 에서 읽는다. 정찰 규칙이 보는 /proc/self/cgroup 과 /proc/self/mountinfo 는 건드리지 않고, 읽기만 하므로 MAY_WRITE 조건도 걸리지 않는다.",
+  "expect_silent": [
+    "t1613-container-discovery",
+    "t1055-009-proc-mem-inject"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "프로세스 상태 정보를 읽는다.",
+      "command": "head -20 /proc/self/status"
+    },
+    {
+      "order": 2,
+      "purpose": "환경 변수 블록의 크기를 확인한다.",
+      "command": "wc -c /proc/self/environ"
+    },
+    {
+      "order": 3,
+      "purpose": "리소스 제한값을 읽는다.",
+      "command": "head -10 /proc/self/limits"
+    },
+    {
+      "order": 4,
+      "purpose": "프로세스 통계 줄을 읽는다.",
+      "command": "cat /proc/self/stat | wc -w"
+    },
+    {
+      "order": 5,
+      "purpose": "실행 파일 경로 링크를 확인한다.",
+      "command": "ls -l /proc/self/exe || true"
+    }
+  ]
+}

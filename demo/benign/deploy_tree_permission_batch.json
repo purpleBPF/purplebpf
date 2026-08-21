@@ -1,0 +1,44 @@
+{
+  "label": "deploy_tree_permission_batch",
+  "kind": "trap",
+  "goal": "배포 디렉터리 전체의 권한을 파일 종류별로 한 번에 정리한다. chmod 를 여러 번 부르지만 setuid 나 setgid 비트는 세우지 않는다.",
+  "expect_silent": [
+    "t1548-001-setuid-bit-set",
+    "t1105-tmp-exec",
+    "exec-file-capability",
+    "exec-admin-tools",
+    "t1611-host-mount"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "배포 스테이징 디렉터리에 실행 스크립트, 설정, 라이브러리를 만든다.",
+      "command": "mkdir -p /opt/stage/bin /opt/stage/etc /opt/stage/lib && printf '%s\\n' '#!/bin/sh' 'echo run' > /opt/stage/bin/run.sh && printf 'k=v\\n' > /opt/stage/etc/app.conf && printf 'lib\\n' > /opt/stage/lib/core.so"
+    },
+    {
+      "order": 2,
+      "purpose": "디렉터리 권한을 0755 로 한 번에 맞춘다.",
+      "command": "find /opt/stage -type d -exec chmod 0755 {} +"
+    },
+    {
+      "order": 3,
+      "purpose": "실행 스크립트가 아닌 일반 파일 권한을 0644 로 한 번에 맞춘다.",
+      "command": "find /opt/stage -type f ! -name '*.sh' -exec chmod 0644 {} +"
+    },
+    {
+      "order": 4,
+      "purpose": "실행 스크립트만 골라 0755 로 맞춘다.",
+      "command": "find /opt/stage -type f -name '*.sh' -exec chmod 0755 {} +"
+    },
+    {
+      "order": 5,
+      "purpose": "소유자를 한 번에 맞추고 결과 권한을 확인한다.",
+      "command": "chown -R root:root /opt/stage && ls -lR /opt/stage | head -20"
+    },
+    {
+      "order": 6,
+      "purpose": "스테이징 디렉터리를 지운다.",
+      "command": "rm -rf /opt/stage"
+    }
+  ]
+}

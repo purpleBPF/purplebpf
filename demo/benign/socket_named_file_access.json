@@ -1,0 +1,27 @@
+{
+  "label": "socket_named_file_access",
+  "kind": "trap",
+  "goal": "런타임 소켓과 같은 이름의 일반 파일을 다룬다. /var/run/docker.sock 경로까지 그대로 쓰되 유닉스 소켓 연결이 아니라 파일 열기라서 규칙이 조용해야 한다. 경로가 아니라 훅 선택이 맞는지 시험하는 항목이다.",
+  "expect_silent": [
+    "t1610-runtime-socket-connect",
+    "t1613-container-discovery",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "작업 디렉터리를 만들고 소켓 이름의 일반 파일을 만든다.",
+      "command": "mkdir -p /tmp/sockcheck/docker && touch /tmp/sockcheck/docker/docker.sock"
+    },
+    {
+      "order": 2,
+      "purpose": "그 파일에 쓰고 다시 읽는다.",
+      "command": "echo ping > /tmp/sockcheck/docker/docker.sock && cat /tmp/sockcheck/docker/docker.sock"
+    },
+    {
+      "order": 3,
+      "purpose": "containerd.sock 이라는 이름의 심볼릭 링크를 만들어 따라 읽는다.",
+      "command": "ln -s /tmp/sockcheck/docker/docker.sock /tmp/sockcheck/containerd.sock && cat /tmp/sockcheck/containerd.sock"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "label": "anonymous_memory_buffer_work",
+  "kind": "normal",
+  "goal": "프로세스 안 메모리에서만 데이터를 조립한다. 디스크에도 익명 메모리 실행에도 닿지 않는다.",
+  "expect_silent": [
+    "fileless-fd-exec",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "이름 없는 파이프에 레코드를 넣고 되읽는다. 커널 버퍼만 쓰므로 디스크 파일이 생기지 않는다.",
+      "command": "perl -e 'pipe(my $r, my $w) or die $!; print $w qq(record-line\\n) x 10; close $w; read($r, my $chunk, 120); print length($chunk), qq(\\n); close $r'"
+    },
+    {
+      "order": 2,
+      "purpose": "문자열 버퍼에 데이터를 쌓아 길이만 확인한다.",
+      "command": "perl -e 'my $b = q(); $b .= q(x) for 1..256; print length($b), qq(\\n)'"
+    },
+    {
+      "order": 3,
+      "purpose": "표준입력 스트림을 파일로 떨구지 않고 그대로 집계한다.",
+      "command": "printf 'l1\\nl2\\n' | perl -ne 'END { print \"$.\\n\" }'"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "label": "graceful_shutdown_sigterm",
+  "kind": "trap",
+  "goal": "배포 스크립트가 옛 작업을 15번 시그널로 정상 종료시킨다. 한계: 규칙이 15번을 그대로 보기 때문에 이 정상 동작에서도 t1562-001-defense-tamper 가 뜬다. 시그널 번호만으로는 정상 정리와 방어 무력화를 가를 수 없다는 것을 보여주는 항목이라 그 규칙은 expect_silent 에 넣지 않는다.",
+  "expect_silent": [
+    "t1055-008-ptrace-inject",
+    "t1105-tmp-exec",
+    "t1562-001-defense-tamper"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "pid 파일을 둘 작업 디렉터리를 만든다.",
+      "command": "mkdir -p /tmp/pb-shutdown; echo ready"
+    },
+    {
+      "order": 2,
+      "purpose": "오래 도는 작업을 띄우고 15번 시그널로 정상 종료를 요청한 뒤 끝날 때까지 기다린다. 배포 교체에서 늘 하는 동작이다.",
+      "command": "sh -c 'sleep 60 & P=$!; echo $P > /tmp/pb-shutdown/old.pid; sleep 1; kill -15 $P; echo sent-term; wait $P; echo old-worker-stopped'"
+    },
+    {
+      "order": 3,
+      "purpose": "종료됐는지 시그널 0으로 확인한다.",
+      "command": "kill -0 $(cat /tmp/pb-shutdown/old.pid) 2>/dev/null && echo still-listed || echo stopped"
+    },
+    {
+      "order": 4,
+      "purpose": "pid 파일을 지운다.",
+      "command": "rm -rf /tmp/pb-shutdown"
+    }
+  ]
+}

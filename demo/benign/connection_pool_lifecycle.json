@@ -1,0 +1,37 @@
+{
+  "label": "connection_pool_lifecycle",
+  "kind": "trap",
+  "goal": "연결 풀이 대기 프로세스를 여러 개 띄워 유지하다가 재적재 시그널로 정리한다. 시그널 1번만 쓰므로 9번과 15번을 보는 규칙에 걸리지 않는다.",
+  "expect_silent": [
+    "t1562-001-defense-tamper",
+    "t1055-009-proc-mem-inject",
+    "t1055-008-ptrace-inject"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "풀 상태 파일을 둘 디렉터리를 만든다.",
+      "command": "mkdir -p /var/lib/pbpool && echo ready"
+    },
+    {
+      "order": 2,
+      "purpose": "대기 프로세스 네 개를 띄워 풀을 채우고 pid 를 기록한다.",
+      "command": "sh -c 'for i in 1 2 3 4; do sleep 20 & echo $! >> /var/lib/pbpool/pids; done; sleep 1; echo pool-size=$(wc -l < /var/lib/pbpool/pids)'"
+    },
+    {
+      "order": 3,
+      "purpose": "풀에 있는 각 연결의 /proc 상태를 읽어 살아있는지 확인한다. 읽기만 한다.",
+      "command": "for p in $(cat /var/lib/pbpool/pids); do head -1 /proc/$p/status 2>/dev/null; kill -0 $p 2>/dev/null && echo $p up || echo $p down; done"
+    },
+    {
+      "order": 4,
+      "purpose": "재적재 시그널을 보내 연결을 닫고 각 pid 의 상태 문자로 종료를 확인한다. 9번이나 15번 시그널은 쓰지 않는다.",
+      "command": "kill -HUP $(cat /var/lib/pbpool/pids) 2>/dev/null; sleep 1; for p in $(cat /var/lib/pbpool/pids); do s=$(cut -d' ' -f3 /proc/$p/stat 2>/dev/null); case \"$s\" in ''|Z) echo $p closed;; *) echo $p still;; esac; done"
+    },
+    {
+      "order": 5,
+      "purpose": "풀 상태 파일과 디렉터리를 지운다.",
+      "command": "rm -rf /var/lib/pbpool"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "label": "backup_copy_verify_remove",
+  "kind": "normal",
+  "goal": "데이터를 적재문 형태로 덤프해 복사본을 만들고 해시로 검증한 뒤 다시 적재해 보고 지운다.",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "백업 대상 테이블을 만들고 데이터를 채운다.",
+      "command": "mkdir -p /var/lib/pbbak && seq 1 30 | awk '{print $1 \"|item\" $1}' > /var/lib/pbbak/main.tbl && wc -l < /var/lib/pbbak/main.tbl"
+    },
+    {
+      "order": 2,
+      "purpose": "전체 내용을 적재문 텍스트로 덤프한다. 압축은 하지 않는다.",
+      "command": "awk -F'|' '{print \"INSERT INTO orders VALUES(\" $1 \", \" $2 \");\"}' /var/lib/pbbak/main.tbl > /var/lib/pbbak/dump.sql && head -2 /var/lib/pbbak/dump.sql"
+    },
+    {
+      "order": 3,
+      "purpose": "덤프를 그대로 복사하고 두 파일 크기를 비교한다.",
+      "command": "cp /var/lib/pbbak/dump.sql /var/lib/pbbak/dump.sql.copy && wc -c /var/lib/pbbak/dump.sql /var/lib/pbbak/dump.sql.copy"
+    },
+    {
+      "order": 4,
+      "purpose": "두 파일의 해시를 계산해 복사가 온전한지 검증한다.",
+      "command": "a=$(sha256sum < /var/lib/pbbak/dump.sql | cut -d' ' -f1); b=$(sha256sum < /var/lib/pbbak/dump.sql.copy | cut -d' ' -f1); [ \"$a\" = \"$b\" ] && echo match || echo mismatch"
+    },
+    {
+      "order": 5,
+      "purpose": "덤프를 되읽어 테이블로 복원하고 행 수가 맞는지 확인한다.",
+      "command": "sed 's/^INSERT INTO orders VALUES(//; s/);$//; s/, /|/' /var/lib/pbbak/dump.sql > /var/lib/pbbak/restore.tbl && wc -l < /var/lib/pbbak/restore.tbl"
+    },
+    {
+      "order": 6,
+      "purpose": "백업 파일 권한을 좁히고 백업 디렉터리를 지운다.",
+      "command": "chmod 600 /var/lib/pbbak/dump.sql && rm -rf /var/lib/pbbak"
+    }
+  ]
+}

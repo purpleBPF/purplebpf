@@ -1,0 +1,42 @@
+{
+  "label": "attr_preserving_copy",
+  "kind": "trap",
+  "goal": "권한을 보존하며 파일을 복사하고, security.capability 가 아닌 사용자 확장 속성을 붙인다. 확장 속성 훅과 chmod 훅을 실제로 지나가지만 setuid 비트도 capability 도 설정하지 않는다.",
+  "expect_silent": [
+    "exec-file-capability",
+    "t1548-001-setuid-bit-set",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "작업 디렉터리와 원본 파일을 만든다.",
+      "command": "mkdir -p /tmp/attrtest && dd if=/dev/zero of=/tmp/attrtest/a.bin bs=1024 count=8 2>/dev/null"
+    },
+    {
+      "order": 2,
+      "purpose": "setuid, setgid 비트가 없는 권한 변경만 여러 번 한다. chmod 훅은 지나가되 04000 과 02000 은 켜지 않는다.",
+      "command": "chmod 644 /tmp/attrtest/a.bin && chmod 755 /tmp/attrtest/a.bin && chmod g+w /tmp/attrtest/a.bin"
+    },
+    {
+      "order": 3,
+      "purpose": "security.capability 가 아닌 user 네임스페이스 확장 속성을 설정한다. setfattr 이 없으면 그냥 넘어간다.",
+      "command": "command -v setfattr >/dev/null 2>&1 && setfattr -n user.comment -v backup /tmp/attrtest/a.bin 2>/dev/null; true"
+    },
+    {
+      "order": 4,
+      "purpose": "권한과 시각을 보존해 복사한다.",
+      "command": "cp -p /tmp/attrtest/a.bin /tmp/attrtest/b.bin"
+    },
+    {
+      "order": 5,
+      "purpose": "복사 결과의 권한을 확인한다.",
+      "command": "ls -l /tmp/attrtest && wc -c /tmp/attrtest/b.bin"
+    },
+    {
+      "order": 6,
+      "purpose": "작업 디렉터리를 지운다.",
+      "command": "rm -rf /tmp/attrtest"
+    }
+  ]
+}

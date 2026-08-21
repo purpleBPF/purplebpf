@@ -1,0 +1,27 @@
+{
+  "label": "stdin_piped_code_execution",
+  "kind": "trap",
+  "goal": "코드를 파일로 남기지 않고 표준입력으로 넘겨 실행한다. 실행되는 것은 디스크의 인터프리터라서 익명 메모리 실행과 다르다.",
+  "expect_silent": [
+    "fileless-fd-exec",
+    "t1105-tmp-exec",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "perl 코드를 파이프로 넘겨 실행한다.",
+      "command": "printf 'print \"rows 3\\\\n\";\\n' | perl -"
+    },
+    {
+      "order": 2,
+      "purpose": "셸 코드를 파이프로 넘겨 실행한다.",
+      "command": "printf 'echo shell code arrived on stdin\\n' | sh"
+    },
+    {
+      "order": 3,
+      "purpose": "표준입력으로 받은 데이터를 인라인 코드로 집계한다.",
+      "command": "printf 'a\\nb\\nc\\n' | perl -ne 'END { print \"$.\\n\" }'"
+    }
+  ]
+}

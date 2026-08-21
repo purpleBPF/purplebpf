@@ -1,0 +1,38 @@
+{
+  "label": "package_inventory_query",
+  "kind": "trap",
+  "goal": "설치된 패키지 목록과 파일 소유 패키지를 조회한다. 설치는 하지 않고 조회 도구만 쓰며, 실행 파일 이름이 apt-cache 와 dpkg 라서 apt 로 끝나는 이름 조건에 닿지 않는다.",
+  "expect_silent": [
+    "exec-admin-tools",
+    "t1105-tmp-exec",
+    "t1548-003-sudo-abuse",
+    "t1611-host-mount"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "패키지의 설치 버전과 후보 버전을 조회해 파일로 남긴다.",
+      "command": "apt-cache policy coreutils > /tmp/pkg-policy.txt 2>&1 || true; cat /tmp/pkg-policy.txt"
+    },
+    {
+      "order": 2,
+      "purpose": "패키지 메타데이터를 읽어 의존 관계를 확인한다.",
+      "command": "apt-cache show coreutils 2>/dev/null | head -20 || true"
+    },
+    {
+      "order": 3,
+      "purpose": "설치된 패키지 목록과 특정 파일을 제공한 패키지를 확인한다.",
+      "command": "dpkg -l | head -20; dpkg -S /bin/sh || true"
+    },
+    {
+      "order": 4,
+      "purpose": "패키지가 설치한 파일 목록을 뽑아 파일로 남긴다.",
+      "command": "dpkg -L coreutils 2>&1 | head -20 > /tmp/pkg-files.txt; wc -l /tmp/pkg-files.txt"
+    },
+    {
+      "order": 5,
+      "purpose": "조회 결과 파일을 지운다.",
+      "command": "rm -f /tmp/pkg-policy.txt /tmp/pkg-files.txt"
+    }
+  ]
+}

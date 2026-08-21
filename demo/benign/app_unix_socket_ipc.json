@@ -1,0 +1,38 @@
+{
+  "label": "app_unix_socket_ipc",
+  "kind": "trap",
+  "goal": "애플리케이션이 자기 유닉스 소켓을 열어 워커와 상태를 주고받는 내부 통신 흐름이다. 소켓 경로는 컨테이너 런타임 소켓이 아니다.",
+  "expect_silent": [
+    "t1610-runtime-socket-connect",
+    "t1613-container-discovery",
+    "t1562-001-defense-tamper",
+    "t1552-005-cloud-metadata"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "애플리케이션 전용 런타임 디렉터리를 만든다.",
+      "command": "mkdir -p /run/app /srv/ipc && ls -ld /run/app"
+    },
+    {
+      "order": 2,
+      "purpose": "유닉스 소켓 서버와 워커 클라이언트를 한 스크립트로 만든다.",
+      "command": "cat > /srv/ipc/ipc.pl <<'PERLEOF'\nuse strict; use warnings;\nuse IO::Socket::UNIX;\nmy $S = \"/run/app/app.sock\";\nunlink $S if -e $S;\nmy $srv = IO::Socket::UNIX->new(Local => $S, Type => SOCK_STREAM, Listen => 4)\n    or die \"bind: $!\";\nmy $pid = fork(); die \"fork: $!\" unless defined $pid;\nif (!$pid) {\n    select(undef, undef, undef, 0.3);\n    for my $i (0..2) {\n        my $c = IO::Socket::UNIX->new(Peer => $S, Type => SOCK_STREAM) or die \"connect: $!\";\n        print $c \"status $i\";\n        shutdown($c, 1);\n        my $resp = <$c> // '';\n        print \"worker got $resp\\n\";\n        close $c;\n    }\n    exit 0;\n}\nfor my $i (0..2) {\n    my $conn = $srv->accept() or next;\n    my $msg = <$conn> // '';\n    print $conn \"ack:$msg\";\n    close $conn;\n}\nwaitpid($pid, 0);\nclose $srv;\nunlink $S;\nprint \"ipc round trip done\\n\";\nPERLEOF\nperl -c /srv/ipc/ipc.pl"
+    },
+    {
+      "order": 3,
+      "purpose": "서버와 워커를 실행해 세 번 주고받게 한다.",
+      "command": "perl /srv/ipc/ipc.pl"
+    },
+    {
+      "order": 4,
+      "purpose": "소켓 파일이 남지 않았는지 확인한다.",
+      "command": "ls -l /run/app || true"
+    },
+    {
+      "order": 5,
+      "purpose": "런타임 디렉터리와 스크립트를 지운다.",
+      "command": "rm -rf /run/app /srv/ipc && ls /run/app 2>/dev/null || true"
+    }
+  ]
+}

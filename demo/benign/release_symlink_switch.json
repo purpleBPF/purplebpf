@@ -1,0 +1,44 @@
+{
+  "label": "release_symlink_switch",
+  "kind": "normal",
+  "goal": "릴리스 디렉터리를 버전별로 만들고 현재 버전을 가리키는 심볼릭 링크를 갈아끼운다.",
+  "expect_silent": [
+    "t1611-host-mount",
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set",
+    "t1611-namespace-change",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "두 버전의 릴리스 디렉터리와 실행 파일을 만든다.",
+      "command": "mkdir -p /opt/releases/1.0.0/bin /opt/releases/1.1.0/bin && printf '%s\\n' '#!/bin/sh' 'echo v1.0.0' > /opt/releases/1.0.0/bin/app && printf '%s\\n' '#!/bin/sh' 'echo v1.1.0' > /opt/releases/1.1.0/bin/app && chmod 0755 /opt/releases/1.0.0/bin/app /opt/releases/1.1.0/bin/app"
+    },
+    {
+      "order": 2,
+      "purpose": "현재 릴리스를 가리키는 심볼릭 링크를 건다.",
+      "command": "ln -sfn /opt/releases/1.0.0 /opt/releases/current && ls -l /opt/releases/current"
+    },
+    {
+      "order": 3,
+      "purpose": "링크를 거쳐 현재 릴리스를 실행한다.",
+      "command": "/opt/releases/current/bin/app"
+    },
+    {
+      "order": 4,
+      "purpose": "링크를 새 릴리스로 갈아끼우고 다시 실행해 전환을 확인한다.",
+      "command": "ln -sfn /opt/releases/1.1.0 /opt/releases/current && /opt/releases/current/bin/app"
+    },
+    {
+      "order": 5,
+      "purpose": "더 이상 쓰지 않는 이전 릴리스를 지운다.",
+      "command": "rm -rf /opt/releases/1.0.0 && ls /opt/releases"
+    },
+    {
+      "order": 6,
+      "purpose": "릴리스 디렉터리를 전부 지운다.",
+      "command": "rm -rf /opt/releases"
+    }
+  ]
+}

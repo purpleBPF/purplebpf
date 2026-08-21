@@ -1,0 +1,38 @@
+{
+  "label": "log_batch_processing",
+  "kind": "normal",
+  "goal": "쌓인 로그 파일을 걸러내고 집계해 요약을 만든 뒤 임시 파일을 지운다.",
+  "expect_silent": [
+    "t1562-001-defense-tamper",
+    "t1055-008-ptrace-inject",
+    "t1105-tmp-exec",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "샘플 로그를 만든다.",
+      "command": "mkdir -p /tmp/pb-batch && sh -c 'for i in 1 2 3 4 5 6 7 8; do echo \"2026-08-14 level=info id=$i msg=ok\" >> /tmp/pb-batch/app.log; done'"
+    },
+    {
+      "order": 2,
+      "purpose": "필요한 줄만 골라 별도 파일로 뽑는다.",
+      "command": "grep 'level=info' /tmp/pb-batch/app.log > /tmp/pb-batch/info.log; wc -l < /tmp/pb-batch/info.log"
+    },
+    {
+      "order": 3,
+      "purpose": "날짜 형식을 바꿔 정규화한 파일을 만든다.",
+      "command": "sed 's/2026-08-14/20260814/' /tmp/pb-batch/info.log > /tmp/pb-batch/norm.log; head -2 /tmp/pb-batch/norm.log"
+    },
+    {
+      "order": 4,
+      "purpose": "항목 수를 집계해 요약을 남긴다. awk 가 없는 이미지에서는 줄 수 세기로 대신한다.",
+      "command": "{ awk '{c++} END {print \"count=\" c}' /tmp/pb-batch/norm.log 2>/dev/null || wc -l < /tmp/pb-batch/norm.log; } > /tmp/pb-batch/summary.txt; cat /tmp/pb-batch/summary.txt"
+    },
+    {
+      "order": 5,
+      "purpose": "만든 파일을 모두 지운다.",
+      "command": "rm -rf /tmp/pb-batch"
+    }
+  ]
+}

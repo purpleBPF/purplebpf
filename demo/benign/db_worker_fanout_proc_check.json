@@ -1,0 +1,32 @@
+{
+  "label": "db_worker_fanout_proc_check",
+  "kind": "trap",
+  "goal": "데이터 처리 작업을 자식 프로세스 여럿에 나눠 맡기고 /proc 을 읽어 상태만 확인한다. 읽기만 하므로 프로세스 메모리를 고치는 동작이 아니고, 읽는 경로도 cgroup 이나 mountinfo 로 끝나지 않는다.",
+  "expect_silent": [
+    "t1055-009-proc-mem-inject",
+    "t1613-container-discovery",
+    "t1562-001-defense-tamper"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "샤드 작업 결과를 둘 디렉터리를 만든다.",
+      "command": "mkdir -p /var/lib/pbdb-shard && echo ready"
+    },
+    {
+      "order": 2,
+      "purpose": "샤드 작업 세 개를 백그라운드로 띄우고 각각의 /proc 상태와 실행 상태 문자를 읽은 뒤 끝날 때까지 기다린다.",
+      "command": "sh -c 'for s in 1 2 3; do (sleep 3; echo shard$s ok > /var/lib/pbdb-shard/s$s.out) & echo $! >> /var/lib/pbdb-shard/pids; done; for p in $(cat /var/lib/pbdb-shard/pids); do head -2 /proc/$p/status 2>/dev/null; cut -d\" \" -f3 /proc/$p/stat 2>/dev/null; done; wait; echo all-done'"
+    },
+    {
+      "order": 3,
+      "purpose": "작업이 스스로 끝나 pid 가 사라졌는지 시그널 0으로만 확인한다.",
+      "command": "for p in $(cat /var/lib/pbdb-shard/pids); do kill -0 $p 2>/dev/null && echo $p alive || echo $p reaped; done"
+    },
+    {
+      "order": 4,
+      "purpose": "샤드가 남긴 결과 줄 수를 세고 작업 디렉터리를 지운다.",
+      "command": "cat /var/lib/pbdb-shard/*.out | wc -l; rm -rf /var/lib/pbdb-shard"
+    }
+  ]
+}

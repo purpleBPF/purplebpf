@@ -1,0 +1,31 @@
+{
+  "label": "tmp_session_cleanup",
+  "kind": "normal",
+  "goal": "오래된 세션 임시 파일을 찾아 지우는 주기 정리 작업이다",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "세션 임시 파일을 만든다",
+      "command": "mkdir -p /tmp/sessions && touch /tmp/sessions/s1 /tmp/sessions/s2 /tmp/sessions/s3"
+    },
+    {
+      "order": 2,
+      "purpose": "정리 대상 파일 수를 센다",
+      "command": "find /tmp/sessions -type f -name 's*' | wc -l"
+    },
+    {
+      "order": 3,
+      "purpose": "대상 파일 하나를 지우고 남은 수를 확인한다",
+      "command": "rm -f /tmp/sessions/s1 && find /tmp/sessions -type f | wc -l"
+    },
+    {
+      "order": 4,
+      "purpose": "세션 디렉터리를 정리한다",
+      "command": "rm -rf /tmp/sessions"
+    }
+  ]
+}

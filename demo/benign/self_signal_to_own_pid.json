@@ -1,0 +1,31 @@
+{
+  "label": "self_signal_to_own_pid",
+  "kind": "trap",
+  "goal": "셸이 자기 자신의 pid 에 시그널을 보낸다. 다른 프로세스를 건드리지 않는 자기 종료 처리다.",
+  "expect_silent": [
+    "t1562-001-defense-tamper",
+    "t1055-008-ptrace-inject"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "자기 pid 에 시그널 0을 보내 자기 자신을 확인한다.",
+      "command": "sh -c 'kill -0 $$ && echo self-alive'"
+    },
+    {
+      "order": 2,
+      "purpose": "자기 pid 에 23번을 보낸다. 무시되는 신호라 셸은 계속 돈다.",
+      "command": "sh -c 'kill -23 $$; echo survived-23'"
+    },
+    {
+      "order": 3,
+      "purpose": "자기 pid 에 10번을 보내 스스로 끝난다. 종료 코드가 0이 아니어서 뒤에 true 를 붙인다.",
+      "command": "sh -c 'kill -10 $$' || true"
+    },
+    {
+      "order": 4,
+      "purpose": "자식 셸을 하나 더 띄워 그 셸이 자기 자신에게 1번을 보내게 한다.",
+      "command": "sh -c 'kill -1 $$' || true"
+    }
+  ]
+}

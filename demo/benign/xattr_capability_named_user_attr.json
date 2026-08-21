@@ -1,0 +1,37 @@
+{
+  "label": "xattr_capability_named_user_attr",
+  "kind": "trap",
+  "goal": "속성 이름에 capability라는 낱말이 들어가지만 user 네임스페이스라서 security.capability와는 다른 확장 속성을 붙인다.",
+  "expect_silent": [
+    "exec-file-capability",
+    "t1548-001-setuid-bit-set",
+    "exec-admin-tools"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "패키지 디렉터리에 실행 스크립트를 만들고 실행 권한만 준다.",
+      "command": "mkdir -p /opt/pkg && printf '#!/bin/sh\\necho packaged tool ran\\n' > /opt/pkg/tool.sh && chmod 750 /opt/pkg/tool.sh"
+    },
+    {
+      "order": 2,
+      "purpose": "권한 검토 메모를 user.capability_hint 이름으로 남긴다.",
+      "command": "python3 -c \"import os; p='/opt/pkg/tool.sh'; os.setxattr(p,'user.capability_hint',b'cap_net_bind_service'); os.setxattr(p,'user.capability_reviewed',b'yes')\" || true"
+    },
+    {
+      "order": 3,
+      "purpose": "스크립트를 실행해 정상 동작을 확인한다.",
+      "command": "/opt/pkg/tool.sh"
+    },
+    {
+      "order": 4,
+      "purpose": "붙은 속성 이름을 확인한다.",
+      "command": "python3 -c \"import os; print(os.listxattr('/opt/pkg/tool.sh'))\" || true"
+    },
+    {
+      "order": 5,
+      "purpose": "패키지 디렉터리를 지운다.",
+      "command": "rm -rf /opt/pkg"
+    }
+  ]
+}

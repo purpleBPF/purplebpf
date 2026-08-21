@@ -1,0 +1,32 @@
+{
+  "label": "temp_workdir_lifecycle",
+  "kind": "normal",
+  "goal": "작업 파일을 임시 디렉터리에 만들고 복사한 뒤 지우는 평범한 처리다. 임시 경로에서 실행은 하지 않는다. df 는 /proc/self/mountinfo 를 열어 t1613 의 /mountinfo 후위 조건에 걸리므로 뺐다",
+  "expect_silent": [
+    "t1105-tmp-exec",
+    "t1548-001-setuid-bit-set",
+    "t1613-container-discovery"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "임시 작업 디렉터리에 데이터 파일을 만든다",
+      "command": "mkdir -p /var/tmp/pbpf-work && dd if=/dev/zero of=/var/tmp/pbpf-work/blob bs=1k count=16 2>/dev/null"
+    },
+    {
+      "order": 2,
+      "purpose": "복사본과 하드링크를 만든다",
+      "command": "cp /var/tmp/pbpf-work/blob /var/tmp/pbpf-work/blob.copy && ln /var/tmp/pbpf-work/blob /var/tmp/pbpf-work/blob.link && ls -l /var/tmp/pbpf-work"
+    },
+    {
+      "order": 3,
+      "purpose": "복사본 권한을 좁히고 파일 수와 크기를 확인한다",
+      "command": "chmod 600 /var/tmp/pbpf-work/blob.copy && find /var/tmp/pbpf-work -type f | wc -l && wc -c < /var/tmp/pbpf-work/blob"
+    },
+    {
+      "order": 4,
+      "purpose": "작업 디렉터리를 통째로 지운다",
+      "command": "rm -rf /var/tmp/pbpf-work"
+    }
+  ]
+}

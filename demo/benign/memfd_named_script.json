@@ -1,0 +1,31 @@
+{
+  "label": "memfd_named_script",
+  "kind": "trap",
+  "goal": "파일 이름에 memfd 라는 글자가 들어갈 뿐 디스크에 있는 평범한 스크립트를 실행하는 동작이다",
+  "expect_silent": [
+    "fileless-fd-exec",
+    "t1105-tmp-exec"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "purpose": "캐시 예열 스크립트를 만든다",
+      "command": "mkdir -p /var/lib/appcache && echo '#!/bin/sh' > /var/lib/appcache/memfd-warm.sh && echo 'echo warmed' >> /var/lib/appcache/memfd-warm.sh && chmod 755 /var/lib/appcache/memfd-warm.sh"
+    },
+    {
+      "order": 2,
+      "purpose": "스크립트를 실행한다",
+      "command": "/var/lib/appcache/memfd-warm.sh"
+    },
+    {
+      "order": 3,
+      "purpose": "이름에 memfd: 가 들어간 사본을 만들어 실행한다. 경로 맨 앞이 아니므로 규칙의 Prefix 조건에는 안 맞는다",
+      "command": "cp /var/lib/appcache/memfd-warm.sh '/var/lib/appcache/memfd:cached' && '/var/lib/appcache/memfd:cached'"
+    },
+    {
+      "order": 4,
+      "purpose": "캐시 디렉터리를 정리한다",
+      "command": "rm -rf /var/lib/appcache"
+    }
+  ]
+}
