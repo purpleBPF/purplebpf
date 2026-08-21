@@ -1,0 +1,48 @@
+# 차단판. 관측판과 훅·인자·필터가 같고 matchActions 만 다르다.
+#
+# Sigkill 이 아니라 Override 를 쓴다. Sigkill 은 시스템콜이 제 일을 끝낸 뒤에
+# 프로세스를 죽이므로 막으려던 변경이 이미 일어나 있다. setuid 에서 실측했다.
+# 프로세스는 종료코드 137 로 죽었는데 결과는 -rwsr-xr-x 였다.
+# Override 는 커널 함수의 반환값을 오류로 바꿔 변경 자체가 일어나지 않게 한다.
+#
+# metadata.name 은 관측판과 같다. 두 판을 동시에 올리지 않으므로 충돌하지 않고,
+# 채점하는 쪽은 모드가 바뀌어도 같은 규칙 이름으로 집계한다.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "t1105-tmp-exec"
+spec:
+  kprobes:
+  # 임시 경로에서 프로그램을 실행하는 것만 본다.
+  #
+  # 처음에는 파일을 떨어뜨리는 순간(security_file_open)도 같이 걸었다.
+  # 그런데 /tmp 에 파일을 여는 것은 postgres, runc, containerd 가 늘 하는
+  # 정상 동작이라 오탐이 대부분이었다. 20초에 13건이 떴고 전부 열기 훅에서
+  # 나왔으며 실행 훅에서는 한 건도 안 나왔다.
+  #
+  # 공격의 특징은 떨어뜨린 것이 아니라 떨어뜨린 것을 실행한 것이다.
+  # /tmp 에서 프로그램을 실행하는 일은 정상 시스템에 거의 없다.
+  # 열기 훅을 빼고 실행 훅만 남기니 같은 공격을 잡으면서 오탐이 사라졌다.
+  #   현재(열기+실행)  20초에 23건 발화, 그중 공격 5건
+  #   실행 훅만        20초에  1건 발화, 그중 공격 1건
+  #
+  # 쓰기 조건을 거는 방법(security_file_permission 에 MAY_WRITE)도 시험했으나
+  # 그 훅은 읽기·쓰기마다 불려서 10만 건 가까이 나왔다. 쓰면 안 된다.
+  - call: "security_bprm_check"
+    syscall: false
+    tags: [ "T1105", "pbpf:treatment" ]
+    args:
+    - index: 0
+      type: "linux_binprm"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/tmp/"
+        - "/dev/shm/"
+        - "/run/shm/"
+        - "/var/tmp/"
+      matchActions:
+      - action: Override
+        argError: -1   # -EPERM

@@ -15,14 +15,26 @@ spec:
   - call: "security_inode_setxattr"
     syscall: false
     tags: [ "pbpf:single", "pbpf:no-attack-mapping" ]
+    # 인자 위치가 커널 버전에 따라 다르다. 앞에 한 칸이 새로 끼었다.
+    #
+    #   5.11 이하   (dentry, name, ...)
+    #   5.12~6.2    (user_namespace, dentry, name, ...)
+    #   6.3 이상    (mnt_idmap, dentry, name, ...)
+    #
+    # 앞의 한 칸이 무엇이든 dentry 는 1, 이름은 2 라서 5.12 이상은 같은 번호로
+    # 덮인다. 5.11 이하는 못 덮는다. 지금 검증 커널이 7.0 이라 그쪽에 맞췄다.
+    #
+    # 번호가 틀리면 로드는 되는데 영영 안 뜬다. 실측으로 확인했다. 0/1 로 두면
+    # setxattr 가 성공해도 규칙이 0건이고, 1/2 로 밀면 경로와 속성 이름이
+    # 제대로 나온다.
     args:
-    - index: 0
-      type: "dentry"
     - index: 1
+      type: "dentry"
+    - index: 2
       type: "string"
     selectors:
     - matchArgs:
-      - index: 1
+      - index: 2
         operator: "Equal"
         values:
         - "security.capability"

@@ -21,8 +21,8 @@ spec:
       - index: 0
         operator: "Equal"
         values:
-        - "8"   # BPF_PROG_DETACH
-        - "3"   # BPF_MAP_DELETE_ELEM
+        - "9"   # BPF_PROG_DETACH     프로그램을 떼어낸다
+        - "3"   # BPF_MAP_DELETE_ELEM 맵을 지워 눈을 멀게 한다
 
   # 프로세스를 실제로 죽이는 시그널만 본다.
   #
@@ -48,4 +48,3 @@ spec:
         operator: "Equal"
         values:
         - "9"    # SIGKILL
-        - "15"   # SIGTERM
