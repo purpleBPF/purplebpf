@@ -41,6 +41,18 @@ def get_slack_webhook_url() -> str:
     return url
 
 
+def get_slack_signing_secret() -> str:
+    """Slack이 보낸 인터랙션(버튼 클릭) 요청이 진짜인지 검증할 때 쓰는 서명 비밀키.
+
+    Slack 앱 관리 페이지의 'Basic Information' > 'Signing Secret'에서 확인할 수 있다.
+    앱 관리자(권준희)에게 받아서 .env의 SLACK_SIGNING_SECRET에 채워 넣는다.
+    """
+    secret = os.environ.get("SLACK_SIGNING_SECRET")
+    if not secret:
+        raise RuntimeError("SLACK_SIGNING_SECRET 환경변수가 설정되어 있지 않다.")
+    return secret
+
+
 def build_db_engine() -> Engine:
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:

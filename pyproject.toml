@@ -19,6 +19,8 @@ dependencies = [
     "dbt-duckdb>=1.9",
     "dagster>=1.8",
     "dagster-webserver>=1.8",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
 ]
 
 [build-system]
