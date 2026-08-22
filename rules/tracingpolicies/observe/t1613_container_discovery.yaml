@@ -9,6 +9,9 @@ spec:
   #
   # /proc/self/... 로 열어도 커널이 보는 경로는 /proc/<pid>/... 로 풀린다.
   # 그래서 Equal 로는 안 맞고 Postfix 로 끝부분을 본다(실측).
+  #
+  # 한 selector 안의 matchArgs 는 모두 만족해야 하므로 Prefix 와 Postfix 를
+  # 같이 걸면 두 조건이 AND 로 묶인다.
   - call: "security_file_open"
     syscall: false
     tags: [ "T1613", "pbpf:single" ]
@@ -16,12 +19,42 @@ spec:
     - index: 0
       type: "file"
     selectors:
+    # cgroup 은 /proc 아래로만 한정한다. Postfix 만 쓰면 /sys/fs/cgroup 에도
+    # 걸리는데, 컨테이너가 자기 메모리 한도를 읽을 때 여는 디렉터리라
+    # 정상 동작에서 늘 뜬다. 오탐 측정에서 실제로 잡혔다.
     - matchArgs:
       - index: 0
+        operator: "Prefix"
+        values: [ "/proc/" ]
+      - index: 0
         operator: "Postfix"
+        values: [ "/cgroup" ]
+    # mountinfo 는 경로만으로 정찰과 정상 동작을 못 가른다. df 가 남은 용량을
+    # 계산하려고 마운트 목록을 읽는데, 이때 여는 파일이 정찰과 똑같다(실측).
+    # 그래서 마운트 목록이 일인 도구들을 실행 파일로 뺀다.
+    #
+    # 이 방식의 한계는 분명하다. 공격자가 자기 도구를 /usr/bin/df 로 두면
+    # 빠져나간다. 그래도 남겨두는 쪽이 낫다고 본 이유는, 이 규칙 하나로
+    # 막는 게 아니라 다른 규칙과 같이 보기 때문이다. 이름을 바꿔 심는 것
+    # 자체가 t1105 나 setuid 규칙에 걸린다.
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values: [ "/proc/" ]
+      - index: 0
+        operator: "Postfix"
+        values: [ "/mountinfo" ]
+      matchBinaries:
+      - operator: "NotIn"
         values:
-        - "/cgroup"       # /proc/<pid>/cgroup — 자기가 어느 cgroup 인지
-        - "/mountinfo"    # /proc/<pid>/mountinfo — 무엇이 마운트돼 있는지
+        - "/usr/bin/df"
+        - "/bin/df"
+        - "/usr/bin/mount"
+        - "/bin/mount"
+        - "/usr/bin/umount"
+        - "/bin/umount"
+        - "/usr/bin/findmnt"
+        - "/usr/bin/lsblk"
     - matchArgs:
       - index: 0
         operator: "Equal"

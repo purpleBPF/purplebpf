@@ -1,3 +1,12 @@
+# 차단판. 관측판과 훅·인자·필터가 같고 matchActions 만 다르다.
+#
+# Sigkill 이 아니라 Override 를 쓴다. Sigkill 은 시스템콜이 제 일을 끝낸 뒤에
+# 프로세스를 죽이므로 막으려던 변경이 이미 일어나 있다. setuid 에서 실측했다.
+# 프로세스는 종료코드 137 로 죽었는데 결과는 -rwsr-xr-x 였다.
+# Override 는 커널 함수의 반환값을 오류로 바꿔 변경 자체가 일어나지 않게 한다.
+#
+# metadata.name 은 관측판과 같다. 두 판을 동시에 올리지 않으므로 충돌하지 않고,
+# 채점하는 쪽은 모드가 바뀌어도 같은 규칙 이름으로 집계한다.
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
@@ -34,6 +43,9 @@ spec:
         - "5"      # PTRACE_POKEDATA   메모리에 쓴다
         - "6"      # PTRACE_POKEUSR    사용자 영역에 쓴다. 레지스터가 여기 걸린다
         - "13"     # PTRACE_SETREGS    x86 의 레지스터 쓰기. aarch64 에는 없는 값이다
+      matchActions:
+      - action: Override
+        argError: -1   # -EPERM
     # 붙는 계열과 aarch64 의 레지스터 쓰기
     - matchArgs:
       - index: 0
@@ -42,3 +54,6 @@ spec:
         - "16"     # PTRACE_ATTACH     붙는다
         - "16901"  # PTRACE_SETREGSET  0x4205  aarch64 는 이쪽으로 레지스터를 쓴다
         - "16902"  # PTRACE_SEIZE      0x4206  요즘 쓰는 붙기 방식
+      matchActions:
+      - action: Override
+        argError: -1   # -EPERM

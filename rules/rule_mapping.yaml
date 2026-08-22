@@ -83,8 +83,13 @@ policies:
     leg: ptrace 로 남의 프로세스 메모리에 코드 주입
     hook: sys_ptrace
     note: |
-      요청 종류로 좁혔다. POKETEXT(4), POKEDATA(5), SETREGS(13), ATTACH(16).
-      읽기 계열은 디버깅과 구분이 안 되어 뺐다.
+      요청 종류로 좁혔다. 쓰기와 붙기만 본다. 읽기 계열은 디버깅과
+      구분이 안 되어 뺐다.
+
+      처음 목록에 SEIZE(0x4206) 가 없어서 그것으로 붙으면 안 잡혔다.
+      실측으로 확인하고 채웠다. SETREGS(13) 은 aarch64 에 없는 값이라
+      이 환경에서는 죽은 조건이다. x86 이식성 때문에 남겨두고 같은 일을 하는
+      SETREGSET(0x4205) 을 옆에 넣었다.
       컨테이너는 보통 프로세스가 하나라 주입 대상이 없다. 씨앗 체인은
       대상 프로세스를 직접 띄우므로 시나리오가 인위적이다.
     io_uring: 비대상   # ptrace 옵코드 없음
@@ -93,7 +98,10 @@ policies:
     technique: T1055.009
     leg: /proc/<pid>/mem 쓰기로 메모리 주입
     hook: security_file_permission
-    note: ptrace 를 막아둔 환경에서 쓰이는 우회로다. MAY_WRITE(2) 만 본다
+    note: |
+      ptrace 를 막아둔 환경에서 쓰이는 우회로다. MAY_WRITE(2) 만 본다.
+      경로도 mem 으로 끝나는 것에 한정한다. /proc 아래 쓰기 전체를 잡으면
+      프로세스가 자기 oom_score_adj 나 comm 을 고치는 평범한 동작이 늘 뜬다.
     io_uring: 대상     # 파일 쓰기라 WRITE 로 수행 가능
 
   t1548-003-sudo-abuse:
