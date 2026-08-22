@@ -15,3 +15,10 @@ dbt/duckdb/*.duckdb.wal
 dbt/.user.yml
 .tmp_dagster_home_*/
 .tmp_dagster_home_*/
+.dagster_home/
+
+# 로컬 E2E 검증 스크래치 산출물
+e2e_*.log
+e2e_*summary.md
+recall_by_round_*.log
+recall_by_round_*summary.md
