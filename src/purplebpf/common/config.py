@@ -8,7 +8,15 @@ from dotenv import load_dotenv
 from neo4j import Driver, GraphDatabase
 from sqlalchemy import Engine, create_engine
 
-load_dotenv()
+_env_file = os.environ.get("PBPF_ENV_FILE")
+if _env_file:
+    # 명시적으로 지정된 파일만 로드한다. 이미 설정된 값은 덮어쓰지 않는다(override=False).
+    # 레포 루트가 여러 환경(예: Lima VM)에 동일 경로로 마운트되는 경우, cwd 기준
+    # 자동 탐색(load_dotenv())이 그 환경에 맞지 않는 .env를 잘못 끌어올 수 있어
+    # PBPF_ENV_FILE로 로드 대상을 명시적으로 통제할 수 있게 한다.
+    load_dotenv(dotenv_path=_env_file, override=False)
+else:
+    load_dotenv(override=False)
 
 
 def build_neo4j_driver() -> Driver:
