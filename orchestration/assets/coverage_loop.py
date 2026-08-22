@@ -74,7 +74,23 @@ def run_attack_round(context: AssetExecutionContext) -> MaterializeResult:
     )
     cmd = _limactl_shell(bash_command)
     result = _run_shell(context, "run_attack_round", cmd)
-    _require_success("Executor 실행", cmd, result)
+    
+    # --- 수정된 부분: 0(성공), 2(REJECT), 3(REVIEW) 모두 정상 흐름으로 처리 ---
+    if result.returncode not in (0, 2, 3):
+        raise Failure(
+            description=f"Executor 실행 실패 (returncode={result.returncode})",
+            metadata={
+                "command": MetadataValue.md(f"`{' '.join(cmd)}`"),
+                "returncode": result.returncode,
+                "stderr_tail": result.stderr[-2000:],
+            },
+        )
+    elif result.returncode == 2:
+        context.log.warning("체인이 REJECT(반려) 되어 실행이 차단되었습니다. 파이프라인을 계속 진행합니다.")
+    elif result.returncode == 3:
+        context.log.info("체인이 REVIEW(검토) 상태가 되어 Slack 알림이 발송되었습니다. 파이프라인을 계속 진행합니다.")
+    # -------------------------------------------------------------------------
+    
     return _materialize_result("run_attack_round", cmd, result)
 
 
