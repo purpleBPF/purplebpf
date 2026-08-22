@@ -11,8 +11,19 @@ Mapper가 항상 켜져 있으므로 공격이 나가면 자동으로 잡힌다.
 import subprocess
 
 from dagster import AssetExecutionContext, Failure, MaterializeResult, MetadataValue, asset
+from sqlalchemy import text
+
+from purplebpf.common.config import build_db_engine
 
 from . import constants as C
+
+NEXT_ROUND_ID_SQL = text("SELECT COALESCE(MAX(round_id), 0) + 1 FROM execution_log")
+
+
+def _next_round_id() -> int:
+    engine = build_db_engine()
+    with engine.connect() as conn:
+        return conn.execute(NEXT_ROUND_ID_SQL).scalar_one()
 
 
 def _run_shell(context: AssetExecutionContext, label: str, cmd: list[str]) -> subprocess.CompletedProcess:
@@ -55,9 +66,11 @@ def _limactl_shell(bash_command: str) -> list[str]:
 @asset
 def run_attack_round(context: AssetExecutionContext) -> MaterializeResult:
     """Lima VM 안에서 Executor로 공격 체인 한 라운드를 실행한다 (execution_log에 기록됨)."""
+    round_id = _next_round_id()
+    context.log.info(f"[run_attack_round] round_id={round_id}")
     bash_command = (
         f"cd {C.VM_REPO_ROOT} && source {C.VM_ENV_FILE} && "
-        f"python3 -m purplebpf.offensive.executor.executor {C.TARGET_TECHNIQUE_ID}"
+        f"python3 -m purplebpf.offensive.executor.executor {C.TARGET_TECHNIQUE_ID} --round-id {round_id}"
     )
     cmd = _limactl_shell(bash_command)
     result = _run_shell(context, "run_attack_round", cmd)
