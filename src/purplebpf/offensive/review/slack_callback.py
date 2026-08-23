@@ -10,8 +10,13 @@ Slack은 버튼이 눌리면 여기 등록된 Request URL로 POST 요청을 보�
 그 ngrok 주소를 Slack 앱 설정의 'Interactivity & Shortcuts' > Request URL에
 등록해야 실제로 Slack이 요청을 보낼 수 있다 (앱 관리자 권한 필요, 별도 단계).
 
+[현재 구현 상태 — 표시 전용(display-only)]
 실행: 실제로 체인을 다시 실행하거나 execution_log를 갱신하는 로직은 이 모듈의
-스코프가 아니다 — 지금은 "클릭을 받아서 화면에 반영"까지만 한다.
+스코프가 아니다 — 지금은 "클릭을 받아서 화면에 반영"까지만 한다. 승인
+(approve_chain) 버튼을 눌러도 실제로 차단된 체인이 (재)실행되거나
+execution_log가 갱신되지 않는다. 즉 REVIEW로 차단된 공격의 "승인 → 실제
+실행" 연결은 아직 구현되지 않았다(별도 과제). 이 모듈 자체에는 실행
+트리거가 없다.
 """
 from __future__ import annotations
 
@@ -63,6 +68,9 @@ async def handle_interaction(
         logger.warning("알 수 없는 action_id: %s", action_id)
         raise HTTPException(status_code=400, detail="알 수 없는 action_id")
 
+    # NOTE: 표시 전용 — approve_chain/reject_chain 둘 다 여기서 메시지 텍스트만
+    #       "승인됨"/"반려됨"으로 갱신한다. 실제 체인 실행이나 execution_log
+    #       갱신은 하지 않는다(미구현). "승인 → 실행" 연결은 별도 과제로 남아 있다.
     badge, label = DECISION_LABELS[action_id]
     logger.info("검수 결과: %s → %s (by %s)", technique_id, label, username)
 
