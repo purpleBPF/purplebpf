@@ -19,10 +19,13 @@
     --status-warning: #fab219;
     --status-serious: #ec835a;
     --status-critical: #d03b3b;
+    --status-idle: #b9b7ae;
     --code-bg: #f2f1ee;
+    --accent-grafana: #f050c4;
+    --accent-grafana-text: #ffffff;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       color-scheme: dark;
       --surface-0: #0d0d0d;
       --surface-1: #1a1a19;
@@ -37,9 +40,33 @@
       --status-warning: #fab219;
       --status-serious: #ec835a;
       --status-critical: #d03b3b;
+      --status-idle: #57564f;
       --code-bg: #232322;
+      --accent-grafana: #ff6ad5;
+      --accent-grafana-text: #1a0014;
     }
   }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-0: #0d0d0d;
+    --surface-1: #1a1a19;
+    --surface-2: #232322;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --gridline: #2c2c2a;
+    --border: rgba(255,255,255,0.10);
+    --series-blue: #3987e5;
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #d03b3b;
+    --status-idle: #57564f;
+    --code-bg: #232322;
+    --accent-grafana: #ff6ad5;
+    --accent-grafana-text: #1a0014;
+  }
+  body { background: var(--surface-0); }
   * { box-sizing: border-box; }
   body {
     margin: 0;
@@ -52,13 +79,49 @@
     background: var(--surface-1);
     border-bottom: 1px solid var(--border);
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
   }
+  header .header-left { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   header h1 { font-size: 17px; margin: 0; }
   header .meta { color: var(--text-muted); font-size: 12px; }
+  .grafana-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--accent-grafana);
+    color: var(--accent-grafana-text);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .grafana-btn:hover { filter: brightness(1.06); }
+  .grafana-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .85; }
+
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+  }
+  .theme-toggle-btn:hover { filter: brightness(1.08); }
+
   .round-picker {
     display: flex;
     gap: 8px;
@@ -103,14 +166,14 @@
   .badge-error { background: var(--status-critical); }
   .badge-unknown { background: var(--text-muted); }
 
-  main.grid {
+  main { padding: 16px 24px 32px; display: flex; flex-direction: column; gap: 16px; }
+  main .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
-    padding: 16px 24px 32px;
   }
   @media (max-width: 900px) {
-    main.grid { grid-template-columns: 1fr; }
+    main .grid { grid-template-columns: 1fr; }
   }
   section.panel {
     background: var(--surface-1);
@@ -118,6 +181,14 @@
     border-radius: 10px;
     padding: 16px;
     min-width: 0;
+  }
+  section.panel.panel-full { width: 100%; }
+  section.panel .panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
   }
   section.panel h2 {
     font-size: 13px;
@@ -214,7 +285,40 @@
   .chart-legend span { display: inline-flex; align-items: center; gap: 5px; }
   .chart-legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
 
-  /* Panel D: JSON */
+  /* Panel E: graph / raw json toggle */
+  .view-toggle { display: flex; gap: 6px; flex: 0 0 auto; }
+  .view-toggle button {
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-secondary);
+    font-size: 11.5px;
+    cursor: pointer;
+  }
+  .view-toggle button.active {
+    background: var(--series-blue);
+    border-color: var(--series-blue);
+    color: #fff;
+  }
+  .graph-scroll {
+    overflow-x: auto;
+    padding: 4px 0 10px;
+  }
+  .graph-node-label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px;
+    fill: var(--text-secondary);
+  }
+  .graph-node-order {
+    font-size: 13px;
+    font-weight: 700;
+    fill: #fff;
+  }
+  .graph-edge {
+    stroke: var(--gridline);
+    stroke-width: 2;
+  }
   pre.json-view {
     margin: 0;
     max-height: 420px;
@@ -232,29 +336,39 @@
 </head>
 <body>
 <header>
-  <h1>🛡️ PurpleBPF 공격체인 대시보드</h1>
-  <div class="meta" id="header-meta">-</div>
+  <div class="header-left">
+    <h1>🛡️ PurpleBPF 공격체인 대시보드</h1>
+    <div class="meta" id="header-meta">-</div>
+  </div>
+  <div class="header-right">
+    <button type="button" class="theme-toggle-btn" id="theme-toggle" title="다크/라이트 모드 전환">🌙</button>
+    <a class="grafana-btn" href="http://localhost:3000" target="_blank" rel="noopener">
+      <span class="dot"></span> Grafana 바로가기
+    </a>
+  </div>
 </header>
 
 <div class="round-picker" id="round-picker"></div>
 
-<main class="grid">
-  <section class="panel" id="panel-a">
-    <h2>A · 프로세스 트리 (추론)</h2>
-    <p class="sub">선택된 라운드의 각 step command를 파이프/구분자 기준으로 쪼개 부모-자식 형태로 보여줍니다.</p>
-    <div id="panel-a-body"><div class="empty">라운드를 선택하세요</div></div>
-    <div class="disclaimer">
-      ⚠️ 이 트리는 실제 프로세스 fork/exec 관계(syscall 트레이스)가 아니라, command 문자열을
-      <code>;</code> / <code>&amp;&amp;</code> / <code>||</code> / <code>|</code> 기준으로 정규식 분리해 추론한 것입니다.
-      쉘 인용부호·서브셸·변수 치환까지 완벽하게 파싱하지 않으므로 참고용으로만 사용하세요.
-    </div>
-  </section>
+<main>
+  <div class="grid">
+    <section class="panel" id="panel-a">
+      <h2>A · 프로세스 트리 (추론)</h2>
+      <p class="sub">선택된 라운드의 각 step command를 파이프/구분자 기준으로 쪼개 부모-자식 형태로 보여줍니다.</p>
+      <div id="panel-a-body"><div class="empty">라운드를 선택하세요</div></div>
+      <div class="disclaimer">
+        ⚠️ 이 트리는 실제 프로세스 fork/exec 관계(syscall 트레이스)가 아니라, command 문자열을
+        <code>;</code> / <code>&amp;&amp;</code> / <code>||</code> / <code>|</code> 기준으로 정규식 분리해 추론한 것입니다.
+        쉘 인용부호·서브셸·변수 치환까지 완벽하게 파싱하지 않으므로 참고용으로만 사용하세요.
+      </div>
+    </section>
 
-  <section class="panel" id="panel-b">
-    <h2>B · 단계 흐름</h2>
-    <p class="sub">validator level1(문법) 기준 step 목록과 실제 실행 결과(있는 경우)를 순서대로 표시합니다.</p>
-    <div id="panel-b-body"><div class="empty">라운드를 선택하세요</div></div>
-  </section>
+    <section class="panel" id="panel-b">
+      <h2>B · 단계 흐름</h2>
+      <p class="sub">validator level1(문법) 기준 step 목록과 실제 실행 결과(있는 경우)를 순서대로 표시합니다.</p>
+      <div id="panel-b-body"><div class="empty">라운드를 선택하세요</div></div>
+    </section>
+  </div>
 
   <section class="panel" id="panel-c">
     <h2>C · 라운드 결정 분포</h2>
@@ -262,10 +376,19 @@
     <div id="panel-c-body"><div class="empty">데이터 없음</div></div>
   </section>
 
-  <section class="panel" id="panel-d">
-    <h2>D · Raw JSON</h2>
-    <p class="sub">executor가 stdout으로 출력한 최종 결과 JSON 원본입니다.</p>
-    <pre class="json-view" id="panel-d-body">{}</pre>
+  <section class="panel panel-full" id="panel-graph">
+    <div class="panel-head">
+      <div>
+        <h2>D · 공격체인 그래프</h2>
+        <p class="sub">선택된 라운드의 step을 Neo4j 스타일 노드-엣지 그래프로 표현합니다. 원 안 숫자는 step 순서이며, 색은 실행 결과(성공/실패/미실행)를 나타냅니다.</p>
+      </div>
+      <div class="view-toggle">
+        <button type="button" id="btn-view-graph" class="active">그래프</button>
+        <button type="button" id="btn-view-json">Raw JSON</button>
+      </div>
+    </div>
+    <div id="panel-graph-body"><div class="graph-scroll"><div class="empty">라운드를 선택하세요</div></div></div>
+    <pre class="json-view" id="panel-json-body" style="display:none">{}</pre>
   </section>
 </main>
 
@@ -391,8 +514,77 @@ function renderChart(samples) {
   return `${rows}<div class="chart-legend">${legend}</div><div class="sub" style="margin-top:10px">최근 ${samples.length}개 라운드 기준</div>`;
 }
 
+// --- Panel D: Neo4j-style attack chain graph (circular nodes + edges, single row) ---
+function nodeStatusColor(exitCode, passed) {
+  if (exitCode === undefined || exitCode === null) {
+    if (passed === true) return "var(--status-good)";
+    if (passed === false) return "var(--status-serious)";
+    return "var(--status-idle)";
+  }
+  return exitCode === 0 ? "var(--status-good)" : "var(--status-serious)";
+}
+
+function shortLabel(command) {
+  const s = (command || "").trim();
+  const firstTok = s.split(/\s+/)[0] || s;
+  const name = firstTok.split("/").pop();
+  return name.length > 16 ? name.slice(0, 15) + "…" : name;
+}
+
+function renderGraph(round) {
+  const steps = (round.steps && round.steps.length) ? round.steps : (round.step_results || []);
+  if (!steps.length) return '<div class="graph-scroll"><div class="empty">step 정보 없음</div></div>';
+
+  const resultByOrder = {};
+  (round.step_results || []).forEach((r) => { resultByOrder[r.order] = r; });
+
+  const r = 30;
+  const gap = 150;
+  const cy = 74;
+  const width = Math.max(gap * steps.length + 40, 300);
+  const height = 160;
+
+  let edges = "";
+  let nodes = "";
+
+  steps.forEach((s, i) => {
+    const cx = 60 + i * gap;
+    const executed = resultByOrder[s.order];
+    const exitCode = executed ? executed.exit_code : s.exit_code;
+    const color = nodeStatusColor(exitCode, s.passed);
+    const label = shortLabel(s.command);
+    const fullCommand = esc(s.command || "");
+
+    if (i > 0) {
+      const prevCx = 60 + (i - 1) * gap;
+      edges += `<line class="graph-edge" x1="${prevCx + r}" y1="${cy}" x2="${cx - r - 8}" y2="${cy}" marker-end="url(#arrow)"></line>`;
+    }
+
+    nodes += `<g>
+      <title>Step ${esc(s.order ?? "?")}: ${fullCommand}</title>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}" fill-opacity="0.18" stroke="${color}" stroke-width="2"></circle>
+      <text x="${cx}" y="${cy + 5}" text-anchor="middle" class="graph-node-order" fill="${color}" style="fill:${color}">${esc(s.order ?? "?")}</text>
+      <text x="${cx}" y="${cy + r + 18}" text-anchor="middle" class="graph-node-label">${esc(label)}</text>
+      <text x="${cx}" y="${cy + r + 32}" text-anchor="middle" class="graph-node-label">${exitCode === undefined || exitCode === null ? "미실행" : (exitCode === 0 ? "✅ exit 0" : "⚠️ exit " + esc(exitCode))}</text>
+    </g>`;
+  });
+
+  return `<div class="graph-scroll">
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--gridline)"></path>
+        </marker>
+      </defs>
+      ${edges}
+      ${nodes}
+    </svg>
+  </div>`;
+}
+
 // --- selection + render ---
 let activeIndex = 0;
+let graphView = "graph"; // "graph" | "json"
 
 function renderRoundPicker() {
   const el = document.getElementById("round-picker");
@@ -415,12 +607,21 @@ function renderRoundPicker() {
   });
 }
 
+function applyViewToggle() {
+  document.getElementById("panel-graph-body").style.display = graphView === "graph" ? "" : "none";
+  document.getElementById("panel-json-body").style.display = graphView === "json" ? "" : "none";
+  document.getElementById("btn-view-graph").classList.toggle("active", graphView === "graph");
+  document.getElementById("btn-view-json").classList.toggle("active", graphView === "json");
+}
+
 function renderSelected() {
   const round = SAMPLES[activeIndex];
   if (!round) return;
   document.getElementById("panel-a-body").innerHTML = renderProcessTree(round.steps);
   document.getElementById("panel-b-body").innerHTML = renderStepFlow(round);
-  document.getElementById("panel-d-body").textContent = JSON.stringify(round.raw ?? round, null, 2);
+  document.getElementById("panel-graph-body").innerHTML = renderGraph(round);
+  document.getElementById("panel-json-body").textContent = JSON.stringify(round.raw ?? round, null, 2);
+  applyViewToggle();
 }
 
 function renderAll() {
@@ -433,6 +634,43 @@ function renderAll() {
     : "데이터 없음";
 }
 
+document.getElementById("btn-view-graph").addEventListener("click", () => { graphView = "graph"; applyViewToggle(); });
+document.getElementById("btn-view-json").addEventListener("click", () => { graphView = "json"; applyViewToggle(); });
+
+// --- manual dark/light theme toggle (독립적으로 OS 설정과 무관하게 강제 전환 가능) ---
+function systemPrefersDark() {
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function currentTheme() {
+  const stored = document.documentElement.getAttribute("data-theme");
+  if (stored) return stored;
+  return systemPrefersDark() ? "dark" : "light";
+}
+
+function applyThemeButtonIcon() {
+  const btn = document.getElementById("theme-toggle");
+  btn.textContent = currentTheme() === "dark" ? "☀️" : "🌙";
+}
+
+function initTheme() {
+  try {
+    const saved = localStorage.getItem("pbpf-dashboard-theme");
+    if (saved === "dark" || saved === "light") {
+      document.documentElement.setAttribute("data-theme", saved);
+    }
+  } catch (e) { /* localStorage 사용 불가 환경이면 OS 설정을 그대로 따름 */ }
+  applyThemeButtonIcon();
+}
+
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  const next = currentTheme() === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("pbpf-dashboard-theme", next); } catch (e) { /* noop */ }
+  applyThemeButtonIcon();
+});
+
+initTheme();
 renderAll();
 </script>
 </body>
