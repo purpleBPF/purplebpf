@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
+import re
 import shlex
 import uuid
 from datetime import datetime, timezone
@@ -37,6 +39,10 @@ EXIT_INVALID_INPUT = 5
 STANDARD_EXECUTION_POLICY = "STANDARD"
 DEMO_ALLOW_REVIEW_POLICY = "DEMO_ALLOW_REVIEW"
 _KNOWN_EXECUTION_STATUSES = {"PASS", "REVIEW", "REJECT", "FAIL", "ERROR"}
+BLOCKED_CONTAINER_ID = "blocked"  # 실제 docker short id(16진수)와 절대 겹치지 않는 센티널
+TECHNIQUE_ID_RE = re.compile(r"^T\d{4}(\.\d{3})?$")  # execution_log.technique CHECK 제약과 동일
+
+logger = logging.getLogger(__name__)
 
 INSERT_EXECUTION_LOG = text(
     """
@@ -132,6 +138,36 @@ def _validate_execution_gate(chain: dict) -> dict:
     return invalid_result
 
 
+def _log_blocked_attempt(round_id: int, chain: dict, decision: str) -> None:
+    """REVIEW/REJECT로 실행이 차단된 시도도 execution_log에 남긴다.
+
+    _next_round_id()가 execution_log.round_id의 MAX+1로 다음 라운드 번호를 계산하는데,
+    차단된 시도가 기록되지 않으면 MAX가 안 올라가 다음 시도가 같은 round_id를 받는다
+    (실측: REVIEW 라운드와 그다음 REJECT 라운드가 둘 다 round_id=2로 찍힘).
+    실제 컨테이너가 없으므로 container_id는 실제 docker short id와 절대 겹치지 않는
+    센티널을 쓴다 — coverage.sql의 `d.container_id LIKE e.container_id || '%'` 조인이
+    빈 문자열 등으로 오염되면 안 되기 때문이다.
+    기록 실패가 REVIEW/REJECT 차단 자체(human-in-the-loop)를 막으면 안 되므로 예외를 삼킨다.
+    """
+    technique_id = chain.get("technique_id") if isinstance(chain, dict) else None
+    if not technique_id or not TECHNIQUE_ID_RE.match(technique_id):
+        return
+    now = datetime.now(timezone.utc)
+    try:
+        _insert_execution_log(
+            round_id=round_id,
+            chain_id=uuid.uuid4(),
+            technique=technique_id,
+            channel=CHANNEL,
+            success=False,
+            started_at=now,
+            finished_at=now,
+            container_id=BLOCKED_CONTAINER_ID,
+        )
+    except Exception as exc:
+        logger.warning("차단된 시도의 execution_log 기록 실패 (round_id=%s, decision=%s): %s", round_id, decision, exc)
+
+
 def _notify_scenario_review(chain: dict, source: str, review_result: dict) -> dict:
     try:
         from purplebpf.offensive.review.slack_notify import notify_scenario_review
@@ -187,6 +223,8 @@ def execute_chain(
         )
 
     if not policy["execution_allowed"]:
+        if gate["decision"] in ("REVIEW", "FAIL"):
+            _log_blocked_attempt(round_id, chain, gate["decision"])
         result = {
             "status": "ERROR" if gate["decision"] == "ERROR" else "SKIPPED",
             "decision": gate["decision"],
@@ -465,6 +503,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
 
     if not first_filter_policy["execution_allowed"]:
+        if verdict_status in ("REVIEW", "REJECT"):
+            _log_blocked_attempt(args.round_id, chain, verdict_status)
         result = _first_filter_blocked_result(
             verdict if isinstance(verdict, dict) else {"verdict": None},
             allow_review=args.allow_review,

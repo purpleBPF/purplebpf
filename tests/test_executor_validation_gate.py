@@ -1,7 +1,7 @@
 import sys
 import types
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import ANY, Mock, patch
 
 
 try:
@@ -94,7 +94,23 @@ class ExecutorValidationGateTests(unittest.TestCase):
         from_env.assert_not_called()
         container_run.assert_not_called()
         run_step.assert_not_called()
-        insert_log.assert_not_called()
+        if expected_decision in ("REVIEW", "FAIL"):
+            # REVIEW/REJECT는 human-in-the-loop으로 실행만 막힐 뿐, round_id가
+            # 밀리지 않도록 execution_log에는 success=false로 남는다.
+            insert_log.assert_called_once_with(
+                round_id=1,
+                chain_id=ANY,
+                technique=CHAIN["technique_id"],
+                channel=executor.CHANNEL,
+                success=False,
+                started_at=ANY,
+                finished_at=ANY,
+                container_id=executor.BLOCKED_CONTAINER_ID,
+            )
+        else:
+            # ERROR(검증기 자체 오류/이상 결과)는 방어 시스템의 정상 판정이
+            # 아니므로 execution_log에 남기지 않는다.
+            insert_log.assert_not_called()
         return result
 
     def test_all_levels_pass_enters_existing_execution_path(self):
@@ -178,7 +194,16 @@ class ExecutorValidationGateTests(unittest.TestCase):
         from_env.assert_not_called()
         container_run.assert_not_called()
         run_step.assert_not_called()
-        insert_log.assert_not_called()
+        insert_log.assert_called_once_with(
+            round_id=1,
+            chain_id=ANY,
+            technique=CHAIN["technique_id"],
+            channel=executor.CHANNEL,
+            success=False,
+            started_at=ANY,
+            finished_at=ANY,
+            container_id=executor.BLOCKED_CONTAINER_ID,
+        )
 
     def test_execute_chain_direct_call_cannot_bypass_gate(self):
         self._assert_blocked(

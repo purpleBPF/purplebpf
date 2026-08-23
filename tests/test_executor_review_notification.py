@@ -88,6 +88,14 @@ def gate(decision, validation=None):
 
 
 class ExecutorReviewNotificationTests(unittest.TestCase):
+    def setUp(self):
+        # execute_chain()/main()의 REVIEW·REJECT 차단 분기가 execution_log에 기록을
+        # 남기므로(round_id 중복 방지), 이 파일의 어떤 테스트도 개별적으로
+        # _insert_execution_log를 mock하지 않으면 실제 DB에 쓴다. 기본값으로 막는다.
+        self.enterContext(
+            patch.object(executor, "_insert_execution_log", return_value={"success": True})
+        )
+
     def _cli_modules(self, filter_result):
         filter_module = types.ModuleType("purplebpf.offensive.filter.first_filter")
         filter_module.filter_chain = Mock(return_value=filter_result)
