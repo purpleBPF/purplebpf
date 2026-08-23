@@ -5,6 +5,6 @@
 """
 from dagster import Definitions, load_assets_from_modules
 
-from orchestration.assets import coverage_loop
+from orchestration.assets import chain_dashboard, coverage_loop
 
-defs = Definitions(assets=load_assets_from_modules([coverage_loop]))
+defs = Definitions(assets=load_assets_from_modules([coverage_loop, chain_dashboard]))
