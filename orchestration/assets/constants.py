@@ -21,8 +21,18 @@ DBT_PROFILES_DIR = Path(os.environ.get("PBPF_DBT_PROFILES_DIR", REPO_ROOT / "dbt
 # `limactl list`로 실제 VM 이름을 확인할 것. demo/ 스크립트들은 "purplebpf"를 쓰지만
 # 이 저장소가 실제로 물려있는 VM은 "default"였다 — 팀원 환경에 맞춰 바꿀 것.
 LIMA_VM_NAME = os.environ.get("PBPF_LIMA_VM", "default")
-VM_REPO_ROOT = os.environ.get("PBPF_VM_REPO_ROOT", "/Users/kwonjunhui/Desktop/PurpleBPF")
+# Lima는 기본적으로 macOS 홈 디렉터리를 VM 안에도 같은 경로로 마운트하므로,
+# 레포를 어디에 clone하든 REPO_ROOT(호스트 경로)와 VM 안 경로가 보통 같다.
+# 특정 인물의 경로를 박아두지 않기 위해 REPO_ROOT를 기본값으로 재사용한다.
+VM_REPO_ROOT = os.environ.get("PBPF_VM_REPO_ROOT", str(REPO_ROOT))
 VM_ENV_FILE = os.environ.get("PBPF_VM_ENV_FILE", "~/purplebpf.env")
 
 # --- 파이프라인 파라미터 ---
 TARGET_TECHNIQUE_ID = os.environ.get("PBPF_TARGET_TECHNIQUE", "T1059.004")
+
+# 설정하면 gemma 자유생성 대신 이 체인 파일로 run_attack_round를 돈다(VM_REPO_ROOT
+# 기준 상대경로, executor의 --chain-file로 그대로 전달됨). 비어있으면(기본값)
+# 기존 동작 그대로 gemma가 매번 새로 생성한다. TARGET_TECHNIQUE_ID가 Level3 규칙이
+# 없는 기법(예: T1059.004 기본값)이면 자유생성으로는 절대 decision=PASS가 안 나오므로,
+# 확실히 PASS까지 보고 싶을 때 이 값을 씌운다.
+CHAIN_FILE = os.environ.get("PBPF_CHAIN_FILE", "")

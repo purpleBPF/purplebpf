@@ -68,9 +68,15 @@ def run_attack_round(context: AssetExecutionContext) -> MaterializeResult:
     """Lima VM 안에서 Executor로 공격 체인 한 라운드를 실행한다 (execution_log에 기록됨)."""
     round_id = _next_round_id()
     context.log.info(f"[run_attack_round] round_id={round_id}")
-    bash_command = (
-        f"cd {C.VM_REPO_ROOT} && source {C.VM_ENV_FILE} && "
+    executor_command = (
         f"python3 -m purplebpf.offensive.executor.executor {C.TARGET_TECHNIQUE_ID} --round-id {round_id}"
+    )
+    if C.CHAIN_FILE:
+        # gemma 자유생성 대신 고정 체인파일로 돈다 (PBPF_CHAIN_FILE 설정 시).
+        context.log.info(f"[run_attack_round] chain_file={C.CHAIN_FILE}")
+        executor_command += f" --chain-file {C.CHAIN_FILE}"
+    bash_command = (
+        f"cd {C.VM_REPO_ROOT} && source {C.VM_ENV_FILE} && {executor_command}"
     )
     cmd = _limactl_shell(bash_command)
     result = _run_shell(context, "run_attack_round", cmd)

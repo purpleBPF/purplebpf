@@ -8,7 +8,7 @@
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 4,
   "refresh": "30s",
   "time": {
     "from": "now-24h",
@@ -16,12 +16,27 @@
   },
   "panels": [
     {
+      "id": 6,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 2
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "## 🔥 현재 라운드 결과"
+      }
+    },
+    {
       "id": 1,
       "type": "stat",
       "title": "탐지 성공 (TP)",
       "gridPos": {
         "x": 0,
-        "y": 0,
+        "y": 2,
         "w": 8,
         "h": 4
       },
@@ -36,7 +51,7 @@
             "uid": "purplebpf-postgres"
           },
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'TP'",
+          "rawSql": "SELECT tp AS value FROM recall_by_round ORDER BY round_id DESC LIMIT 1",
           "refId": "A",
           "rawQuery": true,
           "editorMode": "code"
@@ -70,7 +85,7 @@
       "title": "놓침 (FN)",
       "gridPos": {
         "x": 8,
-        "y": 0,
+        "y": 2,
         "w": 8,
         "h": 4
       },
@@ -85,7 +100,7 @@
             "uid": "purplebpf-postgres"
           },
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'FN'",
+          "rawSql": "SELECT fn AS value FROM recall_by_round ORDER BY round_id DESC LIMIT 1",
           "refId": "A",
           "rawQuery": true,
           "editorMode": "code"
@@ -119,7 +134,7 @@
       "title": "측정 불가 (INVALID)",
       "gridPos": {
         "x": 16,
-        "y": 0,
+        "y": 2,
         "w": 8,
         "h": 4
       },
@@ -134,7 +149,7 @@
             "uid": "purplebpf-postgres"
           },
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM coverage WHERE result = 'INVALID'",
+          "rawSql": "SELECT invalid AS value FROM recall_by_round ORDER BY round_id DESC LIMIT 1",
           "refId": "A",
           "rawQuery": true,
           "editorMode": "code"
@@ -165,10 +180,10 @@
     {
       "id": 4,
       "type": "table",
-      "title": "기법별 커버리지 (최신 라운드)",
+      "title": "❄️ 기법별 커버리지 (누적)",
       "gridPos": {
         "x": 0,
-        "y": 4,
+        "y": 6,
         "w": 24,
         "h": 10
       },
@@ -252,7 +267,7 @@
       "description": "기법별 TP(초록)/FN(빨강)/FP(노랑) 상태를 색으로 표현한다.",
       "gridPos": {
         "x": 0,
-        "y": 14,
+        "y": 16,
         "w": 24,
         "h": 8
       },

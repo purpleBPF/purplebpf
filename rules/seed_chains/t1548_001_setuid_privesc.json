@@ -1,0 +1,8 @@
+{
+  "technique_id": "T1548.001",
+  "goal": "setuid 비트를 설정해 권한을 상승시킨다.",
+  "steps": [
+    {"order": 1, "command": "touch /tmp/setuid_target", "purpose": "대상 파일을 만든다."},
+    {"order": 2, "command": "chmod u+s /tmp/setuid_target", "purpose": "setuid 비트를 설정한다."}
+  ]
+}
