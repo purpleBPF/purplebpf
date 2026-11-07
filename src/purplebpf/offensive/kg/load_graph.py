@@ -99,14 +99,20 @@ def extract_subtechnique_relationships(objects: list[dict]) -> list[dict]:
 
 
 def apply_schema(driver) -> None:
+    # A commented header must not hide the first CREATE CONSTRAINT statement.
+    # Previously the whole first chunk was skipped because it began with "//".
+    schema_lines = [
+        line for line in SCHEMA_PATH.read_text(encoding="utf-8").splitlines()
+        if not line.lstrip().startswith("//")
+    ]
     statements = [
         stmt.strip()
-        for stmt in SCHEMA_PATH.read_text(encoding="utf-8").split(";")
-        if stmt.strip() and not stmt.strip().startswith("//")
+        for stmt in "\n".join(schema_lines).split(";")
+        if stmt.strip()
     ]
     with driver.session() as session:
         for stmt in statements:
-            session.run(stmt)
+            session.run(stmt).consume()
 
 
 def load_tactics(driver, tactics: list[dict]) -> None:
