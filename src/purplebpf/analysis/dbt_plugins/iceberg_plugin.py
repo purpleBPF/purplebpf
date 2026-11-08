@@ -26,6 +26,7 @@ from purplebpf.analysis.iceberg_setup import (
     CATALOG_NAME,
     TABLE_IDENTIFIER,
     WAREHOUSE_PATH,
+    round_tag,
 )
 
 
@@ -39,4 +40,34 @@ class Plugin(BasePlugin):
 
     def load(self, source_config):
         table = self._catalog.load_table(TABLE_IDENTIFIER)
-        return table.scan().to_arrow()
+
+        # 라운드 스냅샷 타임트래블 옵션.
+        # 소스 YAML의 meta에 아래 중 하나가 있으면 해당 라운드 태그 시점으로 읽는다.
+        #   round_tag  / snapshot_tag : 태그 이름을 직접 지정 (예: round-7)
+        #   round_id                  : 라운드 ID를 주면 round-<id> 태그로 변환
+        # 아무 옵션도 없으면 기존 동작 그대로 최신(current) 스냅샷을 읽는다.
+        tag = _resolve_round_tag(source_config)
+        if tag is None:
+            return table.scan().to_arrow()
+
+        snapshot = table.snapshot_by_name(tag)
+        if snapshot is None:
+            raise ValueError(
+                f"Iceberg 태그 '{tag}'를 찾을 수 없다. sync_round 실행 여부를 확인하라."
+            )
+        # 태그가 가리키는 스냅샷으로 타임트래블해 그 라운드만 필터링한다.
+        return (
+            table.scan(snapshot_id=snapshot.snapshot_id)
+            .to_arrow()
+        )
+
+
+def _resolve_round_tag(source_config):
+    """source_config의 meta에서 읽을 라운드 태그 이름을 해석한다(없으면 None)."""
+    tag = source_config.get("round_tag") or source_config.get("snapshot_tag")
+    if tag:
+        return str(tag)
+    round_id = source_config.get("round_id")
+    if round_id is not None:
+        return round_tag(int(round_id))
+    return None
