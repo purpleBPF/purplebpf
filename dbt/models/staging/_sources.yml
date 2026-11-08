@@ -6,4 +6,10 @@ sources:
     meta:
       plugin: iceberg
     tables:
+      # 기본 동작: 최신(current) 스냅샷을 읽는다.
+      # 특정 라운드 스냅샷을 읽으려면 meta에 아래 중 하나를 지정한다(opt-in).
+      # 기존 coverage/recall_by_round 모델은 이 소스를 그대로 쓰므로 영향 없다.
+      #   meta.round_tag: "round-7"     # 태그 이름 직접 지정
+      #   meta.snapshot_tag: "round-7"  # round_tag 별칭
+      #   meta.round_id: 7              # round-<id> 태그로 변환
       - name: detections
