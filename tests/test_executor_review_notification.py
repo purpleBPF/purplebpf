@@ -207,7 +207,9 @@ class ExecutorReviewNotificationTests(unittest.TestCase):
         from_env.assert_not_called()
 
     def test_slack_send_failure_keeps_review_decision(self):
-        with patch.object(slack_notify, "notify_review", return_value=False):
+        with patch.object(slack_notify, "notify_review", return_value=False), patch.object(
+            slack_notify.review_store, "create_pending_review", return_value="review-xyz"
+        ):
             notification = slack_notify.notify_scenario_review(
                 CHAIN, "RULE_VALIDATOR", VALIDATOR_REVIEW
             )
@@ -251,12 +253,17 @@ class ExecutorReviewNotificationTests(unittest.TestCase):
             slack_notify,
             "notify_review",
             side_effect=RuntimeError("SLACK_WEBHOOK_URL 환경변수가 설정되어 있지 않다."),
+        ), patch.object(
+            slack_notify.review_store, "create_pending_review", return_value="review-xyz"
         ):
             notification = slack_notify.notify_scenario_review(
                 CHAIN, "RULE_VALIDATOR", VALIDATOR_REVIEW
             )
 
-        self.assertEqual(notification, {"type": "SLACK", "status": "NOT_CONFIGURED"})
+        self.assertEqual(
+            notification,
+            {"type": "SLACK", "status": "NOT_CONFIGURED", "review_id": "review-xyz"},
+        )
 
     def test_first_filter_pass_validator_review_sends_only_validator_notification(self):
         modules = self._cli_modules({"verdict": "PASS", "checks": {}, "reasons": []})
@@ -275,7 +282,9 @@ class ExecutorReviewNotificationTests(unittest.TestCase):
         from_env.assert_not_called()
 
     def test_message_contains_review_context_without_webhook_data(self):
-        with patch.object(slack_notify, "notify_review", return_value=True) as send:
+        with patch.object(slack_notify, "notify_review", return_value=True) as send, patch.object(
+            slack_notify.review_store, "create_pending_review", return_value="review-xyz"
+        ):
             notification = slack_notify.notify_scenario_review(
                 CHAIN, "RULE_VALIDATOR", VALIDATOR_REVIEW
             )
