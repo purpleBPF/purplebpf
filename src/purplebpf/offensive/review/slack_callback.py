@@ -10,13 +10,13 @@ Slack은 버튼이 눌리면 여기 등록된 Request URL로 POST 요청을 보�
 그 ngrok 주소를 Slack 앱 설정의 'Interactivity & Shortcuts' > Request URL에
 등록해야 실제로 Slack이 요청을 보낼 수 있다 (앱 관리자 권한 필요, 별도 단계).
 
-[현재 구현 상태 — 표시 전용(display-only)]
-실행: 실제로 체인을 다시 실행하거나 execution_log를 갱신하는 로직은 이 모듈의
-스코프가 아니다 — 지금은 "클릭을 받아서 화면에 반영"까지만 한다. 승인
-(approve_chain) 버튼을 눌러도 실제로 차단된 체인이 (재)실행되거나
-execution_log가 갱신되지 않는다. 즉 REVIEW로 차단된 공격의 "승인 → 실제
-실행" 연결은 아직 구현되지 않았다(별도 과제). 이 모듈 자체에는 실행
-트리거가 없다.
+[현재 구현 상태 — 결정 영속화(persist), 실행은 미포함]
+버튼 value에 담긴 review_id로 review_decisions 행을 APPROVED/REJECTED로 갱신하고
+(review_store.record_decision), 누가/언제 결정했는지(decided_by/decided_at)를
+남긴다. 다만 실제로 차단된 체인을 (재)실행하거나 execution_log를 갱신하는 일은
+여전히 이 모듈의 스코프가 아니다 — "승인 → 실제 실행" 연결은 워크스트림 C가
+review_decisions/review_store 인터페이스를 소비해 처리한다. 이 모듈 자체에는
+실행 트리거가 없다.
 """
 from __future__ import annotations
 
@@ -31,6 +31,7 @@ import requests
 from fastapi import FastAPI, Header, HTTPException, Request
 
 from purplebpf.common.config import get_slack_signing_secret
+from purplebpf.offensive.review import review_store
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,12 @@ RESPONSE_URL_TIMEOUT_SECONDS = 10
 DECISION_LABELS = {
     "approve_chain": ("✅", "승인됨"),
     "reject_chain": ("❌", "반려됨"),
+}
+
+# action_id → review_decisions.status 전이값.
+DECISION_STATUS = {
+    "approve_chain": review_store.STATUS_APPROVED,
+    "reject_chain": review_store.STATUS_REJECTED,
 }
 
 
@@ -61,18 +68,25 @@ async def handle_interaction(
     payload = _parse_payload(raw_body)
     action = (payload.get("actions") or [{}])[0]
     action_id = action.get("action_id")
-    technique_id = action.get("value")
+    # 버튼 value에는 review_id가 들어있다(slack_notify가 심어둔다). 영속화가
+    # 실패했던 레거시 알림은 technique_id가 들어있을 수 있다 — 그 경우 DB 갱신은
+    # 조용히 건너뛰고 표시만 갱신한다.
+    review_id = action.get("value")
     username = (payload.get("user") or {}).get("username", "알 수 없는 사용자")
 
     if action_id not in DECISION_LABELS:
         logger.warning("알 수 없는 action_id: %s", action_id)
         raise HTTPException(status_code=400, detail="알 수 없는 action_id")
 
-    # NOTE: 표시 전용 — approve_chain/reject_chain 둘 다 여기서 메시지 텍스트만
-    #       "승인됨"/"반려됨"으로 갱신한다. 실제 체인 실행이나 execution_log
-    #       갱신은 하지 않는다(미구현). "승인 → 실행" 연결은 별도 과제로 남아 있다.
+    # review_id로 결정을 영속화한다(status=APPROVED/REJECTED, decided_by, decided_at).
+    # 실제 체인 실행/execution_log 갱신은 하지 않는다 — 그 연결은 워크스트림 C가
+    # review_decisions/review_store를 소비해 처리한다.
+    review = _record_review_decision(review_id, DECISION_STATUS[action_id], username)
+    # 표시용 technique_id: 저장된 행에서 가져오고, 없으면 value를 그대로 쓴다.
+    technique_id = review.get("technique_id") if review else review_id
+
     badge, label = DECISION_LABELS[action_id]
-    logger.info("검수 결과: %s → %s (by %s)", technique_id, label, username)
+    logger.info("검수 결과: %s (review=%s) → %s (by %s)", technique_id, review_id, label, username)
 
     original_blocks = payload.get("message", {}).get("blocks", [])
     updated_blocks = _replace_action_block(original_blocks, badge, label, username)
@@ -95,6 +109,26 @@ async def handle_interaction(
 
     # Slack에는 빈 200 응답으로 "잘 받았다"는 것만 알려준다.
     return {}
+
+
+def _record_review_decision(review_id: str | None, status: str, username: str) -> dict | None:
+    """review_id로 결정을 저장한다. 저장에 실패해도 콜백 응답은 막지 않는다.
+
+    DB가 없거나(레거시 알림/미구성) 해당 행이 없으면 None을 돌려주고, 이 경우
+    메시지 표시만 갱신된다. 버튼 클릭에 500으로 응답하면 Slack이 재시도하며
+    "작업 실패"를 띄우므로, 영속화 오류는 삼키고 로깅만 한다.
+    """
+    if not review_id:
+        logger.warning("버튼 value에 review_id가 없다 — 결정 저장을 건너뛴다.")
+        return None
+    try:
+        review = review_store.record_decision(review_id, status, username)
+    except Exception as exc:
+        logger.error("검수 결정 저장 실패 (review_id=%s): %s", review_id, type(exc).__name__)
+        return None
+    if review is None:
+        logger.warning("review_id=%s 에 해당하는 검수건이 없다 — 표시만 갱신한다.", review_id)
+    return review
 
 
 def _verify_slack_signature(*, raw_body: bytes, timestamp: str | None, signature: str | None) -> None:

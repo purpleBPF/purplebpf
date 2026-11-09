@@ -13,6 +13,7 @@ import logging
 import requests
 
 from purplebpf.common.config import get_slack_webhook_url
+from purplebpf.offensive.review import review_store
 
 logger = logging.getLogger(__name__)
 
@@ -44,24 +45,54 @@ def notify_review(chain: dict, verdict: dict) -> bool:
 
 
 def notify_scenario_review(chain: dict, source: str, review_result: dict) -> dict:
-    """Adapt a REVIEW result to the existing Slack notification contract."""
+    """Adapt a REVIEW result to the existing Slack notification contract.
+
+    전송 전에 차단된 체인에 대한 PENDING 검수건을 영속화하고(review_store),
+    생성된 review_id를 Slack 버튼 value와 결과 dict에 실어 돌려준다. 버튼 콜백
+    (slack_callback)은 이 review_id로 결정을 저장하고, 승인 재실행(워크스트림 C)은
+    같은 id로 체인을 복원한다.
+    """
     context = _review_context(chain, source, review_result)
+    review_id = _persist_pending_review(chain, source)
     verdict = {
         "verdict": "REVIEW",
         "reasons": context["reason_texts"],
         "review_context": context,
+        "review_id": review_id,
     }
     try:
         sent = notify_review(chain, verdict)
     except RuntimeError as exc:
         if "SLACK_WEBHOOK_URL" in str(exc):
-            return {"type": "SLACK", "status": "NOT_CONFIGURED"}
+            return {"type": "SLACK", "status": "NOT_CONFIGURED", "review_id": review_id}
         logger.error("Slack REVIEW 알림 준비 실패: %s", type(exc).__name__)
-        return {"type": "SLACK", "status": "FAILED"}
+        return {"type": "SLACK", "status": "FAILED", "review_id": review_id}
     except Exception as exc:
         logger.error("Slack REVIEW 알림 실패: %s", type(exc).__name__)
-        return {"type": "SLACK", "status": "FAILED"}
-    return {"type": "SLACK", "status": "SENT" if sent else "FAILED"}
+        return {"type": "SLACK", "status": "FAILED", "review_id": review_id}
+    return {
+        "type": "SLACK",
+        "status": "SENT" if sent else "FAILED",
+        "review_id": review_id,
+    }
+
+
+def _persist_pending_review(chain: dict, source: str) -> str | None:
+    """차단된 체인을 PENDING 검수건으로 저장하고 review_id를 돌려준다.
+
+    DB가 없거나 삽입이 실패해도 Slack 알림 자체는 막지 않는다. 영속화 실패 시
+    None을 돌려주며, 이 경우 버튼 value는 technique_id로 폴백한다(레거시 동작).
+    """
+    try:
+        return review_store.create_pending_review(
+            technique_id=chain.get("technique_id", "UNKNOWN"),
+            round_id=chain.get("round_id"),
+            source=source,
+            chain_json=chain,
+        )
+    except Exception as exc:
+        logger.warning("검수건 영속화 실패 — Slack 알림은 계속 진행한다: %s", type(exc).__name__)
+        return None
 
 
 def _review_context(chain: dict, source: str, review_result: dict) -> dict:
@@ -165,6 +196,9 @@ def _command_for_step(chain: dict, order) -> str | None:
 
 def _build_blocks(chain: dict, verdict: dict) -> list[dict]:
     technique_id = chain.get("technique_id", "UNKNOWN")
+    # 버튼 value에는 review_id를 싣는다(콜백이 이 id로 행을 찾아 결정을 저장).
+    # 영속화가 실패해 review_id가 없으면 technique_id로 폴백한다(레거시 동작).
+    button_value = verdict.get("review_id") or technique_id
     goal = chain.get("goal", "(없음)")
     steps = chain.get("steps") or []
     verdict_label = verdict.get("verdict", "UNKNOWN")
@@ -257,14 +291,14 @@ def _build_blocks(chain: dict, verdict: dict) -> list[dict]:
                     "text": {"type": "plain_text", "text": "✅ 승인", "emoji": True},
                     "style": "primary",
                     "action_id": "approve_chain",
-                    "value": technique_id,
+                    "value": button_value,
                 },
                 {
                     "type": "button",
                     "text": {"type": "plain_text", "text": "❌ 반려", "emoji": True},
                     "style": "danger",
                     "action_id": "reject_chain",
-                    "value": technique_id,
+                    "value": button_value,
                 },
             ],
         }

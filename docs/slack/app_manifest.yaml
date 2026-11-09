@@ -1,0 +1,37 @@
+# purpleBPF 2차 검수용 Slack App 매니페스트
+#
+# 이 매니페스트로 Slack App을 만들면 (1) 승인/반려 버튼 클릭을 콜백 서버로 보내는
+# Interactivity와 (2) 알림을 채널에 올리는 Incoming Webhook이 함께 켜진다.
+#
+# 사용법:
+#   1) https://api.slack.com/apps → Create New App → "From an app manifest"
+#   2) 워크스페이스 선택 후 이 YAML을 붙여넣기
+#   3) 생성 후 docs/slack/README.md의 셋업 절차대로 ngrok URL / signing secret /
+#      webhook URL을 .env에 채운다
+#
+# ⚠️ request_url의 호스트는 ngrok 등으로 노출한 콜백 서버 주소로 바꿔야 한다.
+#    경로(/slack/interactions)는 slack_callback.py의 엔드포인트와 반드시 일치해야 한다.
+display_information:
+  name: purpleBPF Review
+  description: REVIEW로 차단된 공격 체인의 2차 검수(승인/반려) 알림과 콜백
+  background_color: "#4a154b"
+
+features:
+  bot_user:
+    display_name: purpleBPF Review
+    always_online: true
+
+oauth_config:
+  scopes:
+    bot:
+      - chat:write          # 봇이 채널에 메시지를 올릴 수 있게
+      - incoming-webhook    # Incoming Webhook(알림 전송)용
+
+settings:
+  interactivity:
+    is_enabled: true
+    # ↓ ngrok 등으로 노출한 콜백 서버 주소로 교체. 경로는 고정이다.
+    request_url: https://YOUR-NGROK-SUBDOMAIN.ngrok-free.app/slack/interactions
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
