@@ -61,6 +61,21 @@ def get_slack_signing_secret() -> str:
     return secret
 
 
+def get_slack_app_token() -> str:
+    """Socket Mode 연결용 App-level Token (xapp-...).
+
+    Slack 앱 관리 페이지 'Basic Information' > 'App-Level Tokens'에서
+    connections:write 스코프로 발급한다. Bot Token(xoxb-)과 다르다.
+    """
+    token = os.environ.get("SLACK_APP_TOKEN")
+    if not token:
+        raise RuntimeError("SLACK_APP_TOKEN 환경변수가 설정되어 있지 않다.")
+    if not token.startswith("xapp-"):
+        # 토큰 값 자체는 로그/예외에 남기지 않는다.
+        raise RuntimeError("SLACK_APP_TOKEN은 xapp- 로 시작하는 App-level Token이어야 한다.")
+    return token
+
+
 def build_db_engine() -> Engine:
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:

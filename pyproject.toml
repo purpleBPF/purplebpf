@@ -21,6 +21,7 @@ dependencies = [
     "dagster-webserver>=1.8",
     "fastapi>=0.110",
     "uvicorn>=0.29",
+    "slack_sdk>=3.27",
 ]
 
 [build-system]
