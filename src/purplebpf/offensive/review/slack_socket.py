@@ -114,7 +114,10 @@ def main() -> None:
 
     connect_with_retry(client)
     logger.info("승인/반려 이벤트 대기 중 (Ctrl+C로 종료)")
-    stop.wait()
+    # Windows에서는 timeout 없는 Event.wait()가 Ctrl+C(SIGINT)에 깨어나지 않는다.
+    # 1초 단위로 깨어나서 시그널 핸들러가 돌 기회를 준다.
+    while not stop.wait(1):
+        pass
 
     logger.info("종료 중...")
     client.close()
